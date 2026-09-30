@@ -2,7 +2,9 @@
 
 وب‌اپ فروشگاهی کپسول گاز و خدمات شارژ — Next.js 15 (App Router) + React 19 + TypeScript + Tailwind v4 + PostgreSQL 16 + Prisma.
 
-قرارداد فنی و فازبندی پروژه در [ARCHITECTURE.md](./ARCHITECTURE.md) است.
+فروشگاه هم **کالای فیزیکی** (خرید کپسول نو، پیک‌نیک) می‌فروشد و هم **خدمت** (شارژ کپسول با تعویض کپسول پرشده)؛ محصول می‌تواند قیمت‌دار یا استعلامی باشد؛ ارسال با پیک یا تحویل حضوری (فقط تهران).
+
+قرارداد فنی و وضعیت فعلی پروژه در [ARCHITECTURE.md](./ARCHITECTURE.md) است (بخش «وضعیت الو کپسول»). طراحی و توکن‌ها: [docs/DESIGN_TOKENS.md](./docs/DESIGN_TOKENS.md). منشأ فورک: [docs/FORK_ORIGIN.md](./docs/FORK_ORIGIN.md).
 
 ## پیش‌نیازها
 
@@ -19,7 +21,7 @@ npm install
 # ۲) ساخت فایل محیطی و مقداردهی AUTH_SECRET (حداقل ۳۲ کاراکتر)
 cp .env.example .env
 
-# ۳) بالا آوردن Postgres (روی 127.0.0.1:5435)
+# ۳) بالا آوردن Postgres (روی 127.0.0.1:5436)
 docker compose up -d
 
 # ۴) ساخت جدول‌ها و داده‌ی نمونه (ADMIN_SEED_PHONE را در .env به شماره‌ی خودتان تغییر دهید)
@@ -32,37 +34,38 @@ npm run dev
 
 سایت روی <http://localhost:3000> در دسترس است.
 
-`db:seed` قابل تکرار است (upsert). برای پاک‌سازی کامل دیتابیس توسعه و شروع دوباره:
+`db:seed` قابل تکرار است (upsert) و ۴ دسته و ۴ محصول **نمونه** (شارژ بوتان، کپسول ۱۱ کیلویی، پیک‌نیک، شارژ اکسیژن استعلامی)، دو روش ارسال (پیک و تحویل حضوری) و کلیدهای تنظیمات را می‌سازد. محتوای واقعی کاتالوگ با `SEO.md` می‌آید. برای پاک‌سازی کامل دیتابیس توسعه و شروع دوباره (همه‌ی داده پاک می‌شود):
 
 ```bash
-npx prisma migrate reset
+npm run db:reset
 ```
 
 ## اسکریپت‌ها
 
-| دستور                                | کار                                                            |
-| ------------------------------------ | -------------------------------------------------------------- |
-| `npm run dev`                        | سرور توسعه                                                     |
-| `npm run build`                      | ساخت production (`output: "standalone"`)                       |
-| `npm start`                          | اجرای خروجی standalone (بعد از `build`)                        |
-| `npm run typecheck`                  | بررسی نوع TypeScript                                           |
-| `npm run lint`                       | ESLint                                                         |
-| `npm run format`                     | قالب‌بندی با Prettier (`format:check` فقط بررسی)               |
-| `npm test`                           | تست‌های واحد (Vitest)                                          |
-| `npm run test:integration`           | تست‌های یکپارچه روی Postgres توسعه                             |
-| `npm run test:e2e`                   | تست‌های Playwright چهار مسیر بحرانی (Postgres + seed لازم است) |
-| `npm run db:migrate`                 | اجرای migrationهای Prisma                                      |
-| `npm run db:seed`                    | داده‌ی نمونه                                                   |
-| `npm run db:seed:demo`               | سفارش‌های نمایشی برای گزارش‌ها (فقط توسعه؛ `-- --clean`)       |
-| `npm run db:studio`                  | Prisma Studio                                                  |
-| `npm run check:finance`              | بررسی سلامت مالی (`check:wallet` فقط کیف پول)                  |
-| `npm run job:expire-orders`          | لغو سفارش‌های پرداخت‌نشده‌ی ۷۲ ساعته                           |
-| `npm run job:retry-notifications`    | تلاش دوباره‌ی پیامک‌های ناموفق                                 |
-| `npm run user:set-password -- 0912…` | تعیین رمز عبور کاربر از روی سرور (بازیابی بدون پیامک)          |
+| دستور                                | کار                                                                                 |
+| ------------------------------------ | ----------------------------------------------------------------------------------- |
+| `npm run dev`                        | سرور توسعه                                                                          |
+| `npm run build`                      | ساخت production (`output: "standalone"`)                                            |
+| `npm start`                          | اجرای خروجی standalone (بعد از `build`)                                             |
+| `npm run typecheck`                  | بررسی نوع TypeScript                                                                |
+| `npm run lint`                       | ESLint                                                                              |
+| `npm run format`                     | قالب‌بندی با Prettier (`format:check` فقط بررسی)                                    |
+| `npm test`                           | تست‌های واحد (Vitest)                                                               |
+| `npm run test:integration`           | تست‌های یکپارچه روی Postgres توسعه                                                  |
+| `npm run test:e2e`                   | تست‌های Playwright (Postgres + seed لازم است؛ `E2E_ADMIN_PHONE=<ADMIN_SEED_PHONE>`) |
+| `npm run db:migrate`                 | اجرای migrationهای Prisma                                                           |
+| `npm run db:seed`                    | داده‌ی نمونه                                                                        |
+| `npm run db:reset`                   | پاک‌سازی و ساخت دوباره‌ی دیتابیس توسعه (migration + seed)                           |
+| `npm run db:seed:demo`               | سفارش‌های نمایشی برای گزارش‌ها (فقط توسعه؛ `-- --clean`)                            |
+| `npm run db:studio`                  | Prisma Studio                                                                       |
+| `npm run check:finance`              | بررسی سلامت مالی (`check:wallet` فقط کیف پول)                                       |
+| `npm run job:expire-orders`          | لغو سفارش‌های پرداخت‌نشده‌ی ۷۲ ساعته                                                |
+| `npm run job:retry-notifications`    | تلاش دوباره‌ی پیامک‌های ناموفق                                                      |
+| `npm run user:set-password -- 0912…` | تعیین رمز عبور کاربر از روی سرور (بازیابی بدون پیامک)                               |
 
 استقرار production: [DEPLOYMENT.md](./DEPLOYMENT.md).
 
-پس از هر فاز باید این سه دستور بدون خطا اجرا شوند:
+پیش از هر commit این سه دستور باید بدون خطا اجرا شوند:
 
 ```bash
 npm run typecheck && npm run lint && npm run build
@@ -97,9 +100,10 @@ npm install --registry <آدرس-میرور-npm>
 
 ## طراحی و محتوای ثابت
 
-- توکن‌های رنگ و شعاع در `src/app/globals.css` هستند (پوشه‌ی طراحی قدیمی در `docs/archive/` بایگانی شده و ملاک نیست).
-- متن‌های ثابت سایت (اسلایدها، تماس، شعب، «درباره ما») در `src/lib/site-content.ts` است؛ تا فاز ۱۳ از همان‌جا ویرایش کنید. **شماره تلفن، آدرس‌ها و آمار نمونه‌اند.**
-- لوگو موقت است و فقط در `src/components/shop/Logo.tsx` قرار دارد.
+- تم روشن و نارنجی؛ همه‌ی رنگ‌ها توکن معنایی در `@theme` فایل `src/app/globals.css` هستند (هیچ کامپوننتی رنگ خام نمی‌نویسد) و جدول کنتراست در `docs/DESIGN_TOKENS.md` است.
+- نام برند فقط در `src/lib/brand.ts` نوشته می‌شود (`SITE` در `src/lib/site-content.ts` از آن می‌خواند).
+- متن‌های صفحه‌ی اصلی، تماس، تحویل حضوری و شرایط خدمت از «تنظیمات ← صفحه‌ی اصلی» و «کسب‌وکار و خدمت» در پنل ادمین ویرایش می‌شوند؛ ادعای واقعی کسب‌وکار در کد/seed با `{{تکمیل توسط الو کپسول: …}}` علامت‌گذاری شده و باید پر شود.
+- لوگو و favicon جای‌نگهدارند (`public/brand/logo.svg`، `src/app/icon.svg`) تا فایل نهایی برسد.
 
 ## قواعد مهم
 

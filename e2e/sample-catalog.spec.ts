@@ -88,6 +88,16 @@ test.describe.serial("محصول نمونه", () => {
     expect(visible).not.toContain('aria-label="آمار"');
   });
 
+  test("انتشار قفل است: robots بسته و صفحات noindex (ALLOW_INDEXING=false)", async ({
+    request,
+  }) => {
+    const robots = await (await request.get("/robots.txt")).text();
+    expect(robots).toMatch(/Disallow:\s*\/\s*$/m);
+    expect(robots).not.toMatch(/Allow:\s*\//);
+    const home = await (await request.get("/")).text();
+    expect(home).toMatch(/<meta name="robots" content="noindex/);
+  });
+
   test("خرید شارژ بوتان تا ثبت سفارش و پیامک بدون اثر برند مبدأ", async ({
     page,
   }) => {

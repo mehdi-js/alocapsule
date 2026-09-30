@@ -8,7 +8,15 @@ import { MediaImage } from "./Placeholder";
 import { ServiceBadge } from "./ServiceBadge";
 
 /** کارت محصول طبق سند طراحی؛ دکمه‌ی + انتخاب سریع متغیر و افزودن به سبد است. */
-export function ProductCard({ product }: { product: ProductCardDto }) {
+export function ProductCard({
+  product,
+  headingLevel = 3,
+}: {
+  product: ProductCardDto;
+  /** سطح عنوان کارت (زیر H1 صفحه‌ی لیست باید h2 باشد تا ترتیب عنوان‌ها نشکند) */
+  headingLevel?: 2 | 3;
+}) {
+  const Heading = `h${headingLevel}` as "h2" | "h3";
   const href = `/products/${encodeURIComponent(product.slug)}`;
 
   return (
@@ -35,11 +43,11 @@ export function ProductCard({ product }: { product: ProductCardDto }) {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <h3 className="text-lg font-bold">
+        <Heading className="text-lg font-bold">
           <Link href={href} className="hover:text-brand-strong transition">
             {product.name}
           </Link>
-        </h3>
+        </Heading>
         {product.shortDescription ? (
           <p className="text-muted line-clamp-2 text-xs leading-[1.8]">
             {product.shortDescription}
@@ -79,7 +87,7 @@ export function ProductGrid({
   return (
     <div className={className}>
       {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard key={product.id} product={product} headingLevel={2} />
       ))}
     </div>
   );

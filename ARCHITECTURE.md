@@ -1,14 +1,57 @@
 # ARCHITECTURE.md — فروشگاه آنلاین الو کپسول
 
-> در این پروژه `FORK.md` مقدم است.
-
-> این سند، قرارداد فنی پروژه است. Claude Code باید **فاز به فاز** پیش برود و هیچ فازی را قبل از تکمیل و تأیید فاز قبلی شروع نکند.
+> قرارداد فنی پروژه‌ی فروشگاه **الو کپسول** (`alocapsule.ir`): تأمین، شارژ و ارسال کپسول گاز مایع (LPG) در تهران. این پروژه از کد فروشگاه دیگری فورک شده و تاریخچه‌ی فورک در `docs/FORK_ORIGIN.md` و `docs/archive/` است.
 >
-> نسخه‌ی سند: ۳ — شامل کد تخفیف و اعلان پیامکی (ملی پیامک). **سیستم مدیریت موجودی و انبارداری عمداً حذف شده است.**
+> نسخه‌ی سند: ۴ (پس از فورک، فازهای F0 تا F7). **بخش «وضعیت الو کپسول» زیر بر متن‌های تاریخی بعدی مقدم است**؛ آن متن‌ها همان قرارداد ساخت پایه‌اند و برای بخش‌های دست‌نخورده (OTP، سبد، کد تخفیف، کیف پول، پیامک، پنل، گزارش‌ها، موتور سئو) معتبرند. **سیستم مدیریت موجودی و انبارداری عمداً وجود ندارد** و نباید اضافه شود.
+
+---
+
+## الف. وضعیت الو کپسول (پس از فورک)
+
+### الف.۱ برند و پیکربندی
+- نام برند و شناسه‌ی فنی فقط در `src/lib/brand.ts` (`BRAND_NAME`، `BRAND_SLUG`، `todo()`) نوشته می‌شوند؛ کد UI از `SITE` (`lib/site-content.ts`) یا کلید `seo.brandName` می‌خواند. کوکی‌ها و salt رمزنگاری از `SITE.slug` ساخته می‌شوند.
+- جای‌نگهدار ادعاهای واقعی کسب‌وکار: `{{تکمیل توسط الو کپسول: …}}` (`COMPLETION_MARKER`)؛ `npm run seo:audit` وجودشان را در HTML گزارش می‌کند و تا رفعشان انتشار ممنوع است.
+- شماره‌ی سفارش: `{order.numberPrefix}-{تاریخ شمسی}-{ردیف روز}` (پیش‌فرض `AC`)؛ پیشوند از `Setting`، نه ثابت در کد.
+
+### الف.۲ نوع محصول و حالت قیمت
+- `Product.kind`: `PHYSICAL` (کالا) یا `SERVICE` (خدمت، مثل شارژ کپسول). `Product.pricingMode`: `FIXED` یا `INQUIRY` (استعلامی).
+- قیمت‌دار: حداقل یک متغیر فعال برای فعال شدن. **استعلامی:** متغیر ندارد؛ در فروشگاه «استعلام قیمت» + تماس/واتساپ؛ سمت سرور افزودن به سبد و ثبت سفارش رد می‌شود (`isSellable`، `INQUIRY_NOT_ORDERABLE_MESSAGE`)؛ محصولی که بعداً استعلامی شود متغیرهایش غیرفعال (نه حذف) و از سبدها برداشته می‌شود؛ JSON-LD بدون `offers`.
+- خدمت: متن شرایط تعویض (`Product.serviceTerms` یا `service.defaultTerms`) در قالب متنی `lib/rich-text.ts` (نه HTML خام) در صفحه‌ی محصول (جعبه‌ی باز) و تسویه نمایش داده می‌شود؛ ثبت سفارش بدون پذیرش رد می‌شود و `Order.serviceTermsAcceptedAt` + `serviceTermsSnapshot` (شرایط همه‌ی خدمت‌های سبد، بدون تکرار، عیناً) ذخیره می‌شود. سبد مخلوط خدمت + کالا مجاز است. `OrderItem.productKindSnapshot` اسنپ‌شات نوع است.
+- شرایط خدمت: کپسول خالی مشتری با کپسول **از قبل پرشده** هم‌اندازه و هم‌نوع تعویض می‌شود. ادمین در جزئیات سفارش «کپسول‌های خالی قابل تحویل گرفتن» را به تفکیک محصول/متغیر می‌بیند.
+
+### الف.۳ ارسال و تحویل حضوری
+- `ShippingMethod.requiresAddress=false` ⇒ «تحویل حضوری»: در تسویه به‌جای آدرس، `business.pickupAddress` و `business.pickupHours` نمایش داده می‌شود و `Order.shippingAddressSnapshot` خالی (NULL) است؛ همه‌ی نمایش‌دهنده‌های آدرس (پنل کاربر، ادمین، CSV، پیامک) این حالت را پشتیبانی می‌کنند. روش با آدرس بدون آدرس رد می‌شود.
+- ارسال رایگان: مبلغ کالا پس از تخفیف ≥ `freeAboveAmount` **یا** مجموع تعداد اقلام سبد ≥ `freeAboveQuantity`. پیام سبد «با افزودن N عدد دیگر، ارسال رایگان می‌شود».
+- الو کپسول فقط در **شهر تهران** ارسال و خدمات ارائه می‌دهد (`lib/service-area.ts`).
+
+### الف.۴ کلیدهای `Setting` (علاوه بر کلیدهای سئو و پیامک)
+| کلید | کاربرد |
+|---|---|
+| `order.numberPrefix` | پیشوند شماره‌ی سفارش |
+| `business.phone` | **تنها منبع** شماره‌ی تماس (هدر، دکمه‌ی شناور، فوتر، تماس، JSON-LD) |
+| `business.whatsapp` | خالی ⇒ دکمه‌ی واتساپ نمایش داده نمی‌شود |
+| `business.pickupHours` / `business.pickupAddress` | تحویل حضوری |
+| `service.defaultTerms` / `service.checkoutConsentLabel` | شرایط پیش‌فرض خدمت و برچسب چک‌باکس تسویه |
+| `catalog.showPricePerKg` | نمایش قیمت هر کیلو (برای الو کپسول خاموش) |
+| `home.*` | متن‌های صفحه‌ی اصلی (`hero.*`، `steps.*`، `featured.title`، `about.*`، `customers.*`، `stats`، `cta.*`)؛ `home.stats` خالی ⇒ بخش آمار پنهان |
+
+پیش‌فرض‌ها در `lib/business-settings.ts` و `lib/home-settings.ts` و seed؛ ویرایش از «تنظیمات ← کسب‌وکار و خدمت» و «صفحه‌ی اصلی».
+
+### الف.۵ ظاهر
+- تم روشن و فنی با نارنجی؛ همه‌ی رنگ‌ها توکن معنایی در `@theme` (`src/app/globals.css`) و کامپوننت‌ها رنگ خام نمی‌نویسند. جدول کنتراست (WCAG AA): `docs/DESIGN_TOKENS.md`. اسکرین‌شات‌ها: `docs/screenshots/`.
+- فونت وزیرمتن محلی؛ لوگو و favicon جای‌نگهدار تا کارفرما فایل بدهد.
+- صفحه‌ی اصلی: هیرو، دسته‌های `isFeatured` از دیتابیس، مراحل شارژ، محصولات منتخب، درباره ما، مشتریان، آمار (اختیاری)، دعوت به تماس. دقیقاً یک H1 (از `seo.home.h1`).
+
+### الف.۶ زیرساخت توسعه
+- Postgres توسعه روی `127.0.0.1:5436` (پروژه‌ی compose: `alocapsule-shop`)؛ یک migration اولیه‌ی ادغام‌شده (`20260930100000_init`).
+- تست‌ها: `npm test` (واحد)، `npm run test:integration` (Postgres واقعی)، `npm run test:e2e` (Playwright؛ با `E2E_ADMIN_PHONE=<شماره‌ی ادمین seed>`). `npm run db:reset` دیتابیس محلی را از صفر می‌سازد.
+- انتشار روی `alocapsule.ir` تا اجرای ریدایرکت آدرس‌های وردپرس طبق `SEO.md` ممنوع است؛ `ALLOW_INDEXING=false` و robots برابر `Disallow: /` می‌ماند.
 
 ---
 
 ## 0. قوانین کار برای Claude Code (مهم — قبل از هر کاری بخوان)
+
+> این قوانین از فازبندی ساخت پایه‌اند؛ برای کار بعد از فورک هم معتبرند (به‌جز پیشوند commit که برای فازهای فورک `fork-FN` بود).
 
 1. **یک فاز در هر زمان.** در پایان هر فاز توقف کن، خلاصه‌ی کارهای انجام‌شده + خروجی `typecheck`/`lint`/`build` را گزارش بده و منتظر تأیید بمان.
 2. **هیچ‌وقت فاز بعدی را "چون منطقی بود" جلو نینداز.** اگر چیزی در فاز فعلی به نظرت لازم است ولی در لیست فاز نیست، اول بپرس.
@@ -92,6 +135,7 @@
   - مدیریت کاربران + مدیریت موجودی کیف پول
   - گزارش‌گیری: جدول + نمودار فروش به تفکیک بازه زمانی
 - تنظیمات پایه (کارت شرکت، هزینه ارسال، متن پیامک‌ها، اطلاعات تماس)
+- الو کپسول: نوع محصول (کالا/خدمت) و حالت قیمت (قیمت‌دار/استعلامی)، شرایط خدمت با پذیرش در تسویه، تحویل حضوری، ارسال رایگان تعدادی، متن‌های صفحه‌ی اصلی قابل ویرایش، گزارش فروش به تفکیک نوع
 
 ### 🔜 نسخه ۲ (فقط جای آن باز بماند — **پیاده‌سازی نشود**)
 - درگاه پرداخت آنلاین با verify (زرین‌پال/آیدی‌پی)
@@ -272,9 +316,9 @@ enum NotificationStatus { PENDING SENT FAILED }
 
 **Session** — `id`, `userId`, `tokenHash`, `expiresAt`, `userAgent?`, `createdAt`, `revokedAt?`
 
-**Category** — `id`, `name`, `slug` (unique), `parentId?`, `description?`, `imageUrl?`, `sortOrder`, `isActive`
+**Category** — `id`, `name`, `slug` (unique), `parentId?`, `description?`, `imageUrl?`, `sortOrder`, `isActive`, `isFeatured` (نمایش در صفحه‌ی اصلی)
 
-**Product** — `id`, `name`, `slug` (unique), `shortDescription?`, `description?`, `categoryId`, `unit` (ProductUnit), `isActive`, `sortOrder`, `metaTitle?`, `metaDescription?`, `createdAt`, `updatedAt`
+**Product** — `id`, `name`, `slug` (unique), `shortDescription?`, `description?`, `categoryId`, `unit` (ProductUnit), `kind` (ProductKind), `pricingMode` (PricingMode), `serviceTerms?`, `isActive`, `sortOrder`, `metaTitle?`, `metaDescription?`, `createdAt`, `updatedAt`
 > 🔴 **بدون هیچ فیلد موجودی.**
 
 **ProductVariant** — `id`, `productId`, `unitValue` (Int), `title?` (اگر خالی، خودکار تولید می‌شود), `sku?`, `price` (Int، تومان), `comparePrice?`, `shippingWeightGrams` (Int), `isActive`, `sortOrder`
@@ -296,11 +340,11 @@ enum NotificationStatus { PENDING SENT FAILED }
 **CouponRedemption** — `id`, `couponId`, `userId`, `orderId`, `discountAmount`, `createdAt`
 > `unique(couponId, orderId)` · `index(couponId, userId)` — این unique جلوی ثبت دوباره در شرایط رقابتی را می‌گیرد.
 
-**Order** — `id`, `orderNumber` (unique، خوانا مثل `XX-14040625-0031` (پیشوند از `Setting` با کلید `order.numberPrefix`)), `userId`, `status`, `subtotal`, `shippingTotal`, `discountTotal`, `grandTotal`, `couponId?`, `couponCode?` (اسنپ‌شات), `shippingMethodName` (اسنپ‌شات), `shippingAddressSnapshot` (Json), `customerNote?`, `adminNote?`, `trackingCode?`, `placedAt`, `paidAt?`, `shippedAt?`, `canceledAt?`
+**Order** — `id`, `orderNumber` (unique، خوانا مثل `XX-14040625-0031` (پیشوند از `Setting` با کلید `order.numberPrefix`)), `userId`, `status`, `subtotal`, `shippingTotal`, `discountTotal`, `grandTotal`, `couponId?`, `couponCode?` (اسنپ‌شات), `shippingMethodName` (اسنپ‌شات), `shippingAddressSnapshot` (Json؟ — خالی برای تحویل حضوری), `serviceTermsAcceptedAt?`, `serviceTermsSnapshot?`, `customerNote?`, `adminNote?`, `trackingCode?`, `placedAt`, `paidAt?`, `shippedAt?`, `canceledAt?`
 
 > **فرمول واحد و همیشگی:** `grandTotal = subtotal + shippingTotal − discountTotal`
 
-**OrderItem** — `id`, `orderId`, `variantId?`, `productId?`, `productName`, `variantTitle`, `unitPrice`, `quantity`, `lineTotal`, `unitValueSnapshot`, `unitSnapshot`
+**OrderItem** — `id`, `orderId`, `variantId?`, `productId?`, `productName`, `variantTitle`, `unitPrice`, `quantity`, `lineTotal`, `unitValueSnapshot`, `unitSnapshot`, `productKindSnapshot`
 > **اسنپ‌شات کامل** است. اگر بعداً محصول حذف یا قیمتش عوض شد، سفارش قدیمی نباید تغییر کند.
 
 **Payment** — `id`, `orderId`, `method`, `amount`, `status`, `receiptImageUrl?`, `payerCardLast4?`, `referenceNumber?`, `paidAtClaimed?`, `reviewedByUserId?`, `reviewedAt?`, `rejectReason?`, `createdAt`
@@ -314,7 +358,7 @@ enum NotificationStatus { PENDING SENT FAILED }
 **CompanyBankCard** — `id`, `bankName`, `cardNumber`, `shebaNumber?`, `accountHolderName`, `isActive`, `sortOrder`
 > شماره کارت **در دیتابیس** است نه در کد یا env.
 
-**ShippingMethod** — `id`, `name`, `description?`, `cost` (Int), `freeAboveAmount?` (Int), `isActive`, `sortOrder`
+**ShippingMethod** — `id`, `name`, `description?`, `cost` (Int), `freeAboveAmount?` (Int), `freeAboveQuantity?` (Int — مجموع تعداد اقلام), `requiresAddress` (Boolean — `false` برای تحویل حضوری), `payOnDelivery`, `provinces`, `isActive`, `sortOrder`
 
 **OrderStatusHistory** — `id`, `orderId`, `fromStatus?`, `toStatus`, `changedByUserId?`, `note?`, `createdAt`
 
@@ -449,6 +493,9 @@ SHIPPED          → DELIVERED
 
 ---
 
+### ۷.۸ خدمت، استعلامی و تحویل حضوری (الو کپسول)
+جزئیات در بخش «الف» بالا. قواعد سمت سرور (نه فقط UI): رد افزودن/ثبت سفارش محصول استعلامی؛ رد سفارش دارای خدمت بدون پذیرش شرایط؛ رد روش با آدرس بدون آدرس و ذخیره‌ی اسنپ‌شات خالی برای روش بدون آدرس؛ ارسال رایگان با مبلغ یا تعداد. تست‌ها: `order-kind.int.test.ts`، `product-kind.int.test.ts`، `catalog-kind.int.test.ts` و e2e (`service-flows.spec.ts`، `sample-catalog.spec.ts`، `admin-catalog.spec.ts`).
+
 ## 8. امنیت
 
 - OTP: ۶ رقمی، اعتبار ۲ دقیقه، حداکثر ۵ تلاش، حداکثر ۳ ارسال در ۱۰ دقیقه برای هر شماره و هر IP.
@@ -469,7 +516,8 @@ SHIPPED          → DELIVERED
 ```env
 DATABASE_URL=postgresql://...
 AUTH_SECRET=                        # حداقل ۳۲ کاراکتر تصادفی
-NEXT_PUBLIC_SITE_URL=https://alocapsule.example
+NEXT_PUBLIC_SITE_URL=https://alocapsule.ir
+ALLOW_INDEXING=false               # فقط هنگام انتشار نهایی true
 
 SMS_PROVIDER=melipayamak            # melipayamak | console
 MELIPAYAMAK_USERNAME=
@@ -841,7 +889,7 @@ ADMIN_SEED_PHONE=09xxxxxxxxx
 | — | کد تخفیف | در نسخه ۱ — سه نوع: درصدی، مبلغ ثابت، ارسال رایگان |
 | — | پیامک | ملی پیامک، ارسال الگویی، در نسخه ۱ برای ۴ رویداد سفارش |
 | ۱۴۰۵/۰۶/۳۰ | ابزار تست واحد | **Vitest** (devDependency). alias `@/*` در `vitest.config.ts` تنظیم شده؛ تست‌ها کنار فایل با پسوند `.test.ts` |
-| ۱۴۰۵/۰۶/۳۰ | پورت Postgres توسعه | روی میزبان `127.0.0.1:5435` (نه ۵۴۳۲) تا با Postgres سایر پروژه‌های روی همین ماشین تداخل نکند؛ `DATABASE_URL` در `.env.example` هم‌خوان است. نام پروژه‌ی compose: `alocapsule-shop` |
+| ۱۴۰۵/۰۶/۳۰ | پورت Postgres توسعه | روی میزبان `127.0.0.1:5436` (نه ۵۴۳۲) تا با Postgres سایر پروژه‌های روی همین ماشین تداخل نکند؛ `DATABASE_URL` در `.env.example` هم‌خوان است. نام پروژه‌ی compose: `alocapsule-shop` |
 | ۱۴۰۵/۰۶/۳۰ | نسخه‌ی Prisma | **6.19** (نه 7): نسخه‌ی 7 به `@prisma/adapter-pg` و `pg` نیاز دارد که در سند نیستند. `postinstall` اجرای `prisma generate` است |
 | ۱۴۰۵/۰۶/۳۰ | Rate limit | مدل جدید **`RateLimitEvent`** (`key`, `createdAt`, ایندکس `(key, createdAt)`) در فاز ۱ اضافه شد؛ هر تلاش یک ردیف، شمارش در بازه‌ی زمانی |
 | ۱۴۰۵/۰۶/۳۰ | دلیل کیف پول | `WalletTransaction.reason` یک enum به نام **`WalletTxReason`** است: `ADMIN_CREDIT`, `ADMIN_DEBIT`, `ORDER_PAYMENT`, `ORDER_REFUND` (`ADMIN_DEBIT` برای کاهش دستی فاز ۱۱ اضافه شد) |
@@ -990,3 +1038,47 @@ ADMIN_SEED_PHONE=09xxxxxxxxx
 | ۱۴۰۵/۰۷/۰۵ | صفحات ثابت | مدل `Page` (+ فیلد `faq`) و «صفحات» پنل. «درباره ما» و «تماس» طراحی اختصاصی دارند: نامکشان ثابت و حذف‌نشدنی است و فقط متن/سئوی منتشرشده جای متن پیش‌فرض می‌نشیند. سوالات متداول، ارسال، مرجوعی و حریم خصوصی از catch-all رندر می‌شوند. seed همه را پیش‌نویس منتشرنشده می‌سازد (فقط واقعیت‌های سیستم + `{{تکمیل…}}`). حذف صفحه/شعبه آدرس‌هایش را به ریدایرکت 301 تبدیل می‌کند |
 | ۱۴۰۵/۰۷/۰۵ | سئو فاز S5: انتشار | `npm run seo:audit -- <آدرس>` (تحلیل خالص در `src/lib/seo/audit.ts`)، بخش ۱۲ `DEPLOYMENT.md` (ALLOW_INDEXING، دسترسی گوگل‌بات از خارج، دامنه‌ی canonical، Search Console، چک‌لیست انتشار) و ریدایرکت www در `Caddyfile`. نگاشت آدرس‌های سایت قبلی ساخته نشد چون سایت قبلی وجود ندارد |
 | ۱۴۰۵/۰۶/۳۰ | اسکریپت‌های `db:*` در فاز ۰ | فقط در `package.json` تعریف شدند (`prisma migrate dev` / `tsx prisma/seed.ts` / `prisma studio`). خود Prisma و `tsx` در **فاز ۱** نصب می‌شوند |
+
+### تصمیمات فورک الو کپسول (F0–F7)
+
+| تاریخ | موضوع | تصمیم |
+|---|---|---|
+| ۲۰۲۶-۰۹-۳۰ | مسیر پروژه و پورت‌ها | پروژه‌ی مستقل `alocapsule-shop`؛ Postgres روی `127.0.0.1:5436`، دیتابیس و کاربر `alocapsule` |
+| ۲۰۲۶-۰۹-۳۰ | commit مبدأ | مخزن مبدأ بدون `.git` (zip) بود؛ در `docs/FORK_ORIGIN.md` هش SHA-256 ترکیبی فایل‌ها ثبت شد |
+| ۲۰۲۶-۰۹-۳۰ | شماره‌ی ادمین seed | `09010950380` (در `.env` محلی؛ commit نمی‌شود) |
+| ۲۰۲۶-۰۹-۳۰ | شماره‌ی تماس | `09126270595` (`CONTACT.phone`؛ در F3/F5 به `business.phone`) |
+| ۲۰۲۶-۰۹-۳۰ | منطقه‌ی ارسال و خدمات | **فقط شهر تهران** (تأیید کارفرما)؛ `lib/service-area.ts` بدون تغییر می‌ماند |
+| ۲۰۲۶-۰۹-۳۰ | متن‌های محتوایی در کد (F1↔F2) | در F1 فقط نام برند/نام‌های فنی متمرکز شد؛ متن‌های محتوایی و seed در F2 پاک شدند |
+| ۲۰۲۶-۰۹-۳۰ | e2e و شماره‌ی ادمین | تست‌ها با `E2E_ADMIN_PHONE=09010950380 npm run test:e2e` اجرا می‌شوند |
+| ۲۰۲۶-۰۹-۳۰ | آمار «درباره ما» | پیش‌فرض خالی (بدون عدد ساختگی)؛ خالی ⇒ بخش نمایش داده نمی‌شود |
+| ۲۰۲۶-۰۹-۳۰ | `db:reset` | اسکریپت اضافه شد؛ Prisma اجرای آن توسط Claude را فقط با تأیید صریح کاربر اجازه می‌دهد |
+| ۲۰۲۶-۰۹-۳۰ | هزینه‌ی «ارسال با پیک» در seed | ۱۰۰٬۰۰۰ تومان **عدد نمونه** است و باید توسط الو کپسول تعیین شود |
+| ۲۰۲۶-۰۹-۳۰ | `FORK.md` در پایان کار | در F7 به `docs/archive/FORK.md` منتقل شد و جستجوی عبارت‌های پروژه‌ی مبدأ (به‌جز آرشیو و `docs/FORK_ORIGIN.md`) صفر است |
+| ۲۰۲۶-۰۹-۳۰ | ادغام migrationها (F3) | با تأیید صریح کارفرما، ۹ migration قدیمی حذف و یک `20260930100000_init` از اسکیمای نهایی ساخته شد؛ نسخه‌ی قدیمی در commit `fork-F2` می‌ماند |
+| ۲۰۲۶-۰۹-۳۰ | قالب `serviceTerms` و `service.defaultTerms` | «HTML امن‌شده» نیست؛ همان قالب متنی `lib/rich-text.ts` مثل توضیحات محصول (HTML خام هرگز ذخیره/رندر نمی‌شود، طبق ARCHITECTURE)؛ هنگام ذخیره با `sanitizePlainText` پاک‌سازی می‌شود |
+| ۲۰۲۶-۰۹-۳۰ | `Category.isFeatured` | در F3 به اسکیمای اولیه اضافه شد (برای بخش دسته‌های صفحه‌ی اصلی، ۵.۳) |
+| ۲۰۲۶-۰۹-۳۰ | فیلدهای جدید فرم‌های ادمین | `requiresAddress`، `freeAboveQuantity`، `isFeatured`، `kind`/`pricingMode`/`serviceTerms` در Zod اختیاری‌اند؛ `undefined` ⇒ مقدار ذخیره‌شده دست‌نخورده (فرم‌های فعلی چیزی را بازنویسی نمی‌کنند تا UI در F5 بیاید) |
+| ۲۰۲۶-۰۹-۳۰ | استعلامی شدن محصول | متغیرها غیرفعال می‌شوند (نه حذف) و `deactivatedVariants` در نتیجه‌ی ذخیره برمی‌گردد؛ محصول در سبدها با سازوکار موجود «متغیر غیرفعال» حذف می‌شود |
+| ۲۰۲۶-۰۹-۳۰ | فعال شدن محصول | قیمت‌دار بدون متغیر فعال قابل فعال شدن نیست (`canActivateProduct`)؛ استعلامی همیشه قابل فعال شدن است |
+| ۲۰۲۶-۰۹-۳۰ | کلیدهای `home.*` | `home.hero.{title,subtitle,primaryCta,secondaryCta}`، `home.steps.{title,items}`، `home.featured.title`، `home.about.{title,text}`، `home.customers.{title,items}`، `home.stats`، `home.cta.{title,text}` — پیش‌فرض‌ها در `lib/home-settings.ts` |
+| ۲۰۲۶-۰۹-۳۰ | محصول استعلامی در seed | فعال و بدون متغیر (`INQUIRY`)؛ تا F4/F6 صفحه‌ی محصولش هنوز رابط «استعلام قیمت» ندارد |
+| ۲۰۲۶-۰۹-۳۰ | ترتیب صفحه‌ی تسویه (F4) | «روش ارسال» قبل از «آدرس» آمد؛ چون انتخاب روش حضوری بخش آدرس را پنهان می‌کند و به‌جایش محل و ساعت تحویل نمایش می‌دهد |
+| ۲۰۲۶-۰۹-۳۰ | استعلامی در سبد (F4) | 🔴 افزودن و ثبت سفارش سمت سرور رد می‌شود (`isSellable` + `INQUIRY_NOT_ORDERABLE_MESSAGE`)؛ محصولی که بعد از افزودن استعلامی شود با سازوکار «آیتم غیرقابل‌سفارش» از سبد حذف و اطلاع داده می‌شود |
+| ۲۰۲۶-۰۹-۳۰ | متن شرایط ذخیره‌شده در سفارش (F4) | شرایط همه‌ی محصولات خدمت سبد، بدون تکرار؛ اگر متن‌ها فرق داشت هر متن با نام محصول(ها)یش می‌آید؛ متن اختصاصی محصول یا `service.defaultTerms` |
+| ۲۰۲۶-۰۹-۳۰ | ارسال رایگان تعدادی (F4) | مبنا مجموع تعداد همه‌ی اقلام؛ رایگان اگر مبلغ **یا** تعداد برقرار باشد؛ پیام سبد «با افزودن N عدد دیگر…» کمترین کمبود بین روش‌های هزینه‌دار |
+| ۲۰۲۶-۰۹-۳۰ | نسخه‌ی چاپی سفارش | چنین صفحه‌ای در کد نیست؛ جعبه‌ی کپسول‌های خالی در جزئیات سفارش ادمین (پنل سفارش و بررسی پرداخت) است |
+| ۲۰۲۶-۰۹-۳۰ | تنظیمات جدید پنل (F5) | دو تب «کسب‌وکار و خدمت» (`business.*`، `service.*`، `catalog.showPricePerKg`، `order.numberPrefix`) و «صفحه‌ی اصلی» (`home.*` شامل آمار اختیاری)؛ هر ذخیره در AuditLog (متن بلند شرایط در لاگ نمی‌آید) |
+| ۲۰۲۶-۰۹-۳۰ | دو منبع شماره‌ی تماس | `business.phone` (جدید) در کنار `site.content.contact.phone` (فوتر/تماس فعلی)؛ در F6 هدر، دکمه‌ی شناور و فوتر همه از `business.phone` می‌خوانند و فیلد تلفن فرم عمومی حذف می‌شود |
+| ۲۰۲۶-۰۹-۳۰ | مبنای گزارش نوع (F5) | «فروش خدمت/کالا» = جمع مبلغ اقلام (`lineTotal`) به تفکیک `productKindSnapshot`، نه مبلغ نهایی سفارش (سفارش مخلوط تخفیف و ارسال مشترک دارد)؛ جمع دو نوع = جمع سهم دسته‌ها |
+| ۲۰۲۶-۰۹-۳۰ | نوع در جدول پرفروش‌ها | نوع آخرین فروش همان محصول (اسنپ‌شات) |
+| ۲۰۲۶-۰۹-۳۰ | «نتیجه در فروشگاه» در F5 | تا F6 فقط صحت داده و رفتار خرید بررسی می‌شود (قیمت‌دار قابل افزودن؛ استعلامی بدون دکمه‌ی خرید)؛ جعبه‌ی «استعلام قیمت»/شرایط خدمت در صفحه‌ی محصول و نمایش استعلامی‌ها در لیست فروشگاه در F6 |
+| ۲۰۲۶-۰۹-۳۰ | توکن‌های طراحی (F6a) | رنگ‌های سخت‌کدشده با توکن‌های معنایی `@theme` جایگزین شد (`surface`، `brand`، `brand-strong`، `accent`، `ink`، سطوح `border*`…) در commit جدا بدون تغییر ظاهر؛ مقایسه‌ی پیکسلی ۱۸ صفحه: اختلاف حداکثر ۴ از ۲۵۵ |
+| ۲۰۲۶-۰۹-۳۰ | پالت و کنتراست (F6b) | پالت پیشنهادی سند با یک تعدیل: `faint` = `#6B6560` و `danger` = `#B91C1C` برای رسیدن به ۴٫۵:۱؛ جدول در `docs/DESIGN_TOKENS.md` (همه ✅) |
+| ۲۰۲۶-۰۹-۳۰ | هیرو ثابت به‌جای اسلایدر | هیرو طبق ۵.۳ از `home.*` می‌آید؛ کاروسل قدیمی حذف شد. متن اسلایدها در «بنرها» دیگر نمایش داده نمی‌شود و فقط تصویر اسلاید اول برای هیرو استفاده می‌شود |
+| ۲۰۲۶-۰۹-۳۰ | مقصد دکمه‌ی اول هیرو | کلید جدید `home.hero.primaryHref` (پیش‌فرض `/category/lpg-charge`، فقط مسیر داخلی) تا با تصمیم نهایی slug دسته در `SEO.md` قابل تغییر باشد |
+| ۲۰۲۶-۰۹-۳۰ | منبع شماره‌ی تماس (F6) | `business.phone` تنها منبع (هدر، دکمه‌ی شناور، فوتر، صفحه‌ی تماس، JSON-LD)؛ فیلد تلفن فرم عمومی فقط‌خواندنی شد |
+| ۲۰۲۶-۰۹-۳۰ | محصول استعلامی در لیست فروشگاه | حالا در لیست‌ها می‌آید (قیمت `null`)؛ با فیلتر قیمت/بسته کنار می‌رود و در مرتب‌سازی قیمت آخر لیست است؛ JSON-LD بدون offers |
+| ۲۰۲۶-۰۹-۳۰ | پنل ادمین در F6 | از پالت خنثی Tailwind استفاده می‌کند و به تم قبلی وابسته نبود؛ بازطراحی نشد (طبق سند) |
+| ۲۰۲۶-۰۹-۳۰ | Lighthouse موبایل (F6) | صفحه‌ی اصلی: Performance ۹۶، Accessibility ۱۰۰، Best Practices ۱۰۰ (روی build production؛ SEO فقط به‌خاطر `ALLOW_INDEXING=false` ۶۹ است) |
+| ۲۰۲۶-۰۹-۳۰ | منوی اصلی (F7) | چهار مورد: خانه، فروشگاه، درباره ما، تماس با ما؛ «آدرس شعب» برداشته شد و بخش/دکمه‌ی شعب در «درباره ما» و «تماس» فقط وقتی شعبه‌ای در دیتابیس هست نمایش داده می‌شود |
+| ۲۰۲۶-۰۹-۳۰ | ترتیب عنوان‌های لیست (F7) | کارت محصول در لیست فروشگاه `h2` است (زیر H1 صفحه) تا ترتیب عنوان‌ها برای دسترس‌پذیری نشکند |

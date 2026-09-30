@@ -38,7 +38,6 @@ export const SOCIAL = [
 export const NAV_LINKS = [
   { href: "/", label: "صفحه اصلی" },
   { href: "/products", label: "فروشگاه" },
-  { href: "/branches", label: "آدرس شعب" },
   { href: "/about", label: "درباره ما" },
   { href: "/contact", label: "تماس با ما" },
 ] as const;

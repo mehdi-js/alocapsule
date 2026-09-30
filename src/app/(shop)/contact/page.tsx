@@ -16,6 +16,7 @@ import { SITE } from "@/lib/site-content";
 import { phoneHref, socialLinks } from "@/lib/site-settings";
 import { cn } from "@/lib/utils";
 import { getBanners } from "@/server/services/banner.service";
+import { listActiveBranches } from "@/server/services/branch.service";
 import { getFixedPage } from "@/server/services/page.service";
 import { getSeoContext } from "@/server/services/seo-settings.service";
 import { getSiteSettings } from "@/server/services/site-settings.service";
@@ -36,10 +37,11 @@ const rowClass =
   "bg-card flex items-center gap-4 rounded-[18px] border border-hair p-5";
 
 export default async function ContactPage() {
-  const [{ contact, social }, banners, page] = await Promise.all([
+  const [{ contact, social }, banners, page, branches] = await Promise.all([
     getSiteSettings(),
     getBanners(),
     getFixedPage("contact"),
+    listActiveBranches(),
   ]);
   return (
     <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-10 px-5 pt-4 md:pt-5">
@@ -125,9 +127,11 @@ export default async function ContactPage() {
             })}
           </div>
         </div>
-        <Link href="/branches" className={btnOutline}>
-          آدرس شعب
-        </Link>
+        {branches.length > 0 ? (
+          <Link href="/branches" className={btnOutline}>
+            آدرس شعب
+          </Link>
+        ) : null}
       </ContentPanel>
     </div>
   );
