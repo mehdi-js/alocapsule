@@ -23,6 +23,8 @@ export async function createReportOrder(params: {
     title: string;
     price: number;
     quantity: number;
+    /** پیش‌فرض کالای فیزیکی */
+    kind?: "PHYSICAL" | "SERVICE";
   }[];
   productId: string;
   shippingTotal: number;
@@ -39,6 +41,7 @@ export async function createReportOrder(params: {
     lineTotal: item.price * item.quantity,
     unitValueSnapshot: 500,
     unitSnapshot: "GRAM" as const,
+    productKindSnapshot: item.kind ?? ("PHYSICAL" as const),
   }));
   const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
   return db.order.create({

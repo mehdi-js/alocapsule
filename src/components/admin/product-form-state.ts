@@ -169,16 +169,20 @@ export function toProductInput(
     // NaN (نه undefined) تا مقدار نامعتبر بی‌صدا به پیش‌فرض ۰ تبدیل نشود
     sortOrder: parseIntegerInput(state.sortOrder) ?? Number.NaN,
     ...(mode === "create" ? { isActive: state.isActive } : {}),
-    variants: state.variants.map((row) => ({
-      ...(row.id ? { id: row.id } : {}),
-      unitValue: number(row.unitValue) as number,
-      title: row.title,
-      sku: row.sku,
-      price: number(row.price) as number,
-      comparePrice:
-        row.comparePrice.trim() === "" ? null : number(row.comparePrice),
-      shippingWeightGrams: number(row.shippingWeightGrams) as number,
-      ...(!row.id ? { isActive: row.isActive } : {}),
-    })),
+    // استعلامی متغیر ندارد (سرور هم نادیده می‌گیرد)
+    variants:
+      state.pricingMode === "INQUIRY"
+        ? []
+        : state.variants.map((row) => ({
+            ...(row.id ? { id: row.id } : {}),
+            unitValue: number(row.unitValue) as number,
+            title: row.title,
+            sku: row.sku,
+            price: number(row.price) as number,
+            comparePrice:
+              row.comparePrice.trim() === "" ? null : number(row.comparePrice),
+            shippingWeightGrams: number(row.shippingWeightGrams) as number,
+            ...(!row.id ? { isActive: row.isActive } : {}),
+          })),
   };
 }

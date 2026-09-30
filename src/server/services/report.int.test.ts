@@ -29,6 +29,8 @@ beforeAll(async () => {
     title: "۵۰۰ گرم",
     price: 400_000,
   };
+  /** همان متغیر، اما آیتم «خدمت» (اسنپ‌شات نوع) */
+  const smallService = { ...small, kind: "SERVICE" as const };
   const large = {
     variantId: catalog.large,
     name: "محصول تست",
@@ -39,7 +41,7 @@ beforeAll(async () => {
     placedAt: Date,
     status: "PENDING_PAYMENT" | "PROCESSING" | "DELIVERED" | "CANCELED",
     paid: boolean,
-    items: { variant: typeof small; quantity: number }[],
+    items: { variant: typeof small | typeof smallService; quantity: number }[],
     shippingTotal: number,
     discountTotal: number,
     couponCode: string | null = null,
@@ -56,12 +58,12 @@ beforeAll(async () => {
       couponCode,
     });
 
-  // A: ۵ فروردین، ۸۰۰٬۰۰۰ + ۹۰٬۰۰۰ − ۸۰٬۰۰۰ = ۸۱۰٬۰۰۰
+  // A: ۵ فروردین، ۸۰۰٬۰۰۰ + ۹۰٬۰۰۰ − ۸۰٬۰۰۰ = ۸۱۰٬۰۰۰ (آیتم خدمت)
   await order(
     jalaliToDate(1390, 1, 5, 10),
     "PROCESSING",
     true,
-    [{ variant: small, quantity: 2 }],
+    [{ variant: smallService, quantity: 2 }],
     90_000,
     80_000,
     "REPORTA",
@@ -165,8 +167,9 @@ describe("گزارش فروش", () => {
   it("سهم دسته، پرفروش‌ها و تخفیف به تفکیک کد", () => {
     const test = range.categories.find((c) => c.name.startsWith("دسته‌ی تست"));
     expect(test).toMatchObject({ total: 3_050_000, quantity: 5 });
+    // نوع محصول در جدول = نوع آخرین فروش (E: کالای فیزیکی)
     expect(range.topProducts).toEqual([
-      { name: "محصول تست", quantity: 5, total: 3_050_000 },
+      { name: "محصول تست", kind: "PHYSICAL", quantity: 5, total: 3_050_000 },
     ]);
     expect(range.topVariants).toEqual([
       {
@@ -185,5 +188,18 @@ describe("گزارش فروش", () => {
     expect(range.discounts).toEqual([
       { code: "REPORTA", orders: 2, discount: 230_000, sales: 2_250_000 },
     ]);
+  });
+
+  it("🔴 فروش به تفکیک نوع: جمع دستی مبلغ اقلام (A خدمت؛ B و E کالا)", () => {
+    // خدمت: ۲×۴۰۰٬۰۰۰ = ۸۰۰٬۰۰۰ (۱ سفارش)
+    // کالا: ۱×۷۵۰٬۰۰۰ + ۲×۷۵۰٬۰۰۰ = ۲٬۲۵۰٬۰۰۰ (۲ سفارش)
+    expect(range.kinds).toEqual([
+      { kind: "SERVICE", total: 800_000, quantity: 2, orders: 1 },
+      { kind: "PHYSICAL", total: 2_250_000, quantity: 3, orders: 2 },
+    ]);
+    // جمع دو نوع = جمع مبلغ اقلام دسته‌ها
+    expect(range.kinds.reduce((sum, row) => sum + row.total, 0)).toBe(
+      3_050_000,
+    );
   });
 });

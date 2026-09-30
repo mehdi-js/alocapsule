@@ -16,6 +16,7 @@ export function RichTextField({
   rows = 8,
   headingLevel = 2,
   hint,
+  placeholder,
 }: {
   id: string;
   label: string;
@@ -25,6 +26,7 @@ export function RichTextField({
   rows?: number;
   headingLevel?: 2 | 3;
   hint?: string;
+  placeholder?: string;
 }) {
   const [preview, setPreview] = useState(false);
   return (
@@ -40,6 +42,7 @@ export function RichTextField({
             rows={rows}
             value={value}
             invalid={!!error}
+            placeholder={placeholder}
             onChange={(event) => onChange(event.target.value)}
           />
         )}

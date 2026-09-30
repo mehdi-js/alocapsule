@@ -6,14 +6,16 @@ import { SITE } from "@/lib/site-content";
 import { requireAdmin } from "@/server/auth/current-user";
 import { listCategories } from "@/server/services/category.service";
 import { getTitleSettings } from "@/server/services/seo-settings.service";
+import { getBusinessSettings } from "@/server/services/store-content.service";
 
 export const metadata: Metadata = { title: "محصول جدید" };
 
 export default async function NewProductPage() {
   await requireAdmin();
-  const [categories, titleSettings] = await Promise.all([
+  const [categories, titleSettings, business] = await Promise.all([
     listCategories(),
     getTitleSettings(),
+    getBusinessSettings(),
   ]);
 
   return (
@@ -33,6 +35,7 @@ export default async function NewProductPage() {
         images={[]}
         titleSettings={titleSettings}
         siteUrl={SITE.url}
+        defaultServiceTerms={business.serviceDefaultTerms}
       />
     </>
   );

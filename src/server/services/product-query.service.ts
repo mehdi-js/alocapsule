@@ -26,6 +26,9 @@ export interface ProductListParams {
   q: string;
   categoryId: string;
   status: "all" | "active" | "inactive" | "archived";
+  /** خالی = همه */
+  kind: ProductKind | "";
+  pricingMode: PricingMode | "";
   page: number;
 }
 
@@ -99,6 +102,14 @@ export interface ProductEditDto {
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
+/** مقدار نامعتبر ⇒ خالی (بدون فیلتر) */
+function parseEnum<T extends string>(
+  value: string,
+  allowed: readonly T[],
+): T | "" {
+  return allowed.find((item) => item === value) ?? "";
+}
+
 function first(value: string | string[] | undefined): string {
   return (Array.isArray(value) ? value[0] : value)?.trim() ?? "";
 }
@@ -116,6 +127,8 @@ export function parseProductListParams(
       status === "active" || status === "inactive" || status === "archived"
         ? status
         : "all",
+    kind: parseEnum(first(params.kind), ["PHYSICAL", "SERVICE"]),
+    pricingMode: parseEnum(first(params.pricing), ["FIXED", "INQUIRY"]),
     page: Number.isSafeInteger(page) && page > 0 ? page : 1,
   };
 }
@@ -130,6 +143,8 @@ export async function listProducts(
       q: params.q || undefined,
       categoryId: params.categoryId || undefined,
       status: params.status,
+      kind: params.kind || undefined,
+      pricingMode: params.pricingMode || undefined,
       skip: (params.page - 1) * ADMIN_PRODUCTS_PAGE_SIZE,
       take: ADMIN_PRODUCTS_PAGE_SIZE,
     }),

@@ -1,5 +1,7 @@
 "use client";
 
+import type { PricingMode, ProductKind } from "@prisma/client";
+
 import { Field } from "@/components/ui/Field";
 import { Input, Select } from "@/components/ui/Input";
 import type { ProductUnit } from "@/lib/unit";
@@ -95,6 +97,40 @@ export function ProductBasicsSection({
           >
             <option value="GRAM">گرمی (وزنی)</option>
             <option value="PIECE">عددی (تعدادی)</option>
+          </Select>
+        </Field>
+        <Field
+          label="نوع محصول"
+          htmlFor="kind"
+          error={error("kind")}
+          hint="خدمت (مثل شارژ کپسول): شرایط تعویض در صفحه‌ی محصول و تسویه نمایش داده می‌شود و مشتری باید بپذیرد."
+        >
+          <Select
+            id="kind"
+            value={state.kind}
+            onChange={(event) =>
+              onChange({ kind: event.target.value as ProductKind })
+            }
+          >
+            <option value="PHYSICAL">کالای فیزیکی</option>
+            <option value="SERVICE">خدمت</option>
+          </Select>
+        </Field>
+        <Field
+          label="حالت قیمت"
+          htmlFor="pricingMode"
+          error={error("pricingMode")}
+          hint="استعلامی: قیمت ندارد، دکمه‌ی خرید ندارد و مشتری تماس می‌گیرد."
+        >
+          <Select
+            id="pricingMode"
+            value={state.pricingMode}
+            onChange={(event) =>
+              onChange({ pricingMode: event.target.value as PricingMode })
+            }
+          >
+            <option value="FIXED">قیمت‌دار</option>
+            <option value="INQUIRY">استعلامی</option>
           </Select>
         </Field>
         <Field

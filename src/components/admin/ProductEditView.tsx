@@ -16,11 +16,13 @@ export function ProductEditView({
   categories,
   titleSettings,
   siteUrl,
+  defaultServiceTerms,
 }: {
   product: ProductEditDto;
   categories: CategoryDto[];
   titleSettings: TitleSettings;
   siteUrl: string;
+  defaultServiceTerms: string;
 }) {
   const [images, setImages] = useState<ProductImageDto[]>(product.images);
   return (
@@ -36,6 +38,7 @@ export function ProductEditView({
         images={images}
         titleSettings={titleSettings}
         siteUrl={siteUrl}
+        defaultServiceTerms={defaultServiceTerms}
       />
     </div>
   );

@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/Toast";
 import type { TitleSettings } from "@/lib/seo/title";
 import type { ProductUnit } from "@/lib/unit";
+import { toPersianDigits } from "@/lib/utils";
 import {
   createProductAction,
   updateProductAction,
@@ -29,6 +30,7 @@ import {
 } from "./product-form-state";
 import { ProductActiveCard } from "./ProductActiveCard";
 import { ProductBasicsSection } from "./ProductBasicsSection";
+import { RichTextField } from "./seo/RichTextField";
 import { SeoSection } from "./seo/SeoSection";
 import { VariantRows } from "./VariantRows";
 
@@ -41,6 +43,7 @@ export function ProductForm({
   images,
   titleSettings,
   siteUrl,
+  defaultServiceTerms,
 }: {
   categories: CategoryDto[];
   /** اگر باشد حالت ویرایش است */
@@ -49,6 +52,8 @@ export function ProductForm({
   images: { alt: string; isPrimary: boolean }[];
   titleSettings: TitleSettings;
   siteUrl: string;
+  /** متن پیش‌فرض شرایط خدمت (`service.defaultTerms`) برای placeholder */
+  defaultServiceTerms: string;
 }) {
   const router = useRouter();
   const toast = useToast();
@@ -59,6 +64,9 @@ export function ProductForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const mode = product ? "edit" : "create";
   const unitLocked = product?.hasOrders ?? false;
+  // فقط متغیرهای فعلیِ فعال؛ با استعلامی شدن غیرفعال می‌شوند
+  const originalVariantCount =
+    product?.variants.filter((variant) => variant.isActive).length ?? 0;
 
   function patch(update: Partial<ProductFormState>) {
     setState((current) => ({ ...current, ...update }));
@@ -104,6 +112,11 @@ export function ProductForm({
         return;
       }
       if (result.seoWarning) toast.error(result.seoWarning);
+      if (result.deactivatedVariants > 0) {
+        toast.success(
+          `${toPersianDigits(result.deactivatedVariants)} متغیر به‌خاطر استعلامی شدن محصول غیرفعال شد (حذف نشد).`,
+        );
+      }
       if (product) {
         toast.success("تغییرات ذخیره شد.");
         router.push("/admin/products");
@@ -137,35 +150,72 @@ export function ProductForm({
         onChange={patch}
       />
 
-      <section className={sectionClass}>
-        <div>
-          <h2 className="text-lg font-bold">متغیرها (وزن یا تعداد)</h2>
+      {state.kind === "SERVICE" ? (
+        <section className={sectionClass}>
+          <h2 className="text-lg font-bold">شرایط خدمت</h2>
+          <RichTextField
+            id="serviceTerms"
+            label="شرایط شارژ و تعویض (اختصاصی این محصول)"
+            rows={8}
+            headingLevel={3}
+            value={state.serviceTerms}
+            error={error("serviceTerms")}
+            placeholder={defaultServiceTerms}
+            hint="خالی بگذارید تا متن پیش‌فرض (تنظیمات ← کسب‌وکار و خدمت) نمایش داده شود. متن پذیرفته‌شده هنگام سفارش عیناً در سفارش ذخیره می‌شود."
+            onChange={(serviceTerms) => patch({ serviceTerms })}
+          />
+        </section>
+      ) : null}
+
+      {state.pricingMode === "INQUIRY" ? (
+        <section className={sectionClass}>
+          <h2 className="text-lg font-bold">محصول استعلامی</h2>
           <p className="text-sm text-neutral-600">
-            مشتری فقط یکی از متغیرها را انتخاب می‌کند و در سبد تعداد آن را تعیین
-            می‌کند (مثلاً ۳ عدد جعبه‌ی ۱ کیلوگرمی).
+            این محصول متغیر و قیمت ندارد؛ در فروشگاه به‌جای قیمت «استعلام قیمت»
+            با دکمه‌ی تماس نمایش داده می‌شود و افزودن به سبد ندارد.
           </p>
-        </div>
-        <VariantRows
-          unit={state.unit}
-          rows={state.variants}
-          errors={errors}
-          onChange={changeVariant}
-          onAdd={() =>
-            setState((current) => ({
-              ...current,
-              variants: [...current.variants, emptyVariantRow()],
-            }))
-          }
-          onRemove={(index) =>
-            setState((current) => ({
-              ...current,
-              variants: current.variants.filter(
-                (_, rowIndex) => rowIndex !== index,
-              ),
-            }))
-          }
-        />
-      </section>
+          {product && originalVariantCount > 0 ? (
+            <p
+              role="alert"
+              className="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900"
+            >
+              هشدار: با ذخیره، {toPersianDigits(originalVariantCount)} متغیر
+              فعلی این محصول غیرفعال می‌شود (حذف نمی‌شوند) و از سبد مشتریانی که
+              آن را دارند برداشته می‌شود.
+            </p>
+          ) : null}
+        </section>
+      ) : (
+        <section className={sectionClass}>
+          <div>
+            <h2 className="text-lg font-bold">متغیرها (وزن یا تعداد)</h2>
+            <p className="text-sm text-neutral-600">
+              مشتری فقط یکی از متغیرها را انتخاب می‌کند و در سبد تعداد آن را
+              تعیین می‌کند (مثلاً ۳ عدد جعبه‌ی ۱ کیلوگرمی).
+            </p>
+          </div>
+          <VariantRows
+            unit={state.unit}
+            rows={state.variants}
+            errors={errors}
+            onChange={changeVariant}
+            onAdd={() =>
+              setState((current) => ({
+                ...current,
+                variants: [...current.variants, emptyVariantRow()],
+              }))
+            }
+            onRemove={(index) =>
+              setState((current) => ({
+                ...current,
+                variants: current.variants.filter(
+                  (_, rowIndex) => rowIndex !== index,
+                ),
+              }))
+            }
+          />
+        </section>
+      )}
 
       <SeoSection
         state={state.seo}

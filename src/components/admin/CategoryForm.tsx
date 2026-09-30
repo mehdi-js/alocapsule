@@ -164,6 +164,14 @@ export function CategoryForm({
             onChange={(isActive) => patch({ isActive })}
           />
         </label>
+        <label className="flex items-center gap-3 text-sm font-medium">
+          نمایش در صفحه‌ی اصلی
+          <Switch
+            checked={state.isFeatured}
+            label="نمایش دسته در بخش دسته‌های صفحه‌ی اصلی"
+            onChange={(isFeatured) => patch({ isFeatured })}
+          />
+        </label>
       </section>
 
       <section className={sectionClass}>

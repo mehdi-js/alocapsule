@@ -12,6 +12,7 @@ import {
   createProduct,
   updateProduct,
 } from "./product.service";
+import { listProducts, parseProductListParams } from "./product-query.service";
 
 /**
  * نوع محصول و حالت قیمت (FORK.md §۳.۲): استعلامی بدون متغیر، تغییر حالت
@@ -289,5 +290,57 @@ describe("ستون‌های جدید سفارش", () => {
     expect(saved.shippingAddressSnapshot).toMatchObject({
       receiverName: "مریم",
     });
+  });
+});
+
+describe("لیست ادمین: فیلتر نوع و حالت قیمت", () => {
+  it("فیلتر روی kind و pricingMode و ستون‌ها در خروجی", async () => {
+    const physical = await track(await createProduct(input("list-phys")));
+    const service = await track(
+      await createProduct(input("list-svc", { kind: "SERVICE" })),
+    );
+    const inquiry = await track(
+      await createProduct(
+        input("list-inq", { kind: "SERVICE", pricingMode: "INQUIRY" }),
+      ),
+    );
+    const base = { q: "", categoryId, status: "all" as const, page: 1 };
+    const names = async (
+      kind: "" | "PHYSICAL" | "SERVICE",
+      pricing: "" | "FIXED" | "INQUIRY",
+    ) =>
+      (await listProducts({ ...base, kind, pricingMode: pricing })).items
+        .map((item) => item.id)
+        .filter((id) => [physical.id, service.id, inquiry.id].includes(id))
+        .sort();
+
+    expect(await names("", "")).toEqual(
+      [physical.id, service.id, inquiry.id].sort(),
+    );
+    expect(await names("SERVICE", "")).toEqual([service.id, inquiry.id].sort());
+    expect(await names("PHYSICAL", "")).toEqual([physical.id]);
+    expect(await names("", "INQUIRY")).toEqual([inquiry.id]);
+    expect(await names("SERVICE", "FIXED")).toEqual([service.id]);
+
+    const row = (
+      await listProducts({ ...base, kind: "", pricingMode: "INQUIRY" })
+    ).items.find((item) => item.id === inquiry.id);
+    expect(row).toMatchObject({
+      kind: "SERVICE",
+      pricingMode: "INQUIRY",
+      variantCount: 0,
+    });
+  });
+
+  it("پارامتر نامعتبر URL ⇒ بدون فیلتر", () => {
+    expect(parseProductListParams({ kind: "GAS", pricing: "x" })).toMatchObject(
+      {
+        kind: "",
+        pricingMode: "",
+      },
+    );
+    expect(
+      parseProductListParams({ kind: "SERVICE", pricing: "INQUIRY" }),
+    ).toMatchObject({ kind: "SERVICE", pricingMode: "INQUIRY" });
   });
 });

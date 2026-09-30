@@ -8,6 +8,7 @@ import { requireAdmin } from "@/server/auth/current-user";
 import { listCategories } from "@/server/services/category.service";
 import { getProductForEdit } from "@/server/services/product-query.service";
 import { getTitleSettings } from "@/server/services/seo-settings.service";
+import { getBusinessSettings } from "@/server/services/store-content.service";
 
 export const metadata: Metadata = { title: "ویرایش محصول" };
 
@@ -18,10 +19,11 @@ export default async function EditProductPage({
 }) {
   await requireAdmin();
   const { id } = await params;
-  const [product, categories, titleSettings] = await Promise.all([
+  const [product, categories, titleSettings, business] = await Promise.all([
     getProductForEdit(id),
     listCategories(),
     getTitleSettings(),
+    getBusinessSettings(),
   ]);
   if (!product) notFound();
 
@@ -47,6 +49,7 @@ export default async function EditProductPage({
         categories={categories}
         titleSettings={titleSettings}
         siteUrl={SITE.url}
+        defaultServiceTerms={business.serviceDefaultTerms}
       />
     </>
   );

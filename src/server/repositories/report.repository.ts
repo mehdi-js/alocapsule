@@ -113,15 +113,66 @@ export async function categoryShare(
   }));
 }
 
-/** پرفروش‌ترین محصولات بر اساس مبلغ (نام از اسنپ‌شات سفارش) */
+export type ReportProductKind = "PHYSICAL" | "SERVICE";
+
+export interface KindSalesRow {
+  kind: ReportProductKind;
+  /** مبلغ اقلام (جمع `lineTotal`، پیش از تخفیف و بدون ارسال) */
+  total: number;
+  quantity: number;
+  /** تعداد سفارش‌های فروشی که حداقل یک آیتم این نوع دارند */
+  orders: number;
+}
+
+/**
+ * فروش به تفکیک نوع محصول (خدمت / کالای فیزیکی) روی `productKindSnapshot`
+ * آیتم‌ها؛ مبلغ = مبلغ اقلام (مثل سهم دسته‌بندی‌ها)، نه مبلغ نهایی سفارش،
+ * چون سفارش مخلوط تخفیف و ارسال مشترک دارد.
+ */
+export async function salesByKind(period: Period): Promise<KindSalesRow[]> {
+  const rows = await db.$queryRaw<
+    {
+      kind: ReportProductKind;
+      total: bigint;
+      quantity: bigint;
+      orders: bigint;
+    }[]
+  >`
+    SELECT oi."productKindSnapshot"::text AS kind,
+           SUM(oi."lineTotal")::bigint AS total,
+           SUM(oi."quantity")::bigint AS quantity,
+           COUNT(DISTINCT o."id")::bigint AS orders
+    FROM "OrderItem" oi
+    JOIN "Order" o ON o."id" = oi."orderId"
+    WHERE ${salesWhere(period)}
+    GROUP BY oi."productKindSnapshot"
+    ORDER BY total DESC
+  `;
+  return rows.map((row) => ({
+    kind: row.kind,
+    total: toNumber(row.total),
+    quantity: toNumber(row.quantity),
+    orders: toNumber(row.orders),
+  }));
+}
+
+/** پرفروش‌ترین محصولات بر اساس مبلغ (نام و نوع از اسنپ‌شات سفارش) */
 export async function topProducts(
   period: Period,
   limit = 10,
-): Promise<{ name: string; quantity: number; total: number }[]> {
+): Promise<
+  { name: string; kind: ReportProductKind; quantity: number; total: number }[]
+> {
   const rows = await db.$queryRaw<
-    { name: string; quantity: bigint; total: bigint }[]
+    {
+      name: string;
+      kind: ReportProductKind;
+      quantity: bigint;
+      total: bigint;
+    }[]
   >`
     SELECT MAX(oi."productName") AS name,
+           (ARRAY_AGG(oi."productKindSnapshot"::text ORDER BY o."placedAt" DESC))[1] AS kind,
            SUM(oi."quantity")::bigint AS quantity,
            SUM(oi."lineTotal")::bigint AS total
     FROM "OrderItem" oi
@@ -133,6 +184,7 @@ export async function topProducts(
   `;
   return rows.map((row) => ({
     name: row.name,
+    kind: row.kind,
     quantity: toNumber(row.quantity),
     total: toNumber(row.total),
   }));

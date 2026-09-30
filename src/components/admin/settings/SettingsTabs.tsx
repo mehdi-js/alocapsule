@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 
 const TABS = [
   { href: "/admin/settings", label: "عمومی" },
+  { href: "/admin/settings/business", label: "کسب‌وکار و خدمت" },
+  { href: "/admin/settings/home", label: "صفحه‌ی اصلی" },
   { href: "/admin/settings/bank-cards", label: "کارت‌های بانکی" },
   { href: "/admin/settings/shipping", label: "روش‌های ارسال" },
   { href: "/admin/settings/branches", label: "شعب" },

@@ -15,9 +15,19 @@ import {
   type ShippingMethodFormInput,
   shippingMethodSchema,
 } from "@/lib/validation/settings";
+import {
+  type BusinessSettingsFormInput,
+  businessSettingsSchema,
+  type HomeSettingsFormInput,
+  homeSettingsSchema,
+} from "@/lib/validation/store-content";
 import { requireAdmin } from "@/server/auth/current-user";
 import { saveBanners } from "@/server/services/banner.service";
 import { setMaintenance } from "@/server/services/maintenance.service";
+import {
+  saveBusinessSettings,
+  saveHomeSettings,
+} from "@/server/services/store-content.service";
 import {
   deleteBankCard,
   deleteShippingMethod,
@@ -54,6 +64,33 @@ export async function saveGeneralSettingsAction(
   if (!parsed.success) return validationFailure(parsed.error);
   return runAction(async () => {
     await saveGeneralSettings(admin.id, parsed.data);
+    revalidateSettings();
+    return {};
+  });
+}
+
+export async function saveBusinessSettingsAction(
+  input: BusinessSettingsFormInput,
+): Promise<ActionResult> {
+  const admin = await requireAdmin();
+  const parsed = businessSettingsSchema.safeParse(input);
+  if (!parsed.success) return validationFailure(parsed.error);
+  return runAction(async () => {
+    await saveBusinessSettings(admin.id, parsed.data);
+    revalidateSettings();
+    revalidatePath("/checkout");
+    return {};
+  });
+}
+
+export async function saveHomeSettingsAction(
+  input: HomeSettingsFormInput,
+): Promise<ActionResult> {
+  const admin = await requireAdmin();
+  const parsed = homeSettingsSchema.safeParse(input);
+  if (!parsed.success) return validationFailure(parsed.error);
+  return runAction(async () => {
+    await saveHomeSettings(admin.id, parsed.data);
     revalidateSettings();
     return {};
   });

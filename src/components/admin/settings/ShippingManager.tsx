@@ -42,6 +42,7 @@ export function ShippingManager({ methods }: { methods: ShippingRow[] }) {
             <TH>نام</TH>
             <TH>هزینه</TH>
             <TH>رایگان از</TH>
+            <TH>نوع</TH>
             <TH>استان‌ها</TH>
             <TH>وضعیت</TH>
             <TH>
@@ -59,9 +60,19 @@ export function ShippingManager({ methods }: { methods: ShippingRow[] }) {
                   : `${formatToman(method.cost)} تومان`}
               </TD>
               <TD className="whitespace-nowrap">
-                {method.freeAboveAmount
-                  ? `${formatToman(method.freeAboveAmount)} تومان`
-                  : "—"}
+                {[
+                  method.freeAboveAmount
+                    ? `${formatToman(method.freeAboveAmount)} تومان`
+                    : null,
+                  method.freeAboveQuantity
+                    ? `${toPersianDigits(method.freeAboveQuantity)} عدد`
+                    : null,
+                ]
+                  .filter(Boolean)
+                  .join(" یا ") || "—"}
+              </TD>
+              <TD className="whitespace-nowrap">
+                {method.requiresAddress ? "با آدرس" : "تحویل حضوری"}
               </TD>
               <TD>
                 {method.provinces.length ? method.provinces.join("، ") : "همه"}

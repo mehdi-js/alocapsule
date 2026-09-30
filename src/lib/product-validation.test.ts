@@ -292,3 +292,17 @@ describe("sanitizePlainText", () => {
     expect(sanitizePlainText("<p></p>")).toBeNull();
   });
 });
+
+describe("categoryInputSchema: نمایش در صفحه‌ی اصلی", () => {
+  const category = { name: "شارژ کپسول گاز", slug: "lpg-charge" };
+
+  it("isFeatured اختیاری است (undefined ⇒ دست‌نخورده)", () => {
+    expect(categoryInputSchema.parse(category).isFeatured).toBeUndefined();
+    expect(
+      categoryInputSchema.parse({ ...category, isFeatured: true }).isFeatured,
+    ).toBe(true);
+    expect(
+      categoryInputSchema.safeParse({ ...category, isFeatured: "yes" }).success,
+    ).toBe(false);
+  });
+});

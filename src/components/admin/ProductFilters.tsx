@@ -13,12 +13,17 @@ export function ProductFilters({
   params: ProductListParams;
   categories: CategoryDto[];
 }) {
-  const hasFilters = params.q || params.categoryId || params.status !== "all";
+  const hasFilters =
+    params.q ||
+    params.categoryId ||
+    params.status !== "all" ||
+    params.kind ||
+    params.pricingMode;
 
   return (
     <form
       method="get"
-      className="mb-4 grid gap-3 rounded-xl border border-neutral-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_auto]"
+      className="mb-4 grid gap-3 rounded-xl border border-neutral-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_1fr_auto]"
     >
       <Input
         name="q"
@@ -45,6 +50,20 @@ export function ProductFilters({
         <option value="active">فعال</option>
         <option value="inactive">غیرفعال</option>
         <option value="archived">بایگانی‌شده</option>
+      </Select>
+      <Select name="kind" defaultValue={params.kind} aria-label="نوع محصول">
+        <option value="">همه‌ی انواع</option>
+        <option value="PHYSICAL">کالای فیزیکی</option>
+        <option value="SERVICE">خدمت</option>
+      </Select>
+      <Select
+        name="pricing"
+        defaultValue={params.pricingMode}
+        aria-label="حالت قیمت"
+      >
+        <option value="">همه‌ی حالت‌های قیمت</option>
+        <option value="FIXED">قیمت‌دار</option>
+        <option value="INQUIRY">استعلامی</option>
       </Select>
       <div className="flex gap-2">
         <button type="submit" className={buttonClasses("primary")}>

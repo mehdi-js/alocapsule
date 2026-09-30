@@ -9,6 +9,8 @@ import {
   countAwaitingReview,
   dailySales,
   discountByCoupon,
+  type KindSalesRow,
+  salesByKind,
   salesSummary,
   type SalesSummaryRow,
   topProducts,
@@ -31,7 +33,14 @@ export interface DashboardDto {
     summary: SalesSummaryRow;
     daily: { day: string; label: string; sales: number; orders: number }[];
     categories: { name: string; total: number; quantity: number }[];
-    topProducts: { name: string; quantity: number; total: number }[];
+    /** خدمت و کالای فیزیکی همیشه هر دو هستند (صفر اگر فروشی نیست) */
+    kinds: KindSalesRow[];
+    topProducts: {
+      name: string;
+      kind: "PHYSICAL" | "SERVICE";
+      quantity: number;
+      total: number;
+    }[];
     topVariants: {
       productName: string;
       variantTitle: string;
@@ -60,6 +69,7 @@ export async function getDashboard(
     summary,
     daily,
     categories,
+    kinds,
     products,
     variants,
     discounts,
@@ -71,6 +81,7 @@ export async function getDashboard(
     salesSummary(range),
     dailySales(range),
     categoryShare(range),
+    salesByKind(range),
     topProducts(range),
     topVariants(range),
     discountByCoupon(range),
@@ -100,6 +111,15 @@ export async function getDashboard(
       summary,
       daily: filled,
       categories,
+      kinds: (["SERVICE", "PHYSICAL"] as const).map(
+        (kind) =>
+          kinds.find((row) => row.kind === kind) ?? {
+            kind,
+            total: 0,
+            quantity: 0,
+            orders: 0,
+          },
+      ),
       topProducts: products,
       topVariants: variants,
       discounts,

@@ -17,6 +17,7 @@ import { SeoStatusDot } from "./seo/SeoStatusDot";
 const UNIT_LABELS = { GRAM: "گرمی", PIECE: "عددی" } as const;
 
 function priceRange(item: ProductListItem): string {
+  if (item.pricingMode === "INQUIRY") return "استعلام قیمت";
   if (item.minPrice === null || item.maxPrice === null) return "—";
   if (item.minPrice === item.maxPrice)
     return `${formatToman(item.minPrice)} تومان`;
@@ -36,6 +37,7 @@ export function ProductsTable({
         <tr>
           <TH>محصول</TH>
           <TH>دسته‌بندی</TH>
+          <TH>نوع</TH>
           <TH>واحد</TH>
           <TH>متغیرها</TH>
           <TH>قیمت</TH>
@@ -61,6 +63,22 @@ export function ProductsTable({
               </div>
             </TD>
             <TD>{item.categoryName}</TD>
+            <TD className="whitespace-nowrap">
+              <span
+                className={
+                  item.kind === "SERVICE"
+                    ? "rounded-full bg-sky-100 px-2 py-0.5 text-xs text-sky-900"
+                    : "rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-700"
+                }
+              >
+                {item.kind === "SERVICE" ? "خدمت" : "کالا"}
+              </span>
+              {item.pricingMode === "INQUIRY" ? (
+                <span className="ms-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs text-amber-900">
+                  استعلامی
+                </span>
+              ) : null}
+            </TD>
             <TD>{UNIT_LABELS[item.unit]}</TD>
             <TD>
               {toPersianDigits(item.variantCount)}

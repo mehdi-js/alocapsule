@@ -23,6 +23,8 @@ import { getDashboard } from "@/server/services/report.service";
 
 export const metadata: Metadata = { title: "داشبورد" };
 
+const KIND_LABELS = { SERVICE: "خدمت", PHYSICAL: "کالای فیزیکی" } as const;
+
 function Empty() {
   return (
     <p className="text-sm text-neutral-500">در این بازه فروشی ثبت نشده است.</p>
@@ -118,6 +120,29 @@ export default async function DashboardPage({
         />
       </div>
 
+      <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-[1fr_1fr_1.4fr]">
+        {data.kinds.map((row) => (
+          <StatCard
+            key={row.kind}
+            label={`فروش ${KIND_LABELS[row.kind]}`}
+            value={toman(row.total)}
+            hint={`${toPersianDigits(row.quantity)} عدد در ${toPersianDigits(row.orders)} سفارش · مبلغ اقلام`}
+          />
+        ))}
+        <Panel title="فروش به تفکیک نوع">
+          {data.kinds.every((row) => row.total === 0) ? (
+            <Empty />
+          ) : (
+            <CategoryPieChart
+              data={data.kinds.map((row) => ({
+                name: KIND_LABELS[row.kind],
+                total: row.total,
+              }))}
+            />
+          )}
+        </Panel>
+      </div>
+
       <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
         <Panel title="فروش روزانه">
           <SalesLineChart data={data.daily} />
@@ -140,6 +165,7 @@ export default async function DashboardPage({
               <THead>
                 <tr>
                   <TH>محصول</TH>
+                  <TH>نوع</TH>
                   <TH>تعداد</TH>
                   <TH>مبلغ اقلام</TH>
                 </tr>
@@ -148,6 +174,7 @@ export default async function DashboardPage({
                 {data.topProducts.map((row, index) => (
                   <TR key={`${row.name}-${index}`}>
                     <TD>{row.name}</TD>
+                    <TD>{KIND_LABELS[row.kind]}</TD>
                     <TD>{toPersianDigits(row.quantity)}</TD>
                     <TD className="whitespace-nowrap">{toman(row.total)}</TD>
                   </TR>

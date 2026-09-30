@@ -17,6 +17,8 @@ export interface CategoryFormState {
   description: string;
   sortOrder: string;
   isActive: boolean;
+  /** نمایش در بخش دسته‌های صفحه‌ی اصلی */
+  isFeatured: boolean;
   introText: string;
   bottomContent: string;
   seo: SeoFormState;
@@ -33,6 +35,7 @@ export function categoryFormFrom(
       description: "",
       sortOrder: "0",
       isActive: true,
+      isFeatured: false,
       introText: "",
       bottomContent: "",
       seo: emptySeoForm(),
@@ -45,6 +48,7 @@ export function categoryFormFrom(
     description: dto.description ?? "",
     sortOrder: String(dto.sortOrder),
     isActive: dto.isActive,
+    isFeatured: dto.isFeatured,
     introText: dto.introText ?? "",
     bottomContent: dto.bottomContent ?? "",
     seo: seoFormFrom(dto),
@@ -60,6 +64,7 @@ export function toCategoryInput(state: CategoryFormState): CategoryFormInput {
     // NaN (نه undefined) تا مقدار نامعتبر بی‌صدا به پیش‌فرض ۰ تبدیل نشود
     sortOrder: parseIntegerInput(state.sortOrder) ?? Number.NaN,
     isActive: state.isActive,
+    isFeatured: state.isFeatured,
     introText: state.introText,
     bottomContent: state.bottomContent,
     ...toSeoInput(state.seo),

@@ -25,6 +25,8 @@ function buildHref(params: ProductListParams, page: number): string {
   if (params.q) query.set("q", params.q);
   if (params.categoryId) query.set("category", params.categoryId);
   if (params.status !== "all") query.set("status", params.status);
+  if (params.kind) query.set("kind", params.kind);
+  if (params.pricingMode) query.set("pricing", params.pricingMode);
   if (page > 1) query.set("page", String(page));
   const search = query.toString();
   return search ? `/admin/products?${search}` : "/admin/products";
@@ -48,7 +50,12 @@ export default async function ProductsPage({
     redirect(buildHref(params, result.pageCount));
   }
 
-  const hasFilters = params.q || params.categoryId || params.status !== "all";
+  const hasFilters =
+    params.q ||
+    params.categoryId ||
+    params.status !== "all" ||
+    params.kind ||
+    params.pricingMode;
 
   return (
     <>

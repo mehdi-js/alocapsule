@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { PricingMode, Prisma, ProductKind } from "@prisma/client";
 
 import { db } from "@/lib/db";
 
@@ -62,6 +62,8 @@ export interface AdminProductFilters {
   categoryId?: string;
   /** «همه» یعنی همه‌ی محصولات بایگانی‌نشده */
   status: "all" | "active" | "inactive" | "archived";
+  kind?: ProductKind;
+  pricingMode?: PricingMode;
   skip: number;
   take: number;
 }
@@ -72,6 +74,8 @@ export async function listProductsForAdmin(filters: AdminProductFilters) {
       ? { name: { contains: filters.q, mode: "insensitive" } }
       : {}),
     ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
+    ...(filters.kind ? { kind: filters.kind } : {}),
+    ...(filters.pricingMode ? { pricingMode: filters.pricingMode } : {}),
     ...(filters.status === "archived"
       ? { archivedAt: { not: null } }
       : { archivedAt: null }),

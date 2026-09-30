@@ -18,6 +18,8 @@ export interface ShippingRow {
   description: string | null;
   cost: number;
   freeAboveAmount: number | null;
+  freeAboveQuantity: number | null;
+  requiresAddress: boolean;
   payOnDelivery: boolean;
   provinces: string[];
   isActive: boolean;
@@ -40,6 +42,10 @@ export function MethodForm({
     freeAboveAmount: method?.freeAboveAmount
       ? String(method.freeAboveAmount)
       : "",
+    freeAboveQuantity: method?.freeAboveQuantity
+      ? String(method.freeAboveQuantity)
+      : "",
+    requiresAddress: method?.requiresAddress ?? true,
     provinces: method?.provinces ?? [],
     payOnDelivery: method?.payOnDelivery ?? false,
     isActive: method?.isActive ?? true,
@@ -61,8 +67,14 @@ export function MethodForm({
           !values.payOnDelivery && values.freeAboveAmount.trim()
             ? (parseIntegerInput(values.freeAboveAmount) ?? Number.NaN)
             : null,
+        freeAboveQuantity:
+          !values.payOnDelivery && values.freeAboveQuantity.trim()
+            ? (parseIntegerInput(values.freeAboveQuantity) ?? Number.NaN)
+            : null,
+        requiresAddress: values.requiresAddress,
         payOnDelivery: values.payOnDelivery,
-        provinces: values.provinces,
+        // روش بدون آدرس (تحویل حضوری) به استان وابسته نیست
+        provinces: values.requiresAddress ? values.provinces : [],
         isActive: values.isActive,
         sortOrder: parseIntegerInput(values.sortOrder) ?? 0,
       });
@@ -77,7 +89,13 @@ export function MethodForm({
   }
 
   const text = (
-    key: "name" | "description" | "cost" | "freeAboveAmount" | "sortOrder",
+    key:
+      | "name"
+      | "description"
+      | "cost"
+      | "freeAboveAmount"
+      | "freeAboveQuantity"
+      | "sortOrder",
     label: string,
     hint?: string,
     numeric = false,
@@ -107,6 +125,23 @@ export function MethodForm({
         <input
           type="checkbox"
           className="mt-1"
+          checked={!values.requiresAddress}
+          onChange={(e) =>
+            setValues((v) => ({ ...v, requiresAddress: !e.target.checked }))
+          }
+        />
+        <span>
+          تحویل حضوری (بدون آدرس)
+          <span className="block text-xs text-neutral-500">
+            مشتری آدرس وارد نمی‌کند و به‌جایش محل و ساعت تحویل (تنظیمات ←
+            کسب‌وکار و خدمت) نمایش داده می‌شود.
+          </span>
+        </span>
+      </label>
+      <label className="flex items-start gap-2 rounded-lg border border-neutral-200 p-3 text-sm">
+        <input
+          type="checkbox"
+          className="mt-1"
           checked={values.payOnDelivery}
           onChange={(e) =>
             setValues((v) => ({ ...v, payOnDelivery: e.target.checked }))
@@ -129,9 +164,19 @@ export function MethodForm({
             "با مبلغ کالا پس از تخفیف مقایسه می‌شود.",
             true,
           )}
+          {text(
+            "freeAboveQuantity",
+            "ارسال رایگان از تعداد (اختیاری)",
+            "مجموع تعداد همه‌ی اقلام سبد (مثلاً ۱۰). اگر مبلغ یا تعداد برقرار باشد، ارسال رایگان است.",
+            true,
+          )}
         </>
       )}
-      <fieldset className="space-y-2">
+      <fieldset
+        className="space-y-2"
+        hidden={!values.requiresAddress}
+        disabled={!values.requiresAddress}
+      >
         <legend className="text-sm font-medium">محدود به استان</legend>
         <p className="text-xs text-neutral-500">
           هیچ‌کدام = همه‌ی مناطق تحت پوشش.
