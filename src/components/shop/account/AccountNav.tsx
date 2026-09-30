@@ -1,0 +1,47 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { cn } from "@/lib/utils";
+
+const LINKS = [
+  { href: "/account/orders", label: "سفارش‌ها" },
+  { href: "/account/addresses", label: "آدرس‌ها" },
+  { href: "/account/wallet", label: "کیف پول" },
+  { href: "/account/profile", label: "پروفایل" },
+] as const;
+
+/** تب‌های پنل کاربر (موبایل: اسکرول افقی) */
+export function AccountNav() {
+  const pathname = usePathname();
+  return (
+    <nav
+      aria-label="پنل کاربر"
+      className="-mx-5 overflow-x-auto px-5 md:mx-0 md:px-0"
+    >
+      <ul className="flex min-w-max gap-2">
+        {LINKS.map((link) => {
+          const active =
+            pathname === link.href || pathname.startsWith(`${link.href}/`);
+          return (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "block rounded-full border px-5 py-2.5 text-sm transition",
+                  active
+                    ? "border-action bg-action text-action-ink font-bold"
+                    : "text-ink-2 border-[rgb(201_168_118/0.25)] hover:border-[rgb(201_168_118/0.55)]",
+                )}
+              >
+                {link.label}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}

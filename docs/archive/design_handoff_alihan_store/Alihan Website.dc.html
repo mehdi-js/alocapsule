@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<style>
+  body { margin:0; background:#071009; }
+  * { box-sizing:border-box; }
+  a { color:#C9A876; text-decoration:none; }
+  a:hover { color:#E2C795; }
+  button { font:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+  input { font:inherit; }
+</style>
+</helmet>
+
+<div style="direction:rtl;font-family:Vazirmatn,Tahoma,'Segoe UI',system-ui,sans-serif;background:#071009;color:#F5F0E8;padding:56px 44px 110px;display:flex;flex-direction:column;align-items:center;gap:80px">
+
+  <sc-if value="{{ showSpecSheet }}" hint-placeholder-val="{{ true }}">
+  <div data-screen-label="00-design-system" style="width:1440px;background:#0F2A1D;border:1px solid rgba(201,168,118,.18);border-radius:24px;padding:34px 38px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <span style="font-size:12px;letter-spacing:.16em;color:#C9A876;direction:ltr">ALIHAN BAKLAVA — UI KIT</span>
+        <span style="font-size:32px;font-weight:800">فروشگاه باقلوا علی‌حان</span>
+        <span style="font-size:14px;color:#94A29A">راست‌به‌چپ · فونت وزیرمتن (در پیاده‌سازی: next/font/local) · همه تصاویر جای‌نگهدار خاکستری</span>
+      </div>
+      <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#94A29A;direction:ltr">desktop 1440 · mobile 390</span>
+    </div>
+    <div style="height:1px;background:rgba(201,168,118,.16)"></div>
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:36px">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <span style="font-size:13px;font-weight:700;color:#C9A876">پالت رنگ</span>
+        <div style="display:flex;flex-direction:column;gap:9px;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#94A29A;direction:ltr">
+          <div style="display:flex;align-items:center;gap:9px"><span style="width:24px;height:24px;border-radius:7px;background:#071009;border:1px solid rgba(245,240,232,.22)"></span>#071009 page</div>
+          <div style="display:flex;align-items:center;gap:9px"><span style="width:24px;height:24px;border-radius:7px;background:#0B1F16;border:1px solid rgba(245,240,232,.16)"></span>#0B1F16 canvas</div>
+          <div style="display:flex;align-items:center;gap:9px"><span style="width:24px;height:24px;border-radius:7px;background:#0F2A1D"></span>#0F2A1D panel</div>
+          <div style="display:flex;align-items:center;gap:9px"><span style="width:24px;height:24px;border-radius:7px;background:#12301F"></span>#12301F card</div>
+          <div style="display:flex;align-items:center;gap:9px"><span style="width:24px;height:24px;border-radius:7px;background:#2FA84F"></span>#2FA84F action</div>
+          <div style="display:flex;align-items:center;gap:9px"><span style="width:24px;height:24px;border-radius:7px;background:#C9A876"></span>#C9A876 gold</div>
+          <div style="display:flex;align-items:center;gap:9px"><span style="width:24px;height:24px;border-radius:7px;background:#F5F0E8"></span>#F5F0E8 ink</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <span style="font-size:13px;font-weight:700;color:#C9A876">مقیاس تایپ</span>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <span style="font-size:30px;font-weight:800;line-height:1.2">تیتر هیرو ۶۴/۷۲</span>
+          <span style="font-size:20px;font-weight:700">تیتر سکشن ۳۸/۴۶</span>
+          <span style="font-size:16px;font-weight:700">عنوان کارت ۱۸/۲۶</span>
+          <span style="font-size:14px;color:#94A29A">بدنه ۱۶/۳۲ · توضیح ۱۳/۲۳ · برچسب ۱۲</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <span style="font-size:13px;font-weight:700;color:#C9A876">شعاع و سایه</span>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="width:52px;height:38px;border-radius:24px;background:#12301F;border:1px solid rgba(201,168,118,.3)"></span>
+          <span style="width:52px;height:38px;border-radius:14px;background:#12301F;border:1px solid rgba(201,168,118,.3)"></span>
+          <span style="width:38px;height:38px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.3)"></span>
+        </div>
+        <span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#94A29A;direction:ltr;line-height:1.7">card 24px · panel 30px · pill 999px<br>shadow 0 30px 70px -36px #000</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <span style="font-size:13px;font-weight:700;color:#C9A876">کامپوننت‌ها</span>
+        <div style="display:flex;flex-wrap:wrap;gap:7px;font-family:ui-monospace,Menlo,monospace;font-size:11px;direction:ltr">
+          <span style="padding:6px 10px;border-radius:999px;background:#12301F;color:#CFDAD2">TopNav</span>
+          <span style="padding:6px 10px;border-radius:999px;background:#12301F;color:#CFDAD2">HeroCarousel</span>
+          <span style="padding:6px 10px;border-radius:999px;background:#12301F;color:#CFDAD2">TrustBar</span>
+          <span style="padding:6px 10px;border-radius:999px;background:#12301F;color:#CFDAD2">ProductCard</span>
+          <span style="padding:6px 10px;border-radius:999px;background:#12301F;color:#CFDAD2">VariantPicker</span>
+          <span style="padding:6px 10px;border-radius:999px;background:#12301F;color:#CFDAD2">QtyStepper</span>
+          <span style="padding:6px 10px;border-radius:999px;background:#12301F;color:#CFDAD2">Accordion</span>
+          <span style="padding:6px 10px;border-radius:999px;background:#12301F;color:#CFDAD2">CartRow</span>
+          <span style="padding:6px 10px;border-radius:999px;background:#12301F;color:#CFDAD2">BottomTabBar</span>
+          <span style="padding:6px 10px;border-radius:999px;background:#12301F;color:#CFDAD2">Footer</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:baseline;gap:12px;padding-right:6px">
+      <span style="font-size:16px;font-weight:700;color:#C9A876">۰۱ — دسکتاپ · صفحه اصلی</span>
+      <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#6F7D74;direction:ltr">1440 × auto</span>
+    </div>
+
+    <div data-screen-label="01-desktop-home" style="width:1440px;background:#0B1F16;border:1px solid rgba(245,240,232,.08);border-radius:20px;overflow:hidden;box-shadow:0 40px 90px -44px #000">
+
+      <header style="padding:16px 44px;display:flex;align-items:center;justify-content:space-between;gap:32px;border-bottom:1px solid rgba(201,168,118,.12)">
+        <div style="display:flex;align-items:center;gap:9px">
+          <svg width="32" height="32" viewBox="0 0 34 34" fill="none"><circle cx="17" cy="17" r="13" stroke="#2FA84F" stroke-width="3" stroke-dasharray="34 70" stroke-linecap="round" transform="rotate(-40 17 17)"></circle><circle cx="17" cy="17" r="8" stroke="#2FA84F" stroke-width="2.5" stroke-dasharray="18 50" stroke-linecap="round" transform="rotate(-40 17 17)"></circle></svg>
+          <span style="font-size:24px;font-weight:800">علی‌حان</span>
+        </div>
+        <nav style="display:flex;align-items:center;gap:32px;font-size:15px">
+          <span style="font-weight:700;padding-bottom:5px;border-bottom:2px solid #2FA84F">صفحه اصلی</span>
+          <span style="color:#94A29A">فروشگاه</span>
+          <span style="color:#94A29A">آدرس شعب</span>
+          <span style="color:#94A29A">وبلاگ</span>
+          <span style="color:#94A29A">درباره ما</span>
+          <span style="color:#94A29A">تماس با ما</span>
+        </nav>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center" style-hover="border-color:rgba(201,168,118,.55)">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+          </button>
+          <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center;position:relative" style-hover="border-color:rgba(201,168,118,.55)">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.6 10.6h9.8L20 7.4H6"></path><circle cx="9.5" cy="19.5" r="1.5"></circle><circle cx="17" cy="19.5" r="1.5"></circle></svg>
+            <span style="position:absolute;top:-5px;left:-5px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#C9A876;color:#0B1F16;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">{{ cartCount }}</span>
+          </button>
+          <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center" style-hover="border-color:rgba(201,168,118,.55)">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5.5 20c1.6-3.8 11.4-3.8 13 0"></path></svg>
+          </button>
+        </div>
+      </header>
+
+      <section style="padding:0 0 0;position:relative">
+        <div style="position:relative;height:520px;margin:20px 20px 0;border-radius:18px;overflow:hidden;background:#2B342E;border:1px dashed rgba(245,240,232,.22);display:flex;align-items:center">
+          <span style="position:absolute;top:50%;left:13%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px">
+            <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#A7B2AB;direction:ltr">1400 × 520</span>
+            <span style="font-size:13px;color:#A7B2AB">{{ heroLabel }}</span>
+          </span>
+          <div style="position:absolute;inset:0;background:linear-gradient(270deg,rgba(7,16,9,.97) 6%,rgba(7,16,9,.86) 34%,rgba(7,16,9,.1) 66%)"></div>
+          <sc-if value="{{ showOrnaments }}" hint-placeholder-val="{{ true }}">
+            <svg width="420" height="420" viewBox="0 0 420 420" fill="none" style="position:absolute;top:-60px;left:-70px;opacity:.65;pointer-events:none"><circle cx="210" cy="210" r="180" stroke="#2FA84F" stroke-width="1.3" stroke-dasharray="300 700"></circle><circle cx="210" cy="210" r="140" stroke="#C9A876" stroke-width="1" stroke-dasharray="170 700"></circle></svg>
+          </sc-if>
+          <div style="position:relative;padding:0 56px;display:flex;flex-direction:column;gap:22px;max-width:640px;margin-left:auto">
+            <span style="font-size:15px;color:#2FA84F;display:flex;align-items:center;gap:10px">باقلواهای لوکس ترکی
+              <svg width="26" height="10" viewBox="0 0 26 10" fill="none" stroke="#2FA84F" stroke-width="1.4" stroke-linecap="round"><line x1="25" y1="5" x2="4" y2="5"></line><path d="M8 1L4 5l4 4"></path></svg>
+            </span>
+            <h1 style="margin:0;font-size:64px;font-weight:800;line-height:1.16;letter-spacing:-.02em">طعم اصالت<br>در هر لقمه</h1>
+            <p style="margin:0;font-size:17px;line-height:2;color:#B4BFB8;max-width:430px;text-wrap:pretty">سفری به دنیای طعم‌های ناب و اصیل ترکیه، با بهترین مواد اولیه و هنر دست استادکاران ما.</p>
+            <div>
+              <button style="display:inline-flex;align-items:center;gap:12px;background:#22713A;color:#F5F0E8;padding:15px 16px 15px 28px;border-radius:999px;font-size:16px;font-weight:700;box-shadow:0 20px 44px -24px rgba(47,168,79,.8)" style-hover="background:#2A8546">
+                مشاهده محصولات
+                <span style="width:28px;height:28px;border-radius:999px;background:rgba(245,240,232,.16);display:flex;align-items:center;justify-content:center">
+                  <svg width="15" height="11" viewBox="0 0 26 10" fill="none" stroke="#F5F0E8" stroke-width="1.8" stroke-linecap="round"><line x1="24" y1="5" x2="4" y2="5"></line><path d="M8 1L4 5l4 4"></path></svg>
+                </span>
+              </button>
+            </div>
+          </div>
+          <div style="position:absolute;bottom:26px;left:34px;display:flex;align-items:center;gap:16px">
+            <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#B4BFB8;direction:ltr">{{ heroCounter }}</span>
+            <button onClick="{{ heroPrev }}" style="width:40px;height:40px;border-radius:999px;border:1px solid rgba(245,240,232,.28);display:flex;align-items:center;justify-content:center" style-hover="background:rgba(245,240,232,.12)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"></path></svg></button>
+            <button onClick="{{ heroNext }}" style="width:40px;height:40px;border-radius:999px;border:1px solid rgba(245,240,232,.28);display:flex;align-items:center;justify-content:center" style-hover="background:rgba(245,240,232,.12)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6l6 6-6 6"></path></svg></button>
+          </div>
+        </div>
+      </section>
+
+      <section style="padding:26px 20px 0">
+        <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:18px;padding:24px 36px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))">
+          <div style="display:flex;align-items:center;gap:14px;justify-content:center">
+            <span style="width:48px;height:48px;border-radius:999px;background:#12301F;display:flex;align-items:center;justify-content:center;flex:none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4-3.4 7.2-7 9-3.6-1.8-7-5-7-9V6z"></path><path d="M9 12l2.3 2.3L15.6 10"></path></svg></span>
+            <span style="display:flex;flex-direction:column;gap:3px"><span style="font-size:16px;font-weight:700">تضمین کیفیت</span><span style="font-size:13px;color:#94A29A">با بهترین مواد اولیه</span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;justify-content:center;border-right:1px solid rgba(201,168,118,.16);border-left:1px solid rgba(201,168,118,.16)">
+            <span style="width:48px;height:48px;border-radius:999px;background:#12301F;display:flex;align-items:center;justify-content:center;flex:none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="7" width="11.5" height="9" rx="1.6"></rect><path d="M14 10h4l3 3.4V16h-7z"></path><circle cx="7" cy="18" r="1.4"></circle><circle cx="17.5" cy="18" r="1.4"></circle></svg></span>
+            <span style="display:flex;flex-direction:column;gap:3px"><span style="font-size:16px;font-weight:700">ارسال سریع</span><span style="font-size:13px;color:#94A29A">به سراسر کشور</span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;justify-content:center">
+            <span style="width:48px;height:48px;border-radius:999px;background:#12301F;display:flex;align-items:center;justify-content:center;flex:none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="8.5" width="17" height="11.5" rx="2"></rect><line x1="12" y1="8.5" x2="12" y2="20"></line><path d="M12 8.5C10.2 5 5.5 5.6 7.2 8.5M12 8.5c1.8-3.5 6.5-2.9 4.8 0"></path></svg></span>
+            <span style="display:flex;flex-direction:column;gap:3px"><span style="font-size:16px;font-weight:700">بسته‌بندی لوکس</span><span style="font-size:13px;color:#94A29A">مناسب هدیه دادن</span></span>
+          </div>
+        </div>
+      </section>
+
+      <section style="padding:52px 20px 0">
+        <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:24px;padding:30px 32px 34px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:26px">
+            <div style="display:flex;align-items:center;gap:14px">
+              <span style="font-size:15px;color:#C9A876">مشاهده همه محصولات</span>
+              <svg width="24" height="10" viewBox="0 0 26 10" fill="none" stroke="#C9A876" stroke-width="1.4" stroke-linecap="round"><line x1="25" y1="5" x2="4" y2="5"></line><path d="M8 1L4 5l4 4"></path></svg>
+            </div>
+            <h2 style="margin:0;font-size:34px;font-weight:800;letter-spacing:-.01em">محصولات پرطرفدار</h2>
+            <div style="display:flex;gap:9px">
+              <button style="width:40px;height:40px;border-radius:999px;border:1px solid rgba(201,168,118,.28);display:flex;align-items:center;justify-content:center" style-hover="background:#12301F"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"></path></svg></button>
+              <button style="width:40px;height:40px;border-radius:999px;border:1px solid rgba(201,168,118,.28);display:flex;align-items:center;justify-content:center" style-hover="background:#12301F"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6l6 6-6 6"></path></svg></button>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px">
+            <dc-import name="ProductCard" hint-size="100%,360px" onAdd="{{ addToCart }}" badge="پرفروش" price="۲,۴۰۰,۰۰۰" desc="باقلوا پسته‌ای درجه یک از برند علی‌حان" title="باقلوا پسته‌ای"></dc-import>
+            <dc-import name="ProductCard" hint-size="100%,360px" onAdd="{{ addToCart }}" price="۲,۲۰۰,۰۰۰" desc="باقلوا مخلوط درجه یک از برند علی‌حان" title="باقلوا مخلوط"></dc-import>
+            <dc-import name="ProductCard" hint-size="100%,360px" onAdd="{{ addToCart }}" price="۱,۹۰۰,۰۰۰" desc="باقلوا گردویی درجه یک از برند علی‌حان" title="باقلوا گردویی"></dc-import>
+            <dc-import name="ProductCard" hint-size="100%,360px" onAdd="{{ addToCart }}" price="۱,۳۰۰,۰۰۰" desc="شکلات دبی با پسته و کنافه از برند علی‌حان" title="شکلات دُبی"></dc-import>
+          </div>
+        </div>
+      </section>
+
+      <section style="padding:24px 20px 0">
+        <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:24px;padding:28px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center">
+          <div style="background:#2B342E;border:1px dashed rgba(245,240,232,.22);border-radius:18px;height:340px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px">
+            <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#A7B2AB;direction:ltr">1080 × 760</span>
+            <span style="font-size:13px;color:#A7B2AB">فضای داخلی شعبه</span>
+            <span style="position:absolute;bottom:20px;right:20px;display:flex;align-items:center;gap:11px;background:rgba(7,16,9,.8);border:1px solid rgba(245,240,232,.22);border-radius:999px;padding:8px 16px 8px 8px">
+              <span style="width:32px;height:32px;border-radius:999px;background:#F5F0E8;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="#0B1F16"><path d="M9 6.5l8.5 5.5L9 17.5z"></path></svg></span>
+              <span style="font-size:13px">ویدیو معرفی برند</span>
+            </span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:20px;padding-left:12px">
+            <span style="display:flex;align-items:center;gap:10px;font-size:14px;color:#C9A876">از سال ۱۳۸۵ تا امروز
+              <svg width="30" height="8" viewBox="0 0 30 8" fill="none" stroke="#C9A876" stroke-width="1.2"><line x1="0" y1="4" x2="22" y2="4"></line><circle cx="27" cy="4" r="2.4"></circle></svg>
+            </span>
+            <h2 style="margin:0;font-size:38px;font-weight:800;letter-spacing:-.01em">داستان علی‌حان</h2>
+            <p style="margin:0;font-size:16px;line-height:2.1;color:#B4BFB8;text-wrap:pretty">علی‌حان حاصل سال‌ها تجربه در هنر باقلواسازی ترکیه و تلاش برای ارائه طعمی اصیل و متفاوت به دوستداران این شیرینی سنتی است. ما با استفاده از بهترین مواد اولیه، اصالت طعم را در کنار کیفیت و زیبایی بسته‌بندی برای شما فراهم می‌کنیم.</p>
+            <div>
+              <button style="display:inline-flex;align-items:center;gap:12px;border:1px solid rgba(201,168,118,.45);padding:13px 24px;border-radius:999px;font-size:15px;font-weight:600" style-hover="background:#12301F">بیشتر بخوانید
+                <svg width="22" height="10" viewBox="0 0 26 10" fill="none" stroke="#C9A876" stroke-width="1.4" stroke-linecap="round"><line x1="25" y1="5" x2="4" y2="5"></line><path d="M8 1L4 5l4 4"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section style="padding:24px 20px 0">
+        <div style="border-radius:24px;overflow:hidden;position:relative;background:#2B342E;border:1px dashed rgba(245,240,232,.22);height:360px;display:flex;align-items:center">
+          <span style="position:absolute;top:50%;left:12%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:5px">
+            <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#A7B2AB;direction:ltr">1400 × 360</span>
+            <span style="font-size:13px;color:#A7B2AB">بنر کلوزآپ باقلوا</span>
+          </span>
+          <div style="position:absolute;inset:0;background:linear-gradient(270deg,rgba(7,16,9,.96) 4%,rgba(7,16,9,.82) 36%,rgba(7,16,9,.05) 70%)"></div>
+          <div style="position:relative;padding:0 52px;display:flex;flex-direction:column;gap:18px;max-width:560px;margin-left:auto">
+            <span style="font-size:14px;color:#C9A876">باقلوای ترکی، تجربه‌ای متفاوت</span>
+            <h2 style="margin:0;font-size:42px;font-weight:800;line-height:1.35;letter-spacing:-.01em">انتخابی خاص<br>برای لحظات ویژه</h2>
+            <p style="margin:0;font-size:16px;color:#B4BFB8">مناسب برای پذیرایی، هدیه و لذت در کنار عزیزان</p>
+            <div>
+              <button style="display:inline-flex;align-items:center;gap:12px;background:#22713A;color:#F5F0E8;padding:14px 26px;border-radius:999px;font-size:16px;font-weight:700" style-hover="background:#2A8546">مشاهده محصولات
+                <svg width="22" height="10" viewBox="0 0 26 10" fill="none" stroke="#F5F0E8" stroke-width="1.5" stroke-linecap="round"><line x1="25" y1="5" x2="4" y2="5"></line><path d="M8 1L4 5l4 4"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer style="margin-top:44px;background:#0F2A1D;border-top:1px solid rgba(201,168,118,.16);padding:48px 44px 24px">
+        <div style="display:grid;grid-template-columns:1.1fr .7fr 1fr 1.1fr;gap:44px">
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;align-items:center;gap:9px">
+              <svg width="28" height="28" viewBox="0 0 34 34" fill="none"><circle cx="17" cy="17" r="13" stroke="#2FA84F" stroke-width="3" stroke-dasharray="34 70" stroke-linecap="round" transform="rotate(-40 17 17)"></circle><circle cx="17" cy="17" r="8" stroke="#2FA84F" stroke-width="2.5" stroke-dasharray="18 50" stroke-linecap="round" transform="rotate(-40 17 17)"></circle></svg>
+              <span style="font-size:22px;font-weight:800">علی‌حان</span>
+            </div>
+            <span style="font-size:14px;color:#94A29A">باقلوا، یک دنیا طعم</span>
+            <div style="display:flex;gap:9px">
+              <span style="width:36px;height:36px;border-radius:999px;border:1px solid rgba(201,168,118,.28);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="5"></rect><circle cx="12" cy="12" r="3.6"></circle><circle cx="17" cy="7" r="1" fill="#C9A876"></circle></svg></span>
+              <span style="width:36px;height:36px;border-radius:999px;border:1px solid rgba(201,168,118,.28);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="1.5" stroke-linejoin="round"><path d="M21 4.5L3 11l5 1.8L10 19l3-3.8 5 3.3z"></path></svg></span>
+              <span style="width:36px;height:36px;border-radius:999px;border:1px solid rgba(201,168,118,.28);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="1.5" stroke-linecap="round"><path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.6-1.2A9 9 0 1 0 12 3z"></path></svg></span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <span style="font-size:15px;font-weight:700;color:#C9A876">دسترسی سریع</span>
+            <span style="font-size:14px;color:#94A29A">صفحه اصلی</span>
+            <span style="font-size:14px;color:#94A29A">فروشگاه</span>
+            <span style="font-size:14px;color:#94A29A">آدرس شعب</span>
+            <span style="font-size:14px;color:#94A29A">وبلاگ</span>
+            <span style="font-size:14px;color:#94A29A">تماس با ما</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <span style="font-size:15px;font-weight:700;color:#C9A876">اطلاعات تماس</span>
+            <span style="display:flex;align-items:center;gap:9px;font-size:14px;color:#94A29A"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="1.5" stroke-linecap="round"><path d="M5 4h4l1.5 4L8 9.5c.8 3 3.5 5.7 6.5 6.5L16 13.5l4 1.5v4c-8 .5-15.5-7-15-15z"></path></svg>۰۲۱-۲۲۳۴۵۶۷۸</span>
+            <span style="display:flex;align-items:center;gap:9px;font-size:14px;color:#94A29A"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="1.5" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2.5"></rect><path d="M3.5 7l8.5 6 8.5-6"></path></svg><span style="direction:ltr">info@alihanbaklava.ir</span></span>
+            <span style="display:flex;align-items:flex-start;gap:9px;font-size:14px;color:#94A29A;line-height:1.8"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="1.5" stroke-linejoin="round" style="flex:none;margin-top:5px"><path d="M12 21c4.5-5 7-8.2 7-11a7 7 0 1 0-14 0c0 2.8 2.5 6 7 11z"></path><circle cx="12" cy="10" r="2.6"></circle></svg>تهران، خیابان ولیعصر، پلاک ۱۲۳</span>
+          </div>
+          <sc-if value="{{ showNewsletter }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <span style="font-size:15px;font-weight:700;color:#C9A876">عضویت در خبرنامه</span>
+            <span style="font-size:13px;color:#94A29A;line-height:1.9">برای اطلاع از تخفیف‌ها و محصولات جدید ایمیل خود را وارد کنید.</span>
+            <div style="display:flex;align-items:center;gap:8px;background:#12301F;border:1px solid rgba(201,168,118,.22);border-radius:999px;padding:6px 18px 6px 6px">
+              <input placeholder="آدرس ایمیل شما" style="flex:1;min-width:0;background:transparent;border:none;outline:none;color:#F5F0E8;font-size:14px">
+              <button style="background:#2FA84F;color:#08200F;font-size:14px;font-weight:700;padding:10px 22px;border-radius:999px" style-hover="background:#38BD5C">ثبت</button>
+            </div>
+          </div>
+          </sc-if>
+        </div>
+        <div style="margin-top:36px;padding-top:18px;border-top:1px solid rgba(201,168,118,.14);font-size:13px;color:#6F7D74">© ۲۰۲۵ علی‌حان. تمامی حقوق محفوظ است.</div>
+      </footer>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:baseline;gap:12px;padding-right:6px">
+      <span style="font-size:16px;font-weight:700;color:#C9A876">۰۲ — دسکتاپ · فروشگاه</span>
+      <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#6F7D74;direction:ltr">1440 × auto</span>
+    </div>
+    <div data-screen-label="02-desktop-shop" style="width:1440px;background:#0B1F16;border:1px solid rgba(245,240,232,.08);border-radius:20px;overflow:hidden;box-shadow:0 40px 90px -44px #000">
+      <header style="padding:16px 44px;display:flex;align-items:center;justify-content:space-between;gap:32px;border-bottom:1px solid rgba(201,168,118,.12)">
+        <div style="display:flex;align-items:center;gap:9px">
+          <svg width="32" height="32" viewBox="0 0 34 34" fill="none"><circle cx="17" cy="17" r="13" stroke="#2FA84F" stroke-width="3" stroke-dasharray="34 70" stroke-linecap="round" transform="rotate(-40 17 17)"></circle><circle cx="17" cy="17" r="8" stroke="#2FA84F" stroke-width="2.5" stroke-dasharray="18 50" stroke-linecap="round" transform="rotate(-40 17 17)"></circle></svg>
+          <span style="font-size:24px;font-weight:800">علی‌حان</span>
+        </div>
+        <nav style="display:flex;align-items:center;gap:32px;font-size:15px">
+          <span style="color:#94A29A">صفحه اصلی</span>
+          <span style="font-weight:700;padding-bottom:5px;border-bottom:2px solid #2FA84F">فروشگاه</span>
+          <span style="color:#94A29A">آدرس شعب</span>
+          <span style="color:#94A29A">وبلاگ</span>
+          <span style="color:#94A29A">درباره ما</span>
+          <span style="color:#94A29A">تماس با ما</span>
+        </nav>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg></button>
+          <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center;position:relative"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.6 10.6h9.8L20 7.4H6"></path><circle cx="9.5" cy="19.5" r="1.5"></circle><circle cx="17" cy="19.5" r="1.5"></circle></svg><span style="position:absolute;top:-5px;left:-5px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#C9A876;color:#0B1F16;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">{{ cartCount }}</span></button>
+          <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5.5 20c1.6-3.8 11.4-3.8 13 0"></path></svg></button>
+        </div>
+      </header>
+
+      <div style="padding:22px 44px 0;display:flex;align-items:center;gap:9px;font-size:13px;color:#6F7D74">
+        <span>صفحه اصلی</span>
+        <span>/</span>
+        <span style="color:#C9A876">فروشگاه</span>
+      </div>
+
+      <div style="padding:14px 44px 0;display:flex;align-items:flex-end;justify-content:space-between;gap:24px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <h1 style="margin:0;font-size:36px;font-weight:800;letter-spacing:-.01em">همه محصولات</h1>
+          <span style="font-size:14px;color:#94A29A">۲۴ محصول · باقلوا، شکلات و بسته‌های کادویی</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:14px;color:#94A29A">مرتب‌سازی:</span>
+          <div style="display:flex;align-items:center;gap:10px;background:#12301F;border:1px solid rgba(201,168,118,.22);border-radius:999px;padding:11px 18px;font-size:14px">
+            <span>پرفروش‌ترین</span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:26px 44px 52px;display:grid;grid-template-columns:270px minmax(0,1fr);gap:26px;align-items:start">
+        <aside style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:26px">
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <span style="font-size:15px;font-weight:700">دسته‌بندی</span>
+            <div style="display:flex;flex-direction:column;gap:12px;font-size:14px">
+              <span style="display:flex;align-items:center;justify-content:space-between;color:#F5F0E8"><span style="display:flex;align-items:center;gap:10px"><span style="width:16px;height:16px;border-radius:5px;background:#2FA84F;display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#08200F" stroke-width="3.4" stroke-linecap="round"><path d="M5 13l4 4L19 7"></path></svg></span>باقلوا</span><span style="color:#6F7D74">۱۲</span></span>
+              <span style="display:flex;align-items:center;justify-content:space-between;color:#B4BFB8"><span style="display:flex;align-items:center;gap:10px"><span style="width:16px;height:16px;border-radius:5px;border:1px solid rgba(201,168,118,.4)"></span>شکلات</span><span style="color:#6F7D74">۵</span></span>
+              <span style="display:flex;align-items:center;justify-content:space-between;color:#B4BFB8"><span style="display:flex;align-items:center;gap:10px"><span style="width:16px;height:16px;border-radius:5px;border:1px solid rgba(201,168,118,.4)"></span>پسته‌ای</span><span style="color:#6F7D74">۴</span></span>
+              <span style="display:flex;align-items:center;justify-content:space-between;color:#B4BFB8"><span style="display:flex;align-items:center;gap:10px"><span style="width:16px;height:16px;border-radius:5px;border:1px solid rgba(201,168,118,.4)"></span>گردویی</span><span style="color:#6F7D74">۳</span></span>
+            </div>
+          </div>
+          <div style="height:1px;background:rgba(201,168,118,.14)"></div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <span style="font-size:15px;font-weight:700">وزن بسته</span>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:13px">
+              <span style="padding:9px 15px;border-radius:999px;border:1px solid rgba(201,168,118,.3);color:#B4BFB8">۵۰۰ گرم</span>
+              <span style="padding:9px 15px;border-radius:999px;background:#2FA84F;color:#08200F;font-weight:700">۱ کیلوگرم</span>
+              <span style="padding:9px 15px;border-radius:999px;border:1px solid rgba(201,168,118,.3);color:#B4BFB8">۲ کیلوگرم</span>
+            </div>
+          </div>
+          <div style="height:1px;background:rgba(201,168,118,.14)"></div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <span style="font-size:15px;font-weight:700">محدوده قیمت</span>
+            <div style="position:relative;height:4px;border-radius:999px;background:#12301F">
+              <span style="position:absolute;right:12%;left:24%;top:0;bottom:0;border-radius:999px;background:#2FA84F"></span>
+              <span style="position:absolute;right:12%;top:-6px;width:16px;height:16px;border-radius:999px;background:#F5F0E8;transform:translateX(50%)"></span>
+              <span style="position:absolute;left:24%;top:-6px;width:16px;height:16px;border-radius:999px;background:#F5F0E8;transform:translateX(-50%)"></span>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;color:#94A29A">
+              <span>۹۰۰,۰۰۰ تومان</span>
+              <span>۳,۵۰۰,۰۰۰</span>
+            </div>
+          </div>
+          <div style="height:1px;background:rgba(201,168,118,.14)"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:14px">فقط کالاهای موجود</span>
+            <span style="width:44px;height:26px;border-radius:999px;background:#2FA84F;display:flex;align-items:center;padding:3px;justify-content:flex-start"><span style="width:20px;height:20px;border-radius:999px;background:#08200F"></span></span>
+          </div>
+          <button style="background:#12301F;border:1px solid rgba(201,168,118,.3);border-radius:999px;padding:13px;font-size:14px;font-weight:600" style-hover="border-color:rgba(201,168,118,.6)">حذف فیلترها</button>
+        </aside>
+
+        <div style="display:flex;flex-direction:column;gap:22px">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px">
+            <dc-import name="ProductCard" hint-size="100%,360px" onAdd="{{ addToCart }}" badge="پرفروش" price="۲,۴۰۰,۰۰۰" desc="باقلوا پسته‌ای درجه یک از برند علی‌حان" title="باقلوا پسته‌ای"></dc-import>
+            <dc-import name="ProductCard" hint-size="100%,360px" onAdd="{{ addToCart }}" price="۲,۲۰۰,۰۰۰" desc="باقلوا مخلوط درجه یک از برند علی‌حان" title="باقلوا مخلوط"></dc-import>
+            <dc-import name="ProductCard" hint-size="100%,360px" onAdd="{{ addToCart }}" price="۱,۹۰۰,۰۰۰" desc="باقلوا گردویی درجه یک از برند علی‌حان" title="باقلوا گردویی"></dc-import>
+            <dc-import name="ProductCard" hint-size="100%,360px" onAdd="{{ addToCart }}" badge="جدید" price="۱,۳۰۰,۰۰۰" desc="شکلات دبی با پسته و کنافه از برند علی‌حان" title="شکلات دُبی"></dc-import>
+            <dc-import name="ProductCard" hint-size="100%,360px" onAdd="{{ addToCart }}" price="۲,۸۰۰,۰۰۰" desc="جعبه کادویی مخلوط چهار طعم علی‌حان" title="جعبه کادویی ویژه"></dc-import>
+            <dc-import name="ProductCard" hint-size="100%,360px" onAdd="{{ addToCart }}" price="۹۵۰,۰۰۰" desc="باقلوا سینی کوچک برای پذیرایی روزانه" title="باقلوا سینی کوچک"></dc-import>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:9px;padding-top:6px">
+            <span style="width:40px;height:40px;border-radius:999px;border:1px solid rgba(201,168,118,.28);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"></path></svg></span>
+            <span style="width:40px;height:40px;border-radius:999px;background:#2FA84F;color:#08200F;font-weight:700;display:flex;align-items:center;justify-content:center">۱</span>
+            <span style="width:40px;height:40px;border-radius:999px;border:1px solid rgba(201,168,118,.28);display:flex;align-items:center;justify-content:center;color:#B4BFB8">۲</span>
+            <span style="width:40px;height:40px;border-radius:999px;border:1px solid rgba(201,168,118,.28);display:flex;align-items:center;justify-content:center;color:#B4BFB8">۳</span>
+            <span style="width:40px;height:40px;border-radius:999px;border:1px solid rgba(201,168,118,.28);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6l6 6-6 6"></path></svg></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:baseline;gap:12px;padding-right:6px">
+      <span style="font-size:16px;font-weight:700;color:#C9A876">۰۳ — دسکتاپ · صفحه محصول</span>
+      <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#6F7D74;direction:ltr">1440 × auto · انتخاب وزن و تعداد فعال است</span>
+    </div>
+    <div data-screen-label="03-desktop-product" style="width:1440px;background:#0B1F16;border:1px solid rgba(245,240,232,.08);border-radius:20px;overflow:hidden;box-shadow:0 40px 90px -44px #000">
+      <header style="padding:16px 44px;display:flex;align-items:center;justify-content:space-between;gap:32px;border-bottom:1px solid rgba(201,168,118,.12)">
+        <div style="display:flex;align-items:center;gap:9px">
+          <svg width="32" height="32" viewBox="0 0 34 34" fill="none"><circle cx="17" cy="17" r="13" stroke="#2FA84F" stroke-width="3" stroke-dasharray="34 70" stroke-linecap="round" transform="rotate(-40 17 17)"></circle><circle cx="17" cy="17" r="8" stroke="#2FA84F" stroke-width="2.5" stroke-dasharray="18 50" stroke-linecap="round" transform="rotate(-40 17 17)"></circle></svg>
+          <span style="font-size:24px;font-weight:800">علی‌حان</span>
+        </div>
+        <nav style="display:flex;align-items:center;gap:32px;font-size:15px">
+          <span style="color:#94A29A">صفحه اصلی</span>
+          <span style="font-weight:700;padding-bottom:5px;border-bottom:2px solid #2FA84F">فروشگاه</span>
+          <span style="color:#94A29A">آدرس شعب</span>
+          <span style="color:#94A29A">وبلاگ</span>
+          <span style="color:#94A29A">درباره ما</span>
+          <span style="color:#94A29A">تماس با ما</span>
+        </nav>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg></button>
+          <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center;position:relative"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.6 10.6h9.8L20 7.4H6"></path><circle cx="9.5" cy="19.5" r="1.5"></circle><circle cx="17" cy="19.5" r="1.5"></circle></svg><span style="position:absolute;top:-5px;left:-5px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#C9A876;color:#0B1F16;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">{{ cartCount }}</span></button>
+          <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5.5 20c1.6-3.8 11.4-3.8 13 0"></path></svg></button>
+        </div>
+      </header>
+
+      <div style="padding:22px 44px 0;display:flex;align-items:center;gap:9px;font-size:13px;color:#6F7D74">
+        <span>صفحه اصلی</span><span>/</span><span>فروشگاه</span><span>/</span><span style="color:#C9A876">باقلوا مخلوط</span>
+      </div>
+
+      <div style="padding:22px 44px 0;display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:start">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="background:#2B342E;border:1px dashed rgba(245,240,232,.22);border-radius:22px;height:440px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;position:relative">
+            <span style="font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#A7B2AB;direction:ltr">1000 × 1000</span>
+            <span style="font-size:13px;color:#A7B2AB">تصویر اصلی محصول</span>
+            <span style="position:absolute;top:18px;right:18px;background:#C9A876;color:#0B1F16;font-size:12px;font-weight:800;padding:6px 13px;border-radius:999px">محبوب</span>
+            <div style="position:absolute;top:18px;left:18px;display:flex;gap:8px">
+              <span style="width:38px;height:38px;border-radius:999px;background:rgba(7,16,9,.7);border:1px solid rgba(245,240,232,.2);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.6" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-9.2A4 4 0 0 1 12 8a4 4 0 0 1 7 2.8C19 15.6 12 20 12 20z"></path></svg></span>
+              <span style="width:38px;height:38px;border-radius:999px;background:rgba(7,16,9,.7);border:1px solid rgba(245,240,232,.2);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.6" stroke-linecap="round"><circle cx="17" cy="6" r="2.6"></circle><circle cx="7" cy="12" r="2.6"></circle><circle cx="17" cy="18" r="2.6"></circle><line x1="9.3" y1="10.8" x2="14.7" y2="7.2"></line><line x1="9.3" y1="13.2" x2="14.7" y2="16.8"></line></svg></span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px">
+            <div style="background:#2B342E;border:1px solid #2FA84F;border-radius:14px;height:92px;display:flex;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#A7B2AB;direction:ltr">400 × 400</div>
+            <div style="background:#2B342E;border:1px dashed rgba(245,240,232,.22);border-radius:14px;height:92px;display:flex;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#A7B2AB;direction:ltr">400 × 400</div>
+            <div style="background:#2B342E;border:1px dashed rgba(245,240,232,.22);border-radius:14px;height:92px;display:flex;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#A7B2AB;direction:ltr">400 × 400</div>
+            <div style="background:#2B342E;border:1px dashed rgba(245,240,232,.22);border-radius:14px;height:92px;display:flex;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#A7B2AB;direction:ltr">400 × 400</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:22px">
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <h1 style="margin:0;font-size:36px;font-weight:800;letter-spacing:-.01em">باقلوا مخلوط</h1>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span style="display:flex;gap:3px;color:#C9A876;font-size:16px">★★★★★</span>
+              <span style="font-size:13px;color:#94A29A;white-space:nowrap">۴.۸ از ۵ · ۱۳۲ نظر</span>
+              <span style="width:1px;height:14px;background:rgba(201,168,118,.3)"></span>
+              <span style="font-size:13px;color:#2FA84F">موجود در انبار</span>
+            </div>
+            <p style="margin:0;font-size:15px;line-height:2;color:#B4BFB8;max-width:520px;text-wrap:pretty">باقلوا مخلوط درجه یک از برند علی‌حان، ترکیبی از طعم‌های اصیل پسته، گردو و بادام با خمیر لایه‌لایه و شربت ملایم.</p>
+          </div>
+
+          <div style="height:1px;background:rgba(201,168,118,.14)"></div>
+
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <span style="font-size:14px;color:#94A29A">وزن بسته را انتخاب کنید</span>
+            <div style="display:flex;gap:10px">
+              <button onClick="{{ pickW0 }}" style="{{ w0 }}">۵۰۰ گرم</button>
+              <button onClick="{{ pickW1 }}" style="{{ w1 }}">۱ کیلوگرم</button>
+              <button onClick="{{ pickW2 }}" style="{{ w2 }}">۲ کیلوگرم</button>
+            </div>
+          </div>
+
+          <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.16);border-radius:22px;padding:22px 24px;display:flex;flex-direction:column;gap:18px">
+            <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px">
+              <div style="display:flex;flex-direction:column;gap:5px">
+                <span style="font-size:13px;color:#94A29A">قیمت {{ wLabel }}</span>
+                <span style="font-size:30px;font-weight:800;color:#2FA84F;white-space:nowrap">{{ unitPrice }} <span style="font-size:15px;font-weight:600;color:#B4BFB8">تومان</span></span>
+              </div>
+              <div style="display:flex;align-items:center;gap:14px;background:#12301F;border:1px solid rgba(201,168,118,.22);border-radius:999px;padding:8px 10px">
+                <button onClick="{{ dec }}" style="width:34px;height:34px;border-radius:999px;background:#0B1F16;display:flex;align-items:center;justify-content:center" style-hover="background:#183C27"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2.4" stroke-linecap="round"><line x1="6" y1="12" x2="18" y2="12"></line></svg></button>
+                <span style="min-width:26px;text-align:center;font-size:17px;font-weight:700">{{ qty }}</span>
+                <button onClick="{{ inc }}" style="width:34px;height:34px;border-radius:999px;background:#0B1F16;display:flex;align-items:center;justify-content:center" style-hover="background:#183C27"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="6" x2="12" y2="18"></line><line x1="6" y1="12" x2="18" y2="12"></line></svg></button>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:14px;color:#B4BFB8">
+              <span>جمع سفارش</span>
+              <span style="font-size:17px;font-weight:700;color:#F5F0E8;white-space:nowrap">{{ totalPrice }} تومان</span>
+            </div>
+            <button onClick="{{ addToCart }}" style="display:flex;align-items:center;justify-content:center;gap:12px;background:#2FA84F;color:#08200F;padding:17px;border-radius:999px;font-size:17px;font-weight:800;box-shadow:0 20px 44px -26px rgba(47,168,79,.9)" style-hover="background:#38BD5C">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#08200F" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.6 10.6h9.8L20 7.4H6"></path><circle cx="9.5" cy="19.5" r="1.5"></circle><circle cx="17" cy="19.5" r="1.5"></circle></svg>
+              افزودن به سبد خرید
+            </button>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+            <div style="background:#12301F;border:1px solid rgba(201,168,118,.14);border-radius:16px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:9px">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4-3.4 7.2-7 9-3.6-1.8-7-5-7-9V6z"></path><path d="M9 12l2.3 2.3L15.6 10"></path></svg>
+              <span style="font-size:13px">تضمین کیفیت</span>
+            </div>
+            <div style="background:#12301F;border:1px solid rgba(201,168,118,.14);border-radius:16px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:9px">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="7" width="11.5" height="9" rx="1.6"></rect><path d="M14 10h4l3 3.4V16h-7z"></path><circle cx="7" cy="18" r="1.4"></circle><circle cx="17.5" cy="18" r="1.4"></circle></svg>
+              <span style="font-size:13px">ارسال سریع</span>
+            </div>
+            <div style="background:#12301F;border:1px solid rgba(201,168,118,.14);border-radius:16px;padding:16px;display:flex;flex-direction:column;align-items:center;gap:9px">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="8.5" width="17" height="11.5" rx="2"></rect><line x1="12" y1="8.5" x2="12" y2="20"></line><path d="M12 8.5C10.2 5 5.5 5.6 7.2 8.5M12 8.5c1.8-3.5 6.5-2.9 4.8 0"></path></svg>
+              <span style="font-size:13px">بسته‌بندی لوکس</span>
+            </div>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:18px;padding:18px 22px">
+              <button onClick="{{ toggleDesc }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:16px;font-weight:700;text-align:right">توضیحات محصول
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+              </button>
+              <sc-if value="{{ descOpen }}" hint-placeholder-val="{{ true }}">
+                <p style="margin:14px 0 0;font-size:14px;line-height:2.1;color:#B4BFB8;text-wrap:pretty">باقلوا مخلوط علی‌حان با استفاده از بهترین مواد اولیه و به‌صورت کاملاً سنتی و دست‌ساز تهیه شده است. ترکیب پسته، گردو و بادام، طعمی بی‌نظیر و فراموش‌نشدنی به این محصول بخشیده است.</p>
+              </sc-if>
+            </div>
+            <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:18px;padding:18px 22px">
+              <button onClick="{{ toggleShip }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:16px;font-weight:700;text-align:right">ارسال و نگهداری
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+              </button>
+              <sc-if value="{{ shipOpen }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:14px 0 0;font-size:14px;line-height:2.1;color:#B4BFB8">ارسال در تهران یک روز کاری و به سایر شهرها دو تا سه روز کاری. نگهداری در جای خشک و خنک تا ۲۱ روز.</p>
+              </sc-if>
+            </div>
+            <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:18px;padding:18px 22px">
+              <button onClick="{{ toggleStore }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:16px;font-weight:700;text-align:right">مواد اولیه
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+              </button>
+              <sc-if value="{{ storeOpen }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:14px 0 0;font-size:14px;line-height:2.1;color:#B4BFB8">آرد، کره حیوانی، پسته اکبری، گردو، بادام، شکر و آب‌لیمو طبیعی. بدون مواد نگهدارنده.</p>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:46px 44px 52px;display:flex;flex-direction:column;gap:20px">
+        <div style="display:flex;align-items:center;gap:14px">
+          <h2 style="margin:0;font-size:26px;font-weight:800">محصولات مشابه</h2>
+          <span style="flex:1;height:1px;background:rgba(201,168,118,.18)"></span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px">
+          <dc-import name="ProductCard" hint-size="100%,360px" onAdd="{{ addToCart }}" price="۲,۴۰۰,۰۰۰" desc="باقلوا پسته‌ای درجه یک از برند علی‌حان" title="باقلوا پسته‌ای"></dc-import>
+          <dc-import name="ProductCard" hint-size="100%,360px" onAdd="{{ addToCart }}" price="۱,۹۰۰,۰۰۰" desc="باقلوا گردویی درجه یک از برند علی‌حان" title="باقلوا گردویی"></dc-import>
+          <dc-import name="ProductCard" hint-size="100%,360px" onAdd="{{ addToCart }}" price="۱,۳۰۰,۰۰۰" desc="شکلات دبی با پسته و کنافه از برند علی‌حان" title="شکلات دُبی"></dc-import>
+          <dc-import name="ProductCard" hint-size="100%,360px" onAdd="{{ addToCart }}" price="۲,۸۰۰,۰۰۰" desc="جعبه کادویی مخلوط چهار طعم علی‌حان" title="جعبه کادویی ویژه"></dc-import>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:baseline;gap:12px;padding-right:6px">
+      <span style="font-size:16px;font-weight:700;color:#C9A876">۰۴ — دسکتاپ · سبد خرید</span>
+      <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#6F7D74;direction:ltr">1440 × auto</span>
+    </div>
+    <div data-screen-label="04-desktop-cart" style="width:1440px;background:#0B1F16;border:1px solid rgba(245,240,232,.08);border-radius:20px;overflow:hidden;box-shadow:0 40px 90px -44px #000">
+      <header style="padding:16px 44px;display:flex;align-items:center;justify-content:space-between;gap:32px;border-bottom:1px solid rgba(201,168,118,.12)">
+        <div style="display:flex;align-items:center;gap:9px">
+          <svg width="32" height="32" viewBox="0 0 34 34" fill="none"><circle cx="17" cy="17" r="13" stroke="#2FA84F" stroke-width="3" stroke-dasharray="34 70" stroke-linecap="round" transform="rotate(-40 17 17)"></circle><circle cx="17" cy="17" r="8" stroke="#2FA84F" stroke-width="2.5" stroke-dasharray="18 50" stroke-linecap="round" transform="rotate(-40 17 17)"></circle></svg>
+          <span style="font-size:24px;font-weight:800">علی‌حان</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:20px;font-size:14px">
+          <span style="display:flex;align-items:center;gap:9px"><span style="width:26px;height:26px;border-radius:999px;background:#2FA84F;color:#08200F;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:12px">۱</span>سبد خرید</span>
+          <span style="width:48px;height:1px;background:rgba(201,168,118,.3)"></span>
+          <span style="display:flex;align-items:center;gap:9px;color:#6F7D74"><span style="width:26px;height:26px;border-radius:999px;border:1px solid rgba(201,168,118,.35);display:flex;align-items:center;justify-content:center;font-size:12px">۲</span>اطلاعات ارسال</span>
+          <span style="width:48px;height:1px;background:rgba(201,168,118,.3)"></span>
+          <span style="display:flex;align-items:center;gap:9px;color:#6F7D74"><span style="width:26px;height:26px;border-radius:999px;border:1px solid rgba(201,168,118,.35);display:flex;align-items:center;justify-content:center;font-size:12px">۳</span>پرداخت</span>
+        </div>
+        <span style="display:flex;align-items:center;gap:9px;font-size:14px;color:#C9A876">ادامه خرید
+          <svg width="22" height="10" viewBox="0 0 26 10" fill="none" stroke="#C9A876" stroke-width="1.4" stroke-linecap="round"><line x1="25" y1="5" x2="4" y2="5"></line><path d="M8 1L4 5l4 4"></path></svg>
+        </span>
+      </header>
+
+      <div style="padding:32px 44px 52px;display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:24px;align-items:start">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:2px">
+            <h1 style="margin:0;font-size:30px;font-weight:800">سبد خرید شما</h1>
+            <span style="font-size:14px;color:#94A29A">۲ محصول</span>
+          </div>
+
+          <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:20px;padding:18px;display:grid;grid-template-columns:106px minmax(0,1fr) auto 160px;gap:20px;align-items:center">
+            <div style="background:#2B342E;border:1px dashed rgba(245,240,232,.22);border-radius:14px;height:98px;display:flex;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-size:10px;color:#A7B2AB;direction:ltr">400 × 400</div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <span style="font-size:18px;font-weight:700">باقلوا مخلوط</span>
+              <span style="font-size:13px;color:#94A29A">وزن: {{ wLabel }} · کد BK-2201</span>
+              <span style="font-size:13px;color:#2FA84F">موجود · ارسال ۲ روز کاری</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;background:#12301F;border:1px solid rgba(201,168,118,.22);border-radius:999px;padding:6px 8px">
+              <button onClick="{{ dec }}" style="width:30px;height:30px;border-radius:999px;background:#0B1F16;display:flex;align-items:center;justify-content:center" style-hover="background:#183C27"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2.6" stroke-linecap="round"><line x1="6" y1="12" x2="18" y2="12"></line></svg></button>
+              <span style="min-width:22px;text-align:center;font-size:16px;font-weight:700">{{ qty }}</span>
+              <button onClick="{{ inc }}" style="width:30px;height:30px;border-radius:999px;background:#0B1F16;display:flex;align-items:center;justify-content:center" style-hover="background:#183C27"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="6" x2="12" y2="18"></line><line x1="6" y1="12" x2="18" y2="12"></line></svg></button>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:12px">
+              <span style="font-size:18px;font-weight:700">{{ totalPrice }} <span style="font-size:12px;font-weight:500;color:#94A29A">تومان</span></span>
+              <span style="display:flex;align-items:center;gap:7px;font-size:13px;color:#6F7D74"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6F7D74" stroke-width="1.6" stroke-linecap="round"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"></path></svg>حذف</span>
+            </div>
+          </div>
+
+          <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:20px;padding:18px;display:grid;grid-template-columns:106px minmax(0,1fr) auto 160px;gap:20px;align-items:center">
+            <div style="background:#2B342E;border:1px dashed rgba(245,240,232,.22);border-radius:14px;height:98px;display:flex;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-size:10px;color:#A7B2AB;direction:ltr">400 × 400</div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <span style="font-size:18px;font-weight:700">باقلوا پسته‌ای</span>
+              <span style="font-size:13px;color:#94A29A">وزن: ۱ کیلوگرم · کد BK-2401</span>
+              <span style="font-size:13px;color:#2FA84F">موجود · ارسال ۲ روز کاری</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;background:#12301F;border:1px solid rgba(201,168,118,.22);border-radius:999px;padding:6px 8px">
+              <span style="width:30px;height:30px;border-radius:999px;background:#0B1F16;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2.6" stroke-linecap="round"><line x1="6" y1="12" x2="18" y2="12"></line></svg></span>
+              <span style="min-width:22px;text-align:center;font-size:16px;font-weight:700">۱</span>
+              <span style="width:30px;height:30px;border-radius:999px;background:#0B1F16;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="6" x2="12" y2="18"></line><line x1="6" y1="12" x2="18" y2="12"></line></svg></span>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:12px">
+              <span style="font-size:18px;font-weight:700">۲,۴۰۰,۰۰۰ <span style="font-size:12px;font-weight:500;color:#94A29A">تومان</span></span>
+              <span style="display:flex;align-items:center;gap:7px;font-size:13px;color:#6F7D74"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6F7D74" stroke-width="1.6" stroke-linecap="round"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"></path></svg>حذف</span>
+            </div>
+          </div>
+
+          <div style="background:#0F2A1D;border:1px dashed rgba(201,168,118,.24);border-radius:20px;padding:20px 22px;display:flex;align-items:center;justify-content:space-between;gap:20px">
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <span style="font-size:15px;font-weight:700">کد تخفیف دارید؟</span>
+              <span style="font-size:13px;color:#94A29A">کد را وارد کنید تا در همین مرحله اعمال شود.</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;background:#12301F;border:1px solid rgba(201,168,118,.22);border-radius:999px;padding:6px 18px 6px 6px;min-width:320px">
+              <input placeholder="مثلاً ALIHAN10" style="flex:1;min-width:0;background:transparent;border:none;outline:none;color:#F5F0E8;font-size:14px">
+              <button style="background:#C9A876;color:#0B1F16;font-size:14px;font-weight:700;padding:10px 22px;border-radius:999px" style-hover="background:#DBBC8C">اعمال</button>
+            </div>
+          </div>
+        </div>
+
+        <aside style="background:#0F2A1D;border:1px solid rgba(201,168,118,.16);border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:18px;position:sticky;top:20px">
+          <span style="font-size:19px;font-weight:800">خلاصه سفارش</span>
+          <div style="display:flex;flex-direction:column;gap:13px;font-size:14px">
+            <span style="display:flex;align-items:center;justify-content:space-between"><span style="color:#94A29A">جمع کالاها</span><span>{{ subtotal }} تومان</span></span>
+            <span style="display:flex;align-items:center;justify-content:space-between"><span style="color:#94A29A">تخفیف</span><span style="color:#C9A876">۱۲۰,۰۰۰ −</span></span>
+            <span style="display:flex;align-items:center;justify-content:space-between"><span style="color:#94A29A">هزینه ارسال</span><span>۶۵,۰۰۰ تومان</span></span>
+            <span style="display:flex;align-items:center;justify-content:space-between"><span style="color:#94A29A">بسته‌بندی کادویی</span><span style="color:#2FA84F">رایگان</span></span>
+          </div>
+          <div style="height:1px;background:rgba(201,168,118,.16)"></div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between">
+            <span style="font-size:15px;font-weight:700">مبلغ قابل پرداخت</span>
+            <span style="font-size:24px;font-weight:800;color:#2FA84F">{{ grandTotal }} <span style="font-size:13px;font-weight:600;color:#B4BFB8">تومان</span></span>
+          </div>
+          <button style="display:flex;align-items:center;justify-content:center;gap:10px;background:#2FA84F;color:#08200F;padding:16px;border-radius:999px;font-size:16px;font-weight:800" style-hover="background:#38BD5C">ادامه و ثبت سفارش
+            <svg width="20" height="10" viewBox="0 0 26 10" fill="none" stroke="#08200F" stroke-width="1.9" stroke-linecap="round"><line x1="24" y1="5" x2="4" y2="5"></line><path d="M8 1L4 5l4 4"></path></svg>
+          </button>
+          <div style="display:flex;align-items:center;gap:9px;font-size:12px;color:#6F7D74;line-height:1.8">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6F7D74" stroke-width="1.6" stroke-linejoin="round" style="flex:none"><path d="M12 3l7 3v6c0 4-3.4 7.2-7 9-3.6-1.8-7-5-7-9V6z"></path></svg>
+            پرداخت امن از طریق درگاه بانکی · امکان لغو تا پیش از ارسال
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:flex;align-items:baseline;gap:12px;padding-right:6px">
+      <span style="font-size:16px;font-weight:700;color:#C9A876">۰۵ — دسکتاپ · درباره ما</span>
+      <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#6F7D74;direction:ltr">1440 × auto</span>
+    </div>
+    <div data-screen-label="05-desktop-about" style="width:1440px;background:#0B1F16;border:1px solid rgba(245,240,232,.08);border-radius:20px;overflow:hidden;box-shadow:0 40px 90px -44px #000">
+      <header style="padding:16px 44px;display:flex;align-items:center;justify-content:space-between;gap:32px;border-bottom:1px solid rgba(201,168,118,.12)">
+        <div style="display:flex;align-items:center;gap:9px">
+          <svg width="32" height="32" viewBox="0 0 34 34" fill="none"><circle cx="17" cy="17" r="13" stroke="#2FA84F" stroke-width="3" stroke-dasharray="34 70" stroke-linecap="round" transform="rotate(-40 17 17)"></circle><circle cx="17" cy="17" r="8" stroke="#2FA84F" stroke-width="2.5" stroke-dasharray="18 50" stroke-linecap="round" transform="rotate(-40 17 17)"></circle></svg>
+          <span style="font-size:24px;font-weight:800">علی‌حان</span>
+        </div>
+        <nav style="display:flex;align-items:center;gap:32px;font-size:15px">
+          <span style="color:#94A29A">صفحه اصلی</span>
+          <span style="color:#94A29A">فروشگاه</span>
+          <span style="color:#94A29A">آدرس شعب</span>
+          <span style="color:#94A29A">وبلاگ</span>
+          <span style="font-weight:700;padding-bottom:5px;border-bottom:2px solid #2FA84F">درباره ما</span>
+          <span style="color:#94A29A">تماس با ما</span>
+        </nav>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg></button>
+          <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center;position:relative"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.6 10.6h9.8L20 7.4H6"></path><circle cx="9.5" cy="19.5" r="1.5"></circle><circle cx="17" cy="19.5" r="1.5"></circle></svg><span style="position:absolute;top:-5px;left:-5px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#C9A876;color:#0B1F16;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">{{ cartCount }}</span></button>
+          <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5.5 20c1.6-3.8 11.4-3.8 13 0"></path></svg></button>
+        </div>
+      </header>
+
+      <div style="padding:20px 20px 0">
+        <div style="position:relative;height:340px;border-radius:18px;overflow:hidden;background:#2B342E;border:1px dashed rgba(245,240,232,.22);display:flex;align-items:center">
+          <span style="position:absolute;top:50%;left:12%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:5px">
+            <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#A7B2AB;direction:ltr">1400 × 340</span>
+            <span style="font-size:13px;color:#A7B2AB">کارگاه تولید علی‌حان</span>
+          </span>
+          <div style="position:absolute;inset:0;background:linear-gradient(270deg,rgba(7,16,9,.96) 6%,rgba(7,16,9,.84) 38%,rgba(7,16,9,.08) 72%)"></div>
+          <div style="position:relative;padding:0 52px;display:flex;flex-direction:column;gap:16px;max-width:620px;margin-left:auto">
+            <span style="font-size:14px;color:#C9A876">درباره علی‌حان</span>
+            <h1 style="margin:0;font-size:46px;font-weight:800;line-height:1.25;letter-spacing:-.02em">هنر باقلواسازی،<br>نسل به نسل</h1>
+          </div>
+        </div>
+      </div>
+
+      <section style="padding:44px 44px 0;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center">
+        <div style="display:flex;flex-direction:column;gap:18px">
+          <h2 style="margin:0;font-size:32px;font-weight:800">از یک کارگاه کوچک تا امروز</h2>
+          <p style="margin:0;font-size:16px;line-height:2.1;color:#B4BFB8;text-wrap:pretty">علی‌حان حاصل سال‌ها تجربه در هنر باقلواسازی ترکیه و تلاش برای ارائه طعمی اصیل و متفاوت به دوستداران این شیرینی سنتی است. هر سینی باقلوا در کارگاه ما با خمیر دست‌کشیده، کره تازه و مغزهای درجه یک آماده می‌شود.</p>
+          <p style="margin:0;font-size:16px;line-height:2.1;color:#B4BFB8;text-wrap:pretty">امروز محصولات ما از سه شعبه و فروشگاه اینترنتی به سراسر کشور ارسال می‌شود، اما فرمول و وسواس روز اول تغییری نکرده است.</p>
+        </div>
+        <div style="background:#2B342E;border:1px dashed rgba(245,240,232,.22);border-radius:20px;height:330px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#A7B2AB;direction:ltr">900 × 660</span>
+          <span style="font-size:13px;color:#A7B2AB">استادکار در حال کار</span>
+        </div>
+      </section>
+
+      <section style="padding:44px 44px 0">
+        <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:22px;padding:30px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;text-align:center">
+          <div style="display:flex;flex-direction:column;gap:7px"><span style="font-size:36px;font-weight:800;color:#C9A876">۱۸</span><span style="font-size:14px;color:#94A29A">سال تجربه</span></div>
+          <div style="display:flex;flex-direction:column;gap:7px;border-right:1px solid rgba(201,168,118,.16)"><span style="font-size:36px;font-weight:800;color:#C9A876">۳</span><span style="font-size:14px;color:#94A29A">شعبه فعال</span></div>
+          <div style="display:flex;flex-direction:column;gap:7px;border-right:1px solid rgba(201,168,118,.16)"><span style="font-size:36px;font-weight:800;color:#C9A876">۲۴</span><span style="font-size:14px;color:#94A29A">محصول متنوع</span></div>
+          <div style="display:flex;flex-direction:column;gap:7px;border-right:1px solid rgba(201,168,118,.16)"><span style="font-size:36px;font-weight:800;color:#C9A876">۹۸٪</span><span style="font-size:14px;color:#94A29A">رضایت مشتری</span></div>
+        </div>
+      </section>
+
+      <section style="padding:44px 44px 0;display:flex;flex-direction:column;gap:22px">
+        <h2 style="margin:0;font-size:30px;font-weight:800">ارزش‌های ما</h2>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px">
+          <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:12px">
+            <span style="width:46px;height:46px;border-radius:999px;background:#12301F;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4-3.4 7.2-7 9-3.6-1.8-7-5-7-9V6z"></path><path d="M9 12l2.3 2.3L15.6 10"></path></svg></span>
+            <span style="font-size:18px;font-weight:700">مواد اولیه درجه یک</span>
+            <span style="font-size:14px;line-height:2;color:#94A29A">پسته اکبری، کره حیوانی و مغزهای تازه، بدون هیچ ماده نگهدارنده‌ای.</span>
+          </div>
+          <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:12px">
+            <span style="width:46px;height:46px;border-radius:999px;background:#12301F;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20c1.5-6 5-9 8-9s4-2 4-4"></path><path d="M16 4.5c2.5 0 4 1.5 4 4s-1.5 4-4 4"></path></svg></span>
+            <span style="font-size:18px;font-weight:700">ساخت دست‌ساز</span>
+            <span style="font-size:14px;line-height:2;color:#94A29A">هر لایه خمیر با دست کشیده می‌شود؛ هیچ مرحله‌ای ماشینی نیست.</span>
+          </div>
+          <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:12px">
+            <span style="width:46px;height:46px;border-radius:999px;background:#12301F;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="8.5" width="17" height="11.5" rx="2"></rect><line x1="12" y1="8.5" x2="12" y2="20"></line><path d="M12 8.5C10.2 5 5.5 5.6 7.2 8.5M12 8.5c1.8-3.5 6.5-2.9 4.8 0"></path></svg></span>
+            <span style="font-size:18px;font-weight:700">بسته‌بندی هدیه</span>
+            <span style="font-size:14px;line-height:2;color:#94A29A">جعبه‌های چوبی و مقوایی طراحی‌شده برای مناسبت‌های ویژه.</span>
+          </div>
+        </div>
+      </section>
+
+      <section style="padding:44px 44px 0;display:flex;flex-direction:column;gap:22px">
+        <h2 style="margin:0;font-size:30px;font-weight:800">شعب علی‌حان</h2>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px">
+          <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:20px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="background:#2B342E;border-bottom:1px dashed rgba(245,240,232,.22);height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#A7B2AB;direction:ltr">600 × 400</span><span style="font-size:12px;color:#A7B2AB">ویترین شعبه</span></div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:9px"><span style="font-size:17px;font-weight:700">شعبه ولیعصر</span><span style="font-size:13px;color:#94A29A;line-height:1.9">تهران، خیابان ولیعصر، پلاک ۱۲۳ · ۰۲۱-۲۲۳۴۵۶۷۸</span><span style="font-size:13px;color:#2FA84F">هر روز ۹ تا ۲۲</span></div>
+          </div>
+          <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:20px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="background:#2B342E;border-bottom:1px dashed rgba(245,240,232,.22);height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#A7B2AB;direction:ltr">600 × 400</span><span style="font-size:12px;color:#A7B2AB">ویترین شعبه</span></div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:9px"><span style="font-size:17px;font-weight:700">شعبه سعادت‌آباد</span><span style="font-size:13px;color:#94A29A;line-height:1.9">تهران، سعادت‌آباد، میدان کاج · ۰۲۱-۲۲۸۸۴۴۰۰</span><span style="font-size:13px;color:#2FA84F">هر روز ۱۰ تا ۲۳</span></div>
+          </div>
+          <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:20px;overflow:hidden;display:flex;flex-direction:column">
+            <div style="background:#2B342E;border-bottom:1px dashed rgba(245,240,232,.22);height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px"><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#A7B2AB;direction:ltr">600 × 400</span><span style="font-size:12px;color:#A7B2AB">ویترین شعبه</span></div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:9px"><span style="font-size:17px;font-weight:700">شعبه مشهد</span><span style="font-size:13px;color:#94A29A;line-height:1.9">مشهد، بلوار وکیل‌آباد، نبش وکیل‌آباد ۲۰ · ۰۵۱-۳۶۰۰۱۲۳۴</span><span style="font-size:13px;color:#2FA84F">هر روز ۹ تا ۲۲</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section style="padding:44px 20px 52px">
+        <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.2);border-radius:24px;padding:38px 44px;display:flex;align-items:center;justify-content:space-between;gap:30px">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <h2 style="margin:0;font-size:30px;font-weight:800">سفارش عمده و مناسبتی</h2>
+            <span style="font-size:15px;color:#94A29A">برای مراسم، شرکت‌ها و هدایای سازمانی با ما تماس بگیرید.</span>
+          </div>
+          <button style="display:inline-flex;align-items:center;gap:12px;background:#2FA84F;color:#08200F;padding:15px 30px;border-radius:999px;font-size:16px;font-weight:800;flex:none" style-hover="background:#38BD5C">تماس با ما
+            <svg width="20" height="10" viewBox="0 0 26 10" fill="none" stroke="#08200F" stroke-width="1.9" stroke-linecap="round"><line x1="24" y1="5" x2="4" y2="5"></line><path d="M8 1L4 5l4 4"></path></svg>
+          </button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div style="display:flex;align-items:baseline;gap:12px;padding-right:6px">
+      <span style="font-size:16px;font-weight:700;color:#C9A876">۰۶ — موبایل</span>
+      <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#6F7D74;direction:ltr">390 × 844 · iOS safe areas</span>
+    </div>
+    <div style="display:flex;gap:34px;align-items:flex-start;flex-wrap:wrap">
+
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+        <div data-screen-label="06-mobile-home" style="width:414px;padding:12px;border-radius:52px;background:#161C18;border:1px solid rgba(245,240,232,.12);box-shadow:0 30px 70px -40px #000">
+          <div style="width:390px;height:844px;border-radius:42px;overflow:hidden;background:#0B1F16;display:flex;flex-direction:column;position:relative">
+            <div style="height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-size:13px;font-weight:600;flex:none">
+              <span>۹:۴۱</span>
+              <span style="display:flex;align-items:center;gap:5px"><svg width="16" height="11" viewBox="0 0 18 12" fill="#F5F0E8"><rect x="0" y="8" width="3" height="4" rx="1"></rect><rect x="5" y="5.5" width="3" height="6.5" rx="1"></rect><rect x="10" y="3" width="3" height="9" rx="1"></rect><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"></rect></svg><svg width="22" height="11" viewBox="0 0 26 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.4" stroke="#F5F0E8" opacity=".5"></rect><rect x="2" y="2" width="15" height="8" rx="2" fill="#F5F0E8"></rect><path d="M23.5 4v4a2.3 2.3 0 0 0 0-4z" fill="#F5F0E8" opacity=".5"></path></svg></span>
+            </div>
+            <div style="padding:6px 20px 12px;display:flex;align-items:center;justify-content:space-between;flex:none">
+              <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px">
+                <span style="width:16px;height:2px;border-radius:2px;background:#F5F0E8"></span>
+                <span style="width:16px;height:2px;border-radius:2px;background:#F5F0E8"></span>
+                <span style="width:10px;height:2px;border-radius:2px;background:#C9A876;align-self:flex-end;margin-left:3px"></span>
+              </button>
+              <div style="display:flex;align-items:center;gap:8px">
+                <svg width="26" height="26" viewBox="0 0 34 34" fill="none"><circle cx="17" cy="17" r="13" stroke="#2FA84F" stroke-width="3" stroke-dasharray="34 70" stroke-linecap="round" transform="rotate(-40 17 17)"></circle><circle cx="17" cy="17" r="8" stroke="#2FA84F" stroke-width="2.5" stroke-dasharray="18 50" stroke-linecap="round" transform="rotate(-40 17 17)"></circle></svg>
+                <span style="font-size:20px;font-weight:800">علی‌حان</span>
+              </div>
+              <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center;position:relative"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.6 10.6h9.8L20 7.4H6"></path><circle cx="9.5" cy="19.5" r="1.5"></circle><circle cx="17" cy="19.5" r="1.5"></circle></svg><span style="position:absolute;top:-4px;left:-4px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:#C9A876;color:#0B1F16;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">{{ cartCount }}</span></button>
+            </div>
+
+            <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;gap:16px;padding:0 20px 88px">
+              <div style="display:flex;align-items:center;gap:10px;background:#12301F;border:1px solid rgba(201,168,118,.2);border-radius:999px;padding:11px 18px;flex:none">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#94A29A" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+                <span style="font-size:14px;color:#94A29A">جستجوی محصول…</span>
+              </div>
+
+              <div style="position:relative;height:256px;border-radius:24px;overflow:hidden;background:#2B342E;border:1px dashed rgba(245,240,232,.22);flex:none;display:flex;align-items:flex-end">
+                <span style="position:absolute;top:16%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px">
+                  <span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#A7B2AB;direction:ltr">750 × 900</span>
+                  <span style="font-size:12px;color:#A7B2AB">{{ heroLabel }}</span>
+                </span>
+                <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(7,16,9,.97) 12%,rgba(7,16,9,.7) 46%,rgba(7,16,9,0) 78%)"></div>
+                <div style="position:relative;padding:20px;display:flex;flex-direction:column;gap:12px;width:100%">
+                  <span style="font-size:12px;color:#2FA84F">باقلواهای لوکس ترکی</span>
+                  <h1 style="margin:0;font-size:30px;font-weight:800;line-height:1.25">طعم اصالت<br>در هر لقمه</h1>
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+                    <button style="display:inline-flex;align-items:center;gap:9px;background:#2FA84F;color:#08200F;padding:13px 22px;border-radius:999px;font-size:14px;font-weight:800">مشاهده محصولات
+                      <svg width="18" height="9" viewBox="0 0 26 10" fill="none" stroke="#08200F" stroke-width="2" stroke-linecap="round"><line x1="24" y1="5" x2="4" y2="5"></line><path d="M8 1L4 5l4 4"></path></svg>
+                    </button>
+                    <div style="display:flex;align-items:center;gap:8px">
+                      <button onClick="{{ heroPrev }}" style="width:38px;height:38px;border-radius:999px;border:1px solid rgba(245,240,232,.3);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"></path></svg></button>
+                      <button onClick="{{ heroNext }}" style="width:38px;height:38px;border-radius:999px;border:1px solid rgba(245,240,232,.3);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6l6 6-6 6"></path></svg></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:10px;flex:none">
+                <div style="flex:1;background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:16px;padding:11px 10px;display:flex;flex-direction:column;align-items:center;gap:7px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4-3.4 7.2-7 9-3.6-1.8-7-5-7-9V6z"></path><path d="M9 12l2.3 2.3L15.6 10"></path></svg><span style="font-size:11px;text-align:center">تضمین کیفیت</span></div>
+                <div style="flex:1;background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:16px;padding:11px 10px;display:flex;flex-direction:column;align-items:center;gap:7px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="7" width="11.5" height="9" rx="1.6"></rect><path d="M14 10h4l3 3.4V16h-7z"></path><circle cx="7" cy="18" r="1.4"></circle><circle cx="17.5" cy="18" r="1.4"></circle></svg><span style="font-size:11px;text-align:center">ارسال سریع</span></div>
+                <div style="flex:1;background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:16px;padding:11px 10px;display:flex;flex-direction:column;align-items:center;gap:7px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="8.5" width="17" height="11.5" rx="2"></rect><line x1="12" y1="8.5" x2="12" y2="20"></line><path d="M12 8.5C10.2 5 5.5 5.6 7.2 8.5M12 8.5c1.8-3.5 6.5-2.9 4.8 0"></path></svg><span style="font-size:11px;text-align:center">بسته‌بندی لوکس</span></div>
+              </div>
+
+              <div style="display:flex;align-items:center;justify-content:space-between;flex:none">
+                <span style="font-size:19px;font-weight:800">محصولات پرطرفدار</span>
+                <span style="font-size:13px;color:#C9A876">همه</span>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:none">
+                <dc-import name="ProductCard" hint-size="100%,300px" onAdd="{{ addToCart }}" price="۲,۴۰۰,۰۰۰" desc="باقلوا پسته‌ای درجه یک" title="باقلوا پسته‌ای"></dc-import>
+                <dc-import name="ProductCard" hint-size="100%,300px" onAdd="{{ addToCart }}" price="۲,۲۰۰,۰۰۰" desc="باقلوا مخلوط درجه یک" title="باقلوا مخلوط"></dc-import>
+              </div>
+            </div>
+
+            <div style="position:absolute;bottom:0;right:0;left:0;background:#09160E;border-top:1px solid rgba(201,168,118,.16);padding:10px 16px 26px;display:flex;align-items:center;justify-content:space-between">
+              <span style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;min-height:48px;justify-content:center;color:#2FA84F"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="1.7" stroke-linejoin="round"><path d="M4 11l8-6.5 8 6.5v8a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19z"></path></svg><span style="font-size:10px;font-weight:700">خانه</span></span>
+              <span style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;min-height:48px;justify-content:center;color:#94A29A"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#94A29A" stroke-width="1.7" stroke-linejoin="round"><rect x="4" y="7" width="16" height="13" rx="2.4"></rect><path d="M8.5 7a3.5 3.5 0 1 1 7 0"></path></svg><span style="font-size:10px">فروشگاه</span></span>
+              <span style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;min-height:48px;justify-content:center;color:#94A29A"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#94A29A" stroke-width="1.7" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-9.2A4 4 0 0 1 12 8a4 4 0 0 1 7 2.8C19 15.6 12 20 12 20z"></path></svg><span style="font-size:10px">علاقه‌مندی</span></span>
+              <span style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;min-height:48px;justify-content:center;color:#94A29A"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#94A29A" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5.5 20c1.6-3.8 11.4-3.8 13 0"></path></svg><span style="font-size:10px">حساب من</span></span>
+            </div>
+          </div>
+        </div>
+        <span style="font-size:13px;color:#6F7D74">صفحه اصلی موبایل</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+        <div data-screen-label="07-mobile-product" style="width:414px;padding:12px;border-radius:52px;background:#161C18;border:1px solid rgba(245,240,232,.12);box-shadow:0 30px 70px -40px #000">
+          <div style="width:390px;height:844px;border-radius:42px;overflow:hidden;background:#0B1F16;display:flex;flex-direction:column;position:relative">
+            <div style="height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-size:13px;font-weight:600;flex:none">
+              <span>۹:۴۱</span>
+              <span style="display:flex;align-items:center;gap:5px"><svg width="16" height="11" viewBox="0 0 18 12" fill="#F5F0E8"><rect x="0" y="8" width="3" height="4" rx="1"></rect><rect x="5" y="5.5" width="3" height="6.5" rx="1"></rect><rect x="10" y="3" width="3" height="9" rx="1"></rect><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"></rect></svg><svg width="22" height="11" viewBox="0 0 26 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.4" stroke="#F5F0E8" opacity=".5"></rect><rect x="2" y="2" width="15" height="8" rx="2" fill="#F5F0E8"></rect><path d="M23.5 4v4a2.3 2.3 0 0 0 0-4z" fill="#F5F0E8" opacity=".5"></path></svg></span>
+            </div>
+            <div style="padding:6px 20px 12px;display:flex;align-items:center;justify-content:space-between;flex:none">
+              <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6l6 6-6 6"></path></svg></button>
+              <span style="font-size:16px;font-weight:700">باقلوا مخلوط</span>
+              <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.7" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-9.2A4 4 0 0 1 12 8a4 4 0 0 1 7 2.8C19 15.6 12 20 12 20z"></path></svg></button>
+            </div>
+
+            <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;gap:18px;padding:0 20px 120px">
+              <div style="position:relative;height:280px;border-radius:24px;background:#2B342E;border:1px dashed rgba(245,240,232,.22);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;flex:none">
+                <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#A7B2AB;direction:ltr">1000 × 1000</span>
+                <span style="font-size:12px;color:#A7B2AB">تصویر اصلی محصول</span>
+                <span style="position:absolute;top:14px;right:14px;background:#C9A876;color:#0B1F16;font-size:11px;font-weight:800;padding:5px 12px;border-radius:999px">محبوب</span>
+                <span style="position:absolute;bottom:14px;display:flex;gap:6px"><span style="width:18px;height:6px;border-radius:999px;background:#2FA84F"></span><span style="width:6px;height:6px;border-radius:999px;background:rgba(245,240,232,.4)"></span><span style="width:6px;height:6px;border-radius:999px;background:rgba(245,240,232,.4)"></span></span>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:10px;flex:none">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+                  <h1 style="margin:0;font-size:24px;font-weight:800">باقلوا مخلوط</h1>
+                  <span style="font-size:12px;color:#2FA84F">موجود</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span style="color:#C9A876;font-size:14px">★★★★★</span>
+                  <span style="font-size:12px;color:#94A29A;white-space:nowrap">۴.۸ · ۱۳۲ نظر</span>
+                </div>
+                <p style="margin:0;font-size:13px;line-height:2;color:#B4BFB8;text-wrap:pretty">ترکیبی از پسته، گردو و بادام با خمیر لایه‌لایه و شربت ملایم.</p>
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:10px;flex:none">
+                <span style="font-size:13px;color:#94A29A">وزن بسته</span>
+                <div style="display:flex;gap:8px">
+                  <button onClick="{{ mPickW0 }}" style="{{ mw0 }}">۵۰۰ گرم</button>
+                  <button onClick="{{ mPickW1 }}" style="{{ mw1 }}">۱ کیلوگرم</button>
+                  <button onClick="{{ mPickW2 }}" style="{{ mw2 }}">۲ کیلوگرم</button>
+                </div>
+              </div>
+
+              <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;flex:none">
+                <button onClick="{{ toggleDesc }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:700;text-align:right">توضیحات محصول<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+                <sc-if value="{{ descOpen }}" hint-placeholder-val="{{ true }}">
+                  <p style="margin:0;font-size:13px;line-height:2;color:#94A29A">با بهترین مواد اولیه و کاملاً دست‌ساز، بدون مواد نگهدارنده.</p>
+                </sc-if>
+              </div>
+            </div>
+
+            <div style="position:absolute;bottom:0;right:0;left:0;background:#09160E;border-top:1px solid rgba(201,168,118,.18);padding:14px 20px 28px;display:flex;align-items:center;gap:12px">
+              <div style="display:flex;flex-direction:column;gap:3px;flex:none">
+                <span style="font-size:11px;color:#94A29A">{{ mQty }} × {{ wLabelM }}</span>
+                <span style="font-size:19px;font-weight:800;color:#2FA84F">{{ mTotal }}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;background:#12301F;border:1px solid rgba(201,168,118,.22);border-radius:999px;padding:5px 6px;flex:none">
+                <button onClick="{{ mDec }}" style="width:32px;height:32px;border-radius:999px;background:#0B1F16;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2.6" stroke-linecap="round"><line x1="6" y1="12" x2="18" y2="12"></line></svg></button>
+                <span style="min-width:20px;text-align:center;font-size:15px;font-weight:700">{{ mQty }}</span>
+                <button onClick="{{ mInc }}" style="width:32px;height:32px;border-radius:999px;background:#0B1F16;display:flex;align-items:center;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="6" x2="12" y2="18"></line><line x1="6" y1="12" x2="18" y2="12"></line></svg></button>
+              </div>
+              <button onClick="{{ addToCart }}" style="flex:1;min-width:0;background:#2FA84F;color:#08200F;padding:15px 10px;border-radius:999px;font-size:14px;font-weight:800;min-height:48px" style-hover="background:#38BD5C">افزودن به سبد</button>
+            </div>
+          </div>
+        </div>
+        <span style="font-size:13px;color:#6F7D74">صفحه محصول موبایل</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+        <div data-screen-label="08-mobile-menu" style="width:414px;padding:12px;border-radius:52px;background:#161C18;border:1px solid rgba(245,240,232,.12);box-shadow:0 30px 70px -40px #000">
+          <div style="width:390px;height:844px;border-radius:42px;overflow:hidden;background:#081A11;display:flex;flex-direction:column;position:relative">
+            <div style="height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-size:13px;font-weight:600;flex:none">
+              <span>۹:۴۱</span>
+              <span style="display:flex;align-items:center;gap:5px"><svg width="16" height="11" viewBox="0 0 18 12" fill="#F5F0E8"><rect x="0" y="8" width="3" height="4" rx="1"></rect><rect x="5" y="5.5" width="3" height="6.5" rx="1"></rect><rect x="10" y="3" width="3" height="9" rx="1"></rect><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"></rect></svg><svg width="22" height="11" viewBox="0 0 26 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.4" stroke="#F5F0E8" opacity=".5"></rect><rect x="2" y="2" width="15" height="8" rx="2" fill="#F5F0E8"></rect><path d="M23.5 4v4a2.3 2.3 0 0 0 0-4z" fill="#F5F0E8" opacity=".5"></path></svg></span>
+            </div>
+            <svg width="360" height="360" viewBox="0 0 360 360" fill="none" style="position:absolute;top:120px;left:-120px;opacity:.5;pointer-events:none"><circle cx="180" cy="180" r="150" stroke="#2FA84F" stroke-width="1.2" stroke-dasharray="260 600"></circle><circle cx="180" cy="180" r="112" stroke="#C9A876" stroke-width="1" stroke-dasharray="140 600"></circle></svg>
+            <div style="padding:6px 22px 0;display:flex;align-items:center;justify-content:space-between;flex:none;position:relative">
+              <div style="display:flex;align-items:center;gap:8px">
+                <svg width="26" height="26" viewBox="0 0 34 34" fill="none"><circle cx="17" cy="17" r="13" stroke="#2FA84F" stroke-width="3" stroke-dasharray="34 70" stroke-linecap="round" transform="rotate(-40 17 17)"></circle><circle cx="17" cy="17" r="8" stroke="#2FA84F" stroke-width="2.5" stroke-dasharray="18 50" stroke-linecap="round" transform="rotate(-40 17 17)"></circle></svg>
+                <span style="font-size:20px;font-weight:800">علی‌حان</span>
+              </div>
+              <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg></button>
+            </div>
+
+            <div style="flex:1;padding:36px 22px 22px;display:flex;flex-direction:column;gap:6px;position:relative">
+              <span style="font-size:12px;color:#C9A876;margin-bottom:10px">منوی اصلی</span>
+              <span style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;font-size:22px;font-weight:700;border-bottom:1px solid rgba(201,168,118,.12)">صفحه اصلی<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2FA84F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"></path></svg></span>
+              <span style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;font-size:22px;font-weight:700;border-bottom:1px solid rgba(201,168,118,.12)">فروشگاه<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6F7D74" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"></path></svg></span>
+              <span style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;font-size:22px;font-weight:700;border-bottom:1px solid rgba(201,168,118,.12)">آدرس شعب<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6F7D74" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"></path></svg></span>
+              <span style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;font-size:22px;font-weight:700;border-bottom:1px solid rgba(201,168,118,.12)">وبلاگ<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6F7D74" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"></path></svg></span>
+              <span style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;font-size:22px;font-weight:700;border-bottom:1px solid rgba(201,168,118,.12)">درباره ما<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6F7D74" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"></path></svg></span>
+              <span style="display:flex;align-items:center;justify-content:space-between;padding:16px 0;font-size:22px;font-weight:700">تماس با ما<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6F7D74" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"></path></svg></span>
+
+              <div style="margin-top:auto;display:flex;flex-direction:column;gap:16px">
+                <button style="display:flex;align-items:center;justify-content:center;gap:10px;background:#2FA84F;color:#08200F;padding:16px;border-radius:999px;font-size:15px;font-weight:800">ورود / ثبت‌نام</button>
+                <div style="display:flex;align-items:center;justify-content:space-between">
+                  <div style="display:flex;gap:9px">
+                    <span style="width:40px;height:40px;border-radius:999px;border:1px solid rgba(201,168,118,.28);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="5"></rect><circle cx="12" cy="12" r="3.6"></circle><circle cx="17" cy="7" r="1" fill="#C9A876"></circle></svg></span>
+                    <span style="width:40px;height:40px;border-radius:999px;border:1px solid rgba(201,168,118,.28);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="1.5" stroke-linejoin="round"><path d="M21 4.5L3 11l5 1.8L10 19l3-3.8 5 3.3z"></path></svg></span>
+                    <span style="width:40px;height:40px;border-radius:999px;border:1px solid rgba(201,168,118,.28);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C9A876" stroke-width="1.5" stroke-linecap="round"><path d="M12 3a9 9 0 0 0-7.7 13.6L3 21l4.6-1.2A9 9 0 1 0 12 3z"></path></svg></span>
+                  </div>
+                  <span style="font-size:12px;color:#6F7D74;direction:ltr">۰۲۱-۲۲۳۴۵۶۷۸</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <span style="font-size:13px;color:#6F7D74">منوی همبرگری باز</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:center">
+        <div data-screen-label="09-mobile-cart" style="width:414px;padding:12px;border-radius:52px;background:#161C18;border:1px solid rgba(245,240,232,.12);box-shadow:0 30px 70px -40px #000">
+          <div style="width:390px;height:844px;border-radius:42px;overflow:hidden;background:#0B1F16;display:flex;flex-direction:column;position:relative">
+            <div style="height:48px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-size:13px;font-weight:600;flex:none">
+              <span>۹:۴۱</span>
+              <span style="display:flex;align-items:center;gap:5px"><svg width="16" height="11" viewBox="0 0 18 12" fill="#F5F0E8"><rect x="0" y="8" width="3" height="4" rx="1"></rect><rect x="5" y="5.5" width="3" height="6.5" rx="1"></rect><rect x="10" y="3" width="3" height="9" rx="1"></rect><rect x="15" y="0" width="3" height="12" rx="1" opacity=".4"></rect></svg><svg width="22" height="11" viewBox="0 0 26 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.4" stroke="#F5F0E8" opacity=".5"></rect><rect x="2" y="2" width="15" height="8" rx="2" fill="#F5F0E8"></rect><path d="M23.5 4v4a2.3 2.3 0 0 0 0-4z" fill="#F5F0E8" opacity=".5"></path></svg></span>
+            </div>
+            <div style="padding:6px 20px 14px;display:flex;align-items:center;justify-content:space-between;flex:none">
+              <button style="width:42px;height:42px;border-radius:999px;background:#12301F;border:1px solid rgba(201,168,118,.2);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6l6 6-6 6"></path></svg></button>
+              <span style="font-size:17px;font-weight:800">سبد خرید</span>
+              <span style="font-size:12px;color:#94A29A;min-width:42px;text-align:left">۲ کالا</span>
+            </div>
+
+            <div style="flex:1;overflow:hidden;padding:0 20px 200px;display:flex;flex-direction:column;gap:12px">
+              <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:20px;padding:14px;display:grid;grid-template-columns:82px minmax(0,1fr);gap:14px;align-items:center;flex:none">
+                <div style="background:#2B342E;border:1px dashed rgba(245,240,232,.22);border-radius:14px;height:82px;display:flex;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-size:10px;color:#A7B2AB;direction:ltr">400²</div>
+                <div style="display:flex;flex-direction:column;gap:9px;min-width:0">
+                  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+                    <span style="font-size:16px;font-weight:700">باقلوا مخلوط</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6F7D74" stroke-width="1.7" stroke-linecap="round" style="flex:none;margin-top:4px"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"></path></svg>
+                  </div>
+                  <span style="font-size:12px;color:#94A29A">وزن: {{ wLabel }}</span>
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+                    <span style="font-size:15px;font-weight:700">{{ totalPrice }} <span style="font-size:11px;color:#94A29A">تومان</span></span>
+                    <div style="display:flex;align-items:center;gap:9px;background:#12301F;border:1px solid rgba(201,168,118,.22);border-radius:999px;padding:4px 5px">
+                      <button onClick="{{ dec }}" style="width:28px;height:28px;border-radius:999px;background:#0B1F16;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2.8" stroke-linecap="round"><line x1="6" y1="12" x2="18" y2="12"></line></svg></button>
+                      <span style="min-width:18px;text-align:center;font-size:14px;font-weight:700">{{ qty }}</span>
+                      <button onClick="{{ inc }}" style="width:28px;height:28px;border-radius:999px;background:#0B1F16;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="6" x2="12" y2="18"></line><line x1="6" y1="12" x2="18" y2="12"></line></svg></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="background:#0F2A1D;border:1px solid rgba(201,168,118,.14);border-radius:20px;padding:14px;display:grid;grid-template-columns:82px minmax(0,1fr);gap:14px;align-items:center;flex:none">
+                <div style="background:#2B342E;border:1px dashed rgba(245,240,232,.22);border-radius:14px;height:82px;display:flex;align-items:center;justify-content:center;font-family:ui-monospace,Menlo,monospace;font-size:10px;color:#A7B2AB;direction:ltr">400²</div>
+                <div style="display:flex;flex-direction:column;gap:9px;min-width:0">
+                  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+                    <span style="font-size:16px;font-weight:700">باقلوا پسته‌ای</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6F7D74" stroke-width="1.7" stroke-linecap="round" style="flex:none;margin-top:4px"><path d="M5 7h14M9 7V5h6v2M7 7l1 13h8l1-13"></path></svg>
+                  </div>
+                  <span style="font-size:12px;color:#94A29A">وزن: ۱ کیلوگرم</span>
+                  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+                    <span style="font-size:15px;font-weight:700">۲,۴۰۰,۰۰۰ <span style="font-size:11px;color:#94A29A">تومان</span></span>
+                    <div style="display:flex;align-items:center;gap:9px;background:#12301F;border:1px solid rgba(201,168,118,.22);border-radius:999px;padding:4px 5px">
+                      <span style="width:28px;height:28px;border-radius:999px;background:#0B1F16;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2.8" stroke-linecap="round"><line x1="6" y1="12" x2="18" y2="12"></line></svg></span>
+                      <span style="min-width:18px;text-align:center;font-size:14px;font-weight:700">۱</span>
+                      <span style="width:28px;height:28px;border-radius:999px;background:#0B1F16;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F5F0E8" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="6" x2="12" y2="18"></line><line x1="6" y1="12" x2="18" y2="12"></line></svg></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;align-items:center;gap:8px;background:#12301F;border:1px dashed rgba(201,168,118,.26);border-radius:999px;padding:5px 18px 5px 5px;flex:none">
+                <input placeholder="کد تخفیف" style="flex:1;min-width:0;background:transparent;border:none;outline:none;color:#F5F0E8;font-size:13px">
+                <button style="background:#C9A876;color:#0B1F16;font-size:13px;font-weight:700;padding:11px 20px;border-radius:999px;min-height:44px">اعمال</button>
+              </div>
+            </div>
+
+            <div style="position:absolute;bottom:0;right:0;left:0;background:#09160E;border-top:1px solid rgba(201,168,118,.18);padding:18px 20px 28px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;color:#94A29A"><span>جمع کالاها</span><span style="color:#F5F0E8">{{ subtotal }} تومان</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px;color:#94A29A"><span>تخفیف و ارسال</span><span style="color:#C9A876">۵۵,۰۰۰ −</span></div>
+              <div style="height:1px;background:rgba(201,168,118,.16)"></div>
+              <div style="display:flex;align-items:flex-end;justify-content:space-between"><span style="font-size:14px;font-weight:700">قابل پرداخت</span><span style="font-size:21px;font-weight:800;color:#2FA84F">{{ grandTotal }}</span></div>
+              <button style="display:flex;align-items:center;justify-content:center;gap:10px;background:#2FA84F;color:#08200F;padding:16px;border-radius:999px;font-size:15px;font-weight:800;min-height:48px" style-hover="background:#38BD5C">ادامه و ثبت سفارش
+                <svg width="18" height="9" viewBox="0 0 26 10" fill="none" stroke="#08200F" stroke-width="2" stroke-linecap="round"><line x1="24" y1="5" x2="4" y2="5"></line><path d="M8 1L4 5l4 4"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <span style="font-size:13px;color:#6F7D74">سبد خرید موبایل</span>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showSpecSheet&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;نمایش&quot;},&quot;showOrnaments&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;نمایش&quot;},&quot;showDiscountBadges&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;نمایش&quot;}}">
+class Component extends DCLogic {
+  state = { hero: 0, cart: 2, weight: 1, qty: 1, openAcc: 'desc', mQty: 1, mWeight: 1 };
+
+  fa(n) { return Math.round(n).toLocaleString('en-US').replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]); }
+
+  heroSlides() {
+    return ['اسلاید ۱ — سینی باقلوا پسته‌ای', 'اسلاید ۲ — باقلوا مخلوط و چای', 'اسلاید ۳ — جعبه کادویی علی‌حان'];
+  }
+  weights() {
+    return [{ label: '۵۰۰ گرم', mult: 0.523 }, { label: '۱ کیلوگرم', mult: 1 }, { label: '۲ کیلوگرم', mult: 1.9 }];
+  }
+  pill(active) {
+    return active
+      ? 'white-space:nowrap;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:700;background:#2FA84F;color:#08200F;border:1px solid #2FA84F'
+      : 'white-space:nowrap;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;background:transparent;color:#B4BFB8;border:1px solid rgba(201,168,118,.3)';
+  }
+
+  renderVals() {
+    const base = 2200000;
+    const w = this.weights()[this.state.weight];
+    const mw = this.weights()[this.state.mWeight];
+    const unit = base * w.mult;
+    const set = o => this.setState(o);
+    return {
+      showSpecSheet: this.props.showSpecSheet ?? true,
+      showOrnaments: this.props.showOrnaments ?? true,
+      showNewsletter: this.props.showNewsletter ?? true,
+
+      cartCount: this.fa(this.state.cart),
+      addToCart: () => set({ cart: this.state.cart + 1 }),
+
+      heroLabel: this.heroSlides()[this.state.hero],
+      heroCounter: this.fa(this.state.hero + 1).padStart(2, '۰') + ' / ۰۳',
+      heroPrev: () => set({ hero: (this.state.hero + 2) % 3 }),
+      heroNext: () => set({ hero: (this.state.hero + 1) % 3 }),
+
+      wLabel: w.label,
+      unitPrice: this.fa(unit),
+      totalPrice: this.fa(unit * this.state.qty),
+      w0: this.pill(this.state.weight === 0),
+      w1: this.pill(this.state.weight === 1),
+      w2: this.pill(this.state.weight === 2),
+      pickW0: () => set({ weight: 0 }),
+      pickW1: () => set({ weight: 1 }),
+      pickW2: () => set({ weight: 2 }),
+
+      subtotal: this.fa(unit * this.state.qty + 2400000),
+      grandTotal: this.fa(unit * this.state.qty + 2400000 - 120000 + 65000),
+
+      qty: this.fa(this.state.qty),
+      inc: () => set({ qty: Math.min(20, this.state.qty + 1) }),
+      dec: () => set({ qty: Math.max(1, this.state.qty - 1) }),
+
+      descOpen: this.state.openAcc === 'desc',
+      shipOpen: this.state.openAcc === 'ship',
+      storeOpen: this.state.openAcc === 'store',
+      toggleDesc: () => set({ openAcc: this.state.openAcc === 'desc' ? '' : 'desc' }),
+      toggleShip: () => set({ openAcc: this.state.openAcc === 'ship' ? '' : 'ship' }),
+      toggleStore: () => set({ openAcc: this.state.openAcc === 'store' ? '' : 'store' }),
+
+      wLabelM: mw.label,
+      mUnit: this.fa(base * mw.mult),
+      mTotal: this.fa(base * mw.mult * this.state.mQty),
+      mQty: this.fa(this.state.mQty),
+      mInc: () => set({ mQty: Math.min(20, this.state.mQty + 1) }),
+      mDec: () => set({ mQty: Math.max(1, this.state.mQty - 1) }),
+      mw0: this.pill(this.state.mWeight === 0),
+      mw1: this.pill(this.state.mWeight === 1),
+      mw2: this.pill(this.state.mWeight === 2),
+      mPickW0: () => set({ mWeight: 0 }),
+      mPickW1: () => set({ mWeight: 1 }),
+      mPickW2: () => set({ mWeight: 2 })
+    };
+  }
+}
+</script>
+</body>
+</html>

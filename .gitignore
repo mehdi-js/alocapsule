@@ -1,0 +1,33 @@
+# dependencies
+/node_modules
+
+# next.js
+/.next/
+/out/
+
+# testing
+/coverage
+
+# env — فقط .env.example commit می‌شود
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# uploads محلی (STORAGE_DRIVER=local)
+/public/uploads/*
+!/public/uploads/.gitkeep
+
+# فایل‌های خصوصی (رسیدهای پرداخت) و بکاپ‌ها — هرگز commit نشوند
+/storage/
+/backups/
+
+# Playwright
+/playwright-report/
+/test-results/
+/e2e/.auth/
+
+# misc
+.DS_Store
+*.tsbuildinfo
+npm-debug.log*

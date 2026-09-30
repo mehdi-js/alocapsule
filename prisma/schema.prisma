@@ -1,0 +1,729 @@
+// ARCHITECTURE.md §6 — کل اسکیما یکجا. مبالغ همیشه Int (تومان)، تاریخ‌ها timestamptz (UTC).
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pg_trgm]
+}
+
+// ───────────────────────── Enums ─────────────────────────
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+}
+
+/// روش ورودی که نشست با آن ساخته شد
+enum LoginMethod {
+  OTP
+  PASSWORD
+}
+
+enum ProductUnit {
+  GRAM
+  PIECE
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT // ثبت شده، منتظر پرداخت
+  PAYMENT_REVIEW // رسید آپلود شده، منتظر بررسی ادمین
+  PAYMENT_REJECTED // رسید رد شد
+  PROCESSING // تأیید شد، در حال آماده‌سازی
+  SHIPPED // ارسال شد
+  DELIVERED // تحویل شد
+  CANCELED // لغو شد
+}
+
+enum PaymentMethod {
+  CARD_TO_CARD
+  WALLET
+  GATEWAY // فقط برای v2
+}
+
+enum PaymentStatus {
+  PENDING
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+enum WalletTxType {
+  CREDIT
+  DEBIT
+}
+
+enum WalletTxReason {
+  ADMIN_CREDIT
+  ADMIN_DEBIT
+  ORDER_PAYMENT
+  ORDER_REFUND
+}
+
+enum CouponType {
+  PERCENT
+  FIXED
+  FREE_SHIPPING
+}
+
+enum CouponScope {
+  ALL
+  CATEGORY
+  PRODUCT
+}
+
+enum NotificationType {
+  /// کد ورود (خود کد ذخیره نمی‌شود؛ بدون سفارش)
+  OTP
+  ORDER_PLACED
+  PAYMENT_APPROVED
+  PAYMENT_REJECTED
+  ORDER_SHIPPED
+  ORDER_CANCELED
+  /// به شماره‌ی مدیر
+  ADMIN_RECEIPT_SUBMITTED
+  ADMIN_WALLET_PAID
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+// ───────────────────────── کاربر و احراز هویت ─────────────────────────
+
+model User {
+  id                String    @id @default(cuid())
+  phone             String    @unique
+  fullName          String?
+  email             String?
+  role              UserRole  @default(CUSTOMER)
+  /// scrypt؛ `null` ⇒ کاربر هنوز رمز تعیین نکرده (تا تعیین نکند وارد نمی‌شود)
+  passwordHash      String?
+  passwordChangedAt DateTime? @db.Timestamptz(3)
+  /// کش؛ منبع حقیقت WalletTransaction است
+  walletBalance     Int       @default(0)
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime  @updatedAt @db.Timestamptz(3)
+
+  sessions           Session[]
+  addresses          Address[]
+  carts              Cart[]
+  orders             Order[]
+  walletTransactions WalletTransaction[]  @relation("WalletOwner")
+  createdWalletTxs   WalletTransaction[]  @relation("WalletCreatedBy")
+  notifications      NotificationLog[]
+  couponRedemptions  CouponRedemption[]
+  createdCoupons     Coupon[]             @relation("CouponCreator")
+  reviewedPayments   Payment[]            @relation("PaymentReviewer")
+  statusChanges      OrderStatusHistory[] @relation("StatusChangedBy")
+  auditLogs          AuditLog[]           @relation("AuditActor")
+}
+
+/// کد خام هرگز ذخیره نمی‌شود — فقط hash
+model OtpCode {
+  id         String    @id @default(cuid())
+  phone      String
+  codeHash   String
+  expiresAt  DateTime  @db.Timestamptz(3)
+  attempts   Int       @default(0)
+  consumedAt DateTime? @db.Timestamptz(3)
+  ip         String?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+
+  @@index([phone])
+}
+
+model Session {
+  id        String      @id @default(cuid())
+  userId    String
+  tokenHash String      @unique
+  method    LoginMethod @default(OTP)
+  expiresAt DateTime    @db.Timestamptz(3)
+  userAgent String?
+  createdAt DateTime    @default(now()) @db.Timestamptz(3)
+  revokedAt DateTime?   @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// رویدادهای rate limit روی Postgres (بدون Redis). هر تلاش یک ردیف؛ شمارش در بازه‌ی زمانی.
+model RateLimitEvent {
+  id        String   @id @default(cuid())
+  /// مثل `otp:send:phone:09123456789` یا `coupon:validate:ip:1.2.3.4`
+  key       String
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  @@index([key, createdAt])
+}
+
+// ───────────────────────── کاتالوگ ─────────────────────────
+
+model Category {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  parentId    String?
+  description String?
+  imageUrl    String?
+  sortOrder   Int     @default(0)
+  isActive    Boolean @default(true)
+
+  // ── سئو (SEO.md §۶.۳) ──
+  seoTitle          String?
+  metaDescription   String?
+  /// فقط برای تحلیلگر ادمین؛ در HTML نمی‌آید
+  focusKeyword      String?
+  secondaryKeywords String[] @default([])
+  /// پاراگراف کوتاه بالای فهرست محصولات
+  introText         String?
+  /// متن بلند با H2 زیر فهرست محصولات
+  bottomContent     String?
+  /// [{question, answer}]
+  faq               Json?
+  noindex           Boolean  @default(false)
+  ogImageUrl        String?
+  updatedAt         DateTime @default(now()) @updatedAt @db.Timestamptz(3)
+
+  parent           Category?        @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children         Category[]       @relation("CategoryTree")
+  products         Product[]
+  couponCategories CouponCategory[]
+
+  @@index([parentId])
+}
+
+model Product {
+  id                String      @id @default(cuid())
+  name              String
+  slug              String      @unique
+  shortDescription  String?
+  description       String?
+  categoryId        String
+  unit              ProductUnit
+  isActive          Boolean     @default(true)
+  sortOrder         Int         @default(0)
+  /// عنوان سئو بدون نام برند (قالب ` | {brandName}` خودکار اضافه می‌شود)
+  seoTitle          String?
+  metaDescription   String?
+  /// فقط برای تحلیلگر ادمین؛ در HTML نمی‌آید (SEO.md §۶.۱)
+  focusKeyword      String?
+  secondaryKeywords String[]    @default([])
+  noindex           Boolean     @default(false)
+  /// فقط برای موارد خاص؛ معمولاً خالی
+  canonicalUrl      String?
+  /// خالی ⇒ برش OG تصویر اصلی
+  ogImageUrl        String?
+  /// [{question, answer}]
+  faq               Json?
+  /// بایگانی ⇒ 301 به `archiveRedirectTo` (SEO.md §۴.۳)
+  archivedAt        DateTime?   @db.Timestamptz(3)
+  archiveRedirectTo String?
+  createdAt         DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime    @updatedAt @db.Timestamptz(3)
+
+  category       Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  variants       ProductVariant[]
+  images         ProductImage[]
+  orderItems     OrderItem[]
+  couponProducts CouponProduct[]
+
+  @@index([categoryId])
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin)
+}
+
+model ProductVariant {
+  id                  String  @id @default(cuid())
+  productId           String
+  /// 500 / 1000 / 12 … فقط برای نمایش و وزن ارسال
+  unitValue           Int
+  /// اگر خالی باشد، عنوان خودکار تولید می‌شود (lib/unit.ts)
+  title               String?
+  sku                 String?
+  /// تومان
+  price               Int
+  comparePrice        Int?
+  shippingWeightGrams Int
+  isActive            Boolean @default(true)
+  sortOrder           Int     @default(0)
+
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@unique([productId, unitValue])
+  @@index([productId])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  url       String
+  /// الزامی (SEO.md §۶.۲)
+  alt       String
+  /// برش ۱۲۰۰×۶۳۰ برای Open Graph
+  ogUrl     String?
+  width     Int?
+  height    Int?
+  sortOrder Int     @default(0)
+  isPrimary Boolean @default(false)
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+}
+
+// ───────────────────────── آدرس و سبد ─────────────────────────
+
+model Address {
+  id            String  @id @default(cuid())
+  userId        String
+  receiverName  String
+  receiverPhone String
+  province      String
+  city          String
+  postalCode    String?
+  line          String
+  isDefault     Boolean @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Cart {
+  id         String   @id @default(cuid())
+  token      String   @unique
+  userId     String?
+  couponCode String?
+  createdAt  DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime @updatedAt @db.Timestamptz(3)
+
+  user  User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+
+  @@index([userId])
+}
+
+model CartItem {
+  id        String @id @default(cuid())
+  cartId    String
+  variantId String
+  quantity  Int
+
+  cart    Cart           @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, variantId])
+  @@index([variantId])
+}
+
+// ───────────────────────── کد تخفیف ─────────────────────────
+
+model Coupon {
+  id                String      @id @default(cuid())
+  /// نرمال‌شده: حروف بزرگ لاتین، بدون فاصله
+  code              String      @unique
+  title             String
+  type              CouponType
+  /// درصد یا تومان
+  value             Int
+  /// سقف تخفیف درصدی
+  maxDiscountAmount Int?
+  minOrderAmount    Int?
+  scope             CouponScope @default(ALL)
+  usageLimitTotal   Int?
+  usageLimitPerUser Int?
+  usedCount         Int         @default(0)
+  firstOrderOnly    Boolean     @default(false)
+  startsAt          DateTime?   @db.Timestamptz(3)
+  expiresAt         DateTime?   @db.Timestamptz(3)
+  isActive          Boolean     @default(true)
+  createdByUserId   String?
+  createdAt         DateTime    @default(now()) @db.Timestamptz(3)
+
+  createdBy   User?              @relation("CouponCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  categories  CouponCategory[]
+  products    CouponProduct[]
+  redemptions CouponRedemption[]
+  orders      Order[]
+}
+
+/// فقط وقتی scope = CATEGORY
+model CouponCategory {
+  couponId   String
+  categoryId String
+
+  coupon   Coupon   @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([couponId, categoryId])
+  @@index([categoryId])
+}
+
+/// فقط وقتی scope = PRODUCT
+model CouponProduct {
+  couponId  String
+  productId String
+
+  coupon  Coupon  @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([couponId, productId])
+  @@index([productId])
+}
+
+model CouponRedemption {
+  id             String   @id @default(cuid())
+  couponId       String
+  userId         String
+  orderId        String
+  discountAmount Int
+  createdAt      DateTime @default(now()) @db.Timestamptz(3)
+
+  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  /// جلوی ثبت دوباره در شرایط رقابتی را می‌گیرد
+  @@unique([couponId, orderId])
+  @@index([couponId, userId])
+  @@index([orderId])
+}
+
+// ───────────────────────── سفارش و پرداخت ─────────────────────────
+
+/// grandTotal = subtotal + shippingTotal − discountTotal
+model Order {
+  id                      String      @id @default(cuid())
+  /// خوانا، مثل AL-14040625-0031
+  orderNumber             String      @unique
+  userId                  String
+  status                  OrderStatus @default(PENDING_PAYMENT)
+  subtotal                Int
+  shippingTotal           Int
+  discountTotal           Int         @default(0)
+  grandTotal              Int
+  couponId                String?
+  /// اسنپ‌شات
+  couponCode              String?
+  /// اسنپ‌شات
+  shippingMethodName      String
+  /// عکس لحظه‌ی ثبت: هزینه‌ی ارسال درب منزل به پیک پرداخت می‌شود
+  shippingPayOnDelivery   Boolean     @default(false)
+  shippingAddressSnapshot Json
+  customerNote            String?
+  adminNote               String?
+  trackingCode            String?
+  placedAt                DateTime    @default(now()) @db.Timestamptz(3)
+  paidAt                  DateTime?   @db.Timestamptz(3)
+  shippedAt               DateTime?   @db.Timestamptz(3)
+  canceledAt              DateTime?   @db.Timestamptz(3)
+
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Restrict)
+  coupon             Coupon?              @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  items              OrderItem[]
+  payments           Payment[]
+  statusHistory      OrderStatusHistory[]
+  couponRedemptions  CouponRedemption[]
+  walletTransactions WalletTransaction[]
+  notifications      NotificationLog[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([placedAt])
+}
+
+/// اسنپ‌شات کامل؛ تغییر یا حذف محصول نباید سفارش قدیمی را عوض کند
+model OrderItem {
+  id                String      @id @default(cuid())
+  orderId           String
+  variantId         String?
+  productId         String?
+  productName       String
+  variantTitle      String
+  unitPrice         Int
+  quantity          Int
+  lineTotal         Int
+  unitValueSnapshot Int
+  unitSnapshot      ProductUnit
+
+  order   Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  product Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+}
+
+model Payment {
+  id               String        @id @default(cuid())
+  orderId          String
+  method           PaymentMethod
+  amount           Int
+  status           PaymentStatus @default(PENDING)
+  receiptImageUrl  String?
+  payerCardLast4   String?
+  referenceNumber  String?
+  paidAtClaimed    DateTime?     @db.Timestamptz(3)
+  reviewedByUserId String?
+  reviewedAt       DateTime?     @db.Timestamptz(3)
+  rejectReason     String?
+  createdAt        DateTime      @default(now()) @db.Timestamptz(3)
+
+  order      Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  reviewedBy User? @relation("PaymentReviewer", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([orderId])
+}
+
+model OrderStatusHistory {
+  id              String       @id @default(cuid())
+  orderId         String
+  fromStatus      OrderStatus?
+  toStatus        OrderStatus
+  changedByUserId String?
+  note            String?
+  createdAt       DateTime     @default(now()) @db.Timestamptz(3)
+
+  order     Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  changedBy User? @relation("StatusChangedBy", fields: [changedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+}
+
+// ───────────────────────── کیف پول ─────────────────────────
+
+/// دفتر کل (ledger) و منبع حقیقت؛ User.walletBalance فقط کش است
+model WalletTransaction {
+  id              String         @id @default(cuid())
+  userId          String
+  type            WalletTxType
+  /// همیشه مثبت
+  amount          Int
+  balanceAfter    Int
+  reason          WalletTxReason
+  orderId         String?
+  createdByUserId String?
+  note            String?
+  createdAt       DateTime       @default(now()) @db.Timestamptz(3)
+
+  user      User   @relation("WalletOwner", fields: [userId], references: [id], onDelete: Restrict)
+  order     Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  createdBy User?  @relation("WalletCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+}
+
+// ───────────────────────── اعلان پیامکی ─────────────────────────
+
+model NotificationLog {
+  id                String             @id @default(cuid())
+  userId            String?
+  phone             String
+  type              NotificationType
+  orderId           String?
+  status            NotificationStatus @default(PENDING)
+  providerMessageId String?
+  payload           Json
+  errorMessage      String?
+  attempts          Int                @default(0)
+  createdAt         DateTime           @default(now()) @db.Timestamptz(3)
+  sentAt            DateTime?          @db.Timestamptz(3)
+
+  user  User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  /// یک پیامک برای یک رویداد فقط یک‌بار
+  @@unique([orderId, type])
+  @@index([status])
+}
+
+// ───────────────────────── تنظیمات فروشگاه ─────────────────────────
+
+/// شماره کارت در دیتابیس است نه در کد یا env
+model CompanyBankCard {
+  id                String  @id @default(cuid())
+  bankName          String
+  cardNumber        String
+  shebaNumber       String?
+  accountHolderName String
+  isActive          Boolean @default(true)
+  sortOrder         Int     @default(0)
+}
+
+model ShippingMethod {
+  id              String   @id @default(cuid())
+  name            String
+  description     String?
+  cost            Int
+  /// هزینه‌ی ارسال درب منزل مستقیم به پیک پرداخت می‌شود (در سایت ۰)
+  payOnDelivery   Boolean  @default(false)
+  freeAboveAmount Int?
+  /// استان‌هایی که این روش به آن‌ها ارسال دارد؛ خالی = همه‌ی مناطق تحت پوشش
+  provinces       String[] @default([])
+  isActive        Boolean  @default(true)
+  sortOrder       Int      @default(0)
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorUserId String
+  action      String
+  entityType  String
+  entityId    String
+  metadata    Json
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+
+  actor User @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([entityType, entityId])
+  @@index([actorUserId])
+}
+
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+}
+
+// ───────────────────────── منوی شعبه (QR) ─────────────────────────
+
+/// منوی مستقل هر شعبه؛ صفحه‌ی عمومی `/menu/<slug>` (برای QR code)
+model Menu {
+  id          String   @id @default(cuid())
+  name        String
+  /// فقط حروف کوچک لاتین، عدد و `-`؛ تغییرش QRهای چاپ‌شده را از کار می‌اندازد
+  slug        String   @unique
+  /// یک خط زیر عنوان (مثل نشانی یا ساعت کاری)
+  description String?
+  /// غیرفعال ⇒ صفحه‌ی عمومی ۴۰۴
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  categories MenuCategory[]
+}
+
+model MenuCategory {
+  id        String @id @default(cuid())
+  menuId    String
+  name      String
+  sortOrder Int    @default(0)
+
+  menu  Menu       @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  items MenuItem[]
+
+  @@index([menuId, sortOrder])
+}
+
+model MenuItem {
+  id          String   @id @default(cuid())
+  categoryId  String
+  name        String
+  description String?
+  /// تومان
+  price       Int
+  /// تصویر بندانگشتی مربع (WebP)؛ کلید `menu/<uuid>.webp`
+  imageUrl    String?
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  category MenuCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId, sortOrder])
+}
+
+// ───────────────────────── سئو (SEO.md §۶.۴) ─────────────────────────
+
+enum SlugEntityType {
+  PRODUCT
+  CATEGORY
+  PAGE
+  BRANCH
+}
+
+/// نامک‌های قبلی؛ آدرس قدیمی با 301 به نامک فعلی می‌رود
+model SlugHistory {
+  id         String         @id @default(cuid())
+  entityType SlugEntityType
+  entityId   String
+  oldSlug    String
+  createdAt  DateTime       @default(now()) @db.Timestamptz(3)
+
+  @@unique([entityType, oldSlug])
+  @@index([entityType, entityId])
+}
+
+/// ریدایرکت دستی (مهاجرت از وردپرس و …)
+model Redirect {
+  id         String    @id @default(cuid())
+  /// نرمال‌شده و decode‌شده
+  fromPath   String    @unique
+  toPath     String
+  /// 301 | 410
+  statusCode Int       @default(301)
+  isActive   Boolean   @default(true)
+  hits       Int       @default(0)
+  lastHitAt  DateTime? @db.Timestamptz(3)
+  note       String?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+}
+
+model NotFoundLog {
+  id           String   @id @default(cuid())
+  path         String   @unique
+  hits         Int      @default(1)
+  firstSeenAt  DateTime @default(now()) @db.Timestamptz(3)
+  lastSeenAt   DateTime @default(now()) @db.Timestamptz(3)
+  lastReferrer String?
+}
+
+/// شعبه (در فاز S4 جایگزین شعب داخل `site.content` می‌شود)
+model Branch {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  city            String
+  district        String?
+  address         String
+  phone           String
+  /// ساعات کاری: `{ days: [{day, open, close}], note }` (lib/branch-hours.ts)
+  openingHours    Json
+  latitude        Float?
+  longitude       Float?
+  /// {neshan, balad, google}
+  mapLinks        Json
+  imageUrl        String?
+  description     String?
+  seoTitle        String?
+  metaDescription String?
+  isActive        Boolean  @default(true)
+  sortOrder       Int      @default(0)
+  updatedAt       DateTime @default(now()) @updatedAt @db.Timestamptz(3)
+}
+
+/// صفحات ثابت (درباره ما، تماس، سوالات متداول، ارسال، مرجوعی، حریم خصوصی)
+model Page {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  title           String
+  /// HTML امن‌شده
+  content         String
+  seoTitle        String?
+  metaDescription String?
+  noindex         Boolean  @default(false)
+  /// [{question, answer}] — صفحه‌ی «سوالات متداول» و FAQ هر صفحه
+  faq             Json?
+  isPublished     Boolean  @default(false)
+  updatedAt       DateTime @default(now()) @updatedAt @db.Timestamptz(3)
+}

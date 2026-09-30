@@ -1,0 +1,25 @@
+# فقط برای توسعه‌ی محلی — Postgres 16
+# استقرار production در فاز ۱۳ (docker-compose.prod.yml)
+name: alocapsule-shop
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: alocapsule-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: alocapsule
+      POSTGRES_PASSWORD: alocapsule
+      POSTGRES_DB: alocapsule
+    ports:
+      - "127.0.0.1:5436:5432" # پورت 5436 تا با Postgres دیگر پروژه‌ها روی 5432 تداخل نکند
+    volumes:
+      - alocapsule_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alocapsule -d alocapsule"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  alocapsule_pgdata:

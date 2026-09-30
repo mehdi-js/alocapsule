@@ -1,0 +1,16 @@
+# HTTPS خودکار برای دامنه (گواهی Let's Encrypt؛ DNS دامنه باید به سرور اشاره کند)
+{$DOMAIN} {
+	encode zstd gzip
+	# سقف بدنه‌ی درخواست: آپلود رسید/تصویر ۵MB + سربار فرم
+	request_body {
+		max_size 8MB
+	}
+	reverse_proxy app:3000
+}
+
+# یک دامنه‌ی canonical (بدون www؛ SEO.md §۴.۲): نسخه‌ی www با 301 به دامنه‌ی
+# اصلی می‌رود. HTTP ⇒ HTTPS را Caddy خودکار انجام می‌دهد. اگر رکورد DNS
+# برای www ندارید، یا آن را بسازید (همان IP) یا این بلوک را حذف کنید.
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}
