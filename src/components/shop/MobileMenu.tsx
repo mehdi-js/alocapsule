@@ -12,35 +12,6 @@ import { ChevronLeftIcon, CloseIcon, PhoneIcon, SOCIAL_ICONS } from "./icons";
 import { Logo } from "./Logo";
 import { btnPrimary, iconButton } from "./styles";
 
-/** کمان‌های تزئینی گوشه‌ی منو (echo لوگو) */
-function Ornaments() {
-  return (
-    <svg
-      viewBox="0 0 420 420"
-      fill="none"
-      aria-hidden
-      className="pointer-events-none absolute -top-16 -start-20 size-[420px] opacity-60"
-    >
-      <circle
-        cx="210"
-        cy="210"
-        r="180"
-        className="stroke-brand"
-        strokeWidth="1.3"
-        strokeDasharray="300 700"
-      />
-      <circle
-        cx="210"
-        cy="210"
-        r="140"
-        className="stroke-accent"
-        strokeWidth="1"
-        strokeDasharray="170 700"
-      />
-    </svg>
-  );
-}
-
 export interface HeaderContact {
   phone: string;
   social: {
@@ -87,8 +58,8 @@ export function MobileMenu({ contact }: { contact: HeaderContact }) {
       >
         <span className="bg-ink h-0.5 w-4 rounded-sm" />
         <span className="bg-ink h-0.5 w-4 rounded-sm" />
-        {/* خط سوم کوتاه و طلایی، طبق طراحی */}
-        <span className="bg-accent me-[3px] h-0.5 w-2.5 self-end rounded-sm" />
+        {/* خط سوم کوتاه با رنگ برند */}
+        <span className="bg-brand-strong me-[3px] h-0.5 w-2.5 self-end rounded-sm" />
       </button>
 
       {open ? (
@@ -98,8 +69,6 @@ export function MobileMenu({ contact }: { contact: HeaderContact }) {
           aria-label="منوی اصلی"
           className="fixed inset-0 z-50 flex animate-[fade_250ms_ease] flex-col overflow-y-auto bg-surface-deep px-5 pt-4 pb-10"
         >
-          <Ornaments />
-
           <div className="relative flex items-center justify-between">
             <Logo size={26} />
             <button

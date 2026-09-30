@@ -34,7 +34,7 @@ export function MenuThumb({
           className="h-full w-full object-cover"
         />
       ) : (
-        <span className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_30%_20%,rgb(47_168_79/0.18),transparent_65%)] opacity-70">
+        <span className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_30%_20%,color-mix(in_srgb,var(--color-brand)_18%,transparent),transparent_65%)] opacity-70">
           <LogoMark size={Math.round(size * 0.42)} />
         </span>
       )}

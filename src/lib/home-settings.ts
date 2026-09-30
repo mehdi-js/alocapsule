@@ -11,6 +11,7 @@ export const HOME_KEYS = {
   heroTitle: "home.hero.title",
   heroSubtitle: "home.hero.subtitle",
   heroPrimaryCta: "home.hero.primaryCta",
+  heroPrimaryHref: "home.hero.primaryHref",
   heroSecondaryCta: "home.hero.secondaryCta",
   stepsTitle: "home.steps.title",
   steps: "home.steps.items",
@@ -38,6 +39,8 @@ export interface HomeSettings {
   heroTitle: string;
   heroSubtitle: string;
   heroPrimaryCta: string;
+  /** مقصد دکمه‌ی اول (مسیر داخلی؛ پیش‌فرض دسته‌ی شارژ) */
+  heroPrimaryHref: string;
   heroSecondaryCta: string;
   stepsTitle: string;
   steps: HomeTextItem[];
@@ -85,6 +88,7 @@ export const HOME_SETTING_DEFAULTS: Record<
   [HOME_KEYS.heroSubtitle]:
     "کپسول خالی شما با کپسول پرشده تعویض می‌شود؛ سفارش آنلاین، ارسال با پیک در تهران یا تحویل حضوری.",
   [HOME_KEYS.heroPrimaryCta]: "سفارش شارژ کپسول",
+  [HOME_KEYS.heroPrimaryHref]: "/category/lpg-charge",
   [HOME_KEYS.heroSecondaryCta]: "تماس تلفنی",
   [HOME_KEYS.stepsTitle]: "شارژ کپسول چطور انجام می‌شود؟",
   [HOME_KEYS.steps]: DEFAULT_STEPS,
@@ -101,6 +105,13 @@ export const HOME_SETTING_DEFAULTS: Record<
 
 function requiredText(value: unknown, fallback: string): string {
   return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
+/** فقط مسیر داخلی (`/…`)؛ غیر از آن ⇒ پیش‌فرض (لینک خارجی/javascript: هرگز) */
+function internalHref(value: unknown, fallback: string): string {
+  return typeof value === "string" && /^\/(?!\/)\S*$/.test(value.trim())
+    ? value.trim()
+    : fallback;
 }
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -138,6 +149,10 @@ export function parseHomeSettings(raw: Map<string, unknown>): HomeSettings {
     heroTitle: str(HOME_KEYS.heroTitle),
     heroSubtitle: str(HOME_KEYS.heroSubtitle),
     heroPrimaryCta: str(HOME_KEYS.heroPrimaryCta),
+    heroPrimaryHref: internalHref(
+      raw.get(HOME_KEYS.heroPrimaryHref),
+      d[HOME_KEYS.heroPrimaryHref] as string,
+    ),
     heroSecondaryCta: str(HOME_KEYS.heroSecondaryCta),
     stepsTitle: str(HOME_KEYS.stepsTitle),
     steps: textItems(raw.get(HOME_KEYS.steps), DEFAULT_STEPS),

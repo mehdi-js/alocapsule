@@ -119,7 +119,7 @@ export const catalogProducts: SeedCatalogProduct[] = [
     // استعلامی: بدون متغیر و بدون قیمت؛ فقط تماس
     pricingMode: "INQUIRY",
     isActive: true,
-    shortDescription: "شارژ کپسول اکسیژن ۴۰ کیلویی (استعلام قیمت)",
+    shortDescription: "شارژ کپسول اکسیژن ۴۰ کیلویی؛ قیمت با استعلام تلفنی",
     description: paragraphs(todo("توضیحات خدمت شارژ اکسیژن")),
     seoTitle: "شارژ کپسول اکسیژن ۴۰ کیلویی",
     metaDescription: null,

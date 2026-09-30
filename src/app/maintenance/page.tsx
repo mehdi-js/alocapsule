@@ -27,7 +27,7 @@ export default async function MaintenancePage() {
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-16 text-center">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgb(201_168_118/0.14),transparent_60%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,color-mix(in_srgb,var(--color-brand)_14%,transparent),transparent_60%)]"
       />
       <div className="relative flex max-w-md flex-col items-center gap-6">
         <Logo size={40} href={null} priority />

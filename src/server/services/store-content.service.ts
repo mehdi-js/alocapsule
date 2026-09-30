@@ -93,6 +93,7 @@ export async function saveHomeSettings(
     [HOME_KEYS.heroTitle]: input.heroTitle,
     [HOME_KEYS.heroSubtitle]: input.heroSubtitle,
     [HOME_KEYS.heroPrimaryCta]: input.heroPrimaryCta,
+    [HOME_KEYS.heroPrimaryHref]: input.heroPrimaryHref,
     [HOME_KEYS.heroSecondaryCta]: input.heroSecondaryCta,
     [HOME_KEYS.stepsTitle]: input.stepsTitle,
     [HOME_KEYS.steps]: input.steps,

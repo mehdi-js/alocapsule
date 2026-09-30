@@ -112,7 +112,7 @@ export function ProductPurchase({
       </div>
 
       {/* نوار چسبان موبایل */}
-      <div className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 border-t border-hair bg-[#09160E] px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 border-t border-hair bg-surface px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] md:hidden">
         <div className="flex min-w-0 flex-col">
           <span className="text-muted truncate text-[11px]">
             {toPersianDigits(qty)} × {variant.title}

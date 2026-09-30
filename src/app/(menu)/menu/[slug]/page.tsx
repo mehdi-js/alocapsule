@@ -49,7 +49,7 @@ export default async function MenuPage({ params }: { params: Params }) {
       <header className="relative overflow-hidden px-5 pt-10 pb-8 text-center">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgb(201_168_118/0.16),transparent_60%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,color-mix(in_srgb,var(--color-brand)_14%,transparent),transparent_60%)]"
         />
         <div className="relative flex flex-col items-center gap-3">
           <Logo size={30} priority />

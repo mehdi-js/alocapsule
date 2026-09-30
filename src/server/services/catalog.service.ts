@@ -1,3 +1,5 @@
+import type { PricingMode, ProductKind } from "@prisma/client";
+
 import { isBuildWithoutDb } from "@/lib/build-phase";
 import { comparePacks, packKey, parsePackKey } from "@/lib/catalog-url";
 import { thumbnailUrl } from "@/lib/image/urls";
@@ -22,8 +24,12 @@ export interface ProductCardDto {
   slug: string;
   name: string;
   shortDescription: string | null;
-  /** کمترین قیمت بین متغیرهای فعال */
-  price: number;
+  /** خدمت (مثل شارژ) یا کالای فیزیکی */
+  kind: ProductKind;
+  /** استعلامی ⇒ به‌جای قیمت «استعلام قیمت» و بدون افزودن به سبد */
+  pricingMode: PricingMode;
+  /** کمترین قیمت بین متغیرهای فعال؛ `null` برای محصول استعلامی */
+  price: number | null;
   /** برای محصول چند متغیره، قیمت «از» است */
   hasRange: boolean;
   imageUrl: string | null;
@@ -56,7 +62,12 @@ export function toProductCard(row: ProductCardRow): ProductCardDto {
     slug: row.slug,
     name: row.name,
     shortDescription: row.shortDescription,
-    price: Math.min(...prices),
+    kind: row.kind,
+    pricingMode: row.pricingMode,
+    price:
+      row.pricingMode === "INQUIRY" || prices.length === 0
+        ? null
+        : Math.min(...prices),
     hasRange: new Set(prices).size > 1,
     imageUrl: image ? thumbnailUrl(image.url) : null,
     imageAlt: image?.alt ?? null,

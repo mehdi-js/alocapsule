@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
 
 import { JsonLd } from "@/components/seo/JsonLd";
-import { HeroCarousel } from "@/components/shop/HeroCarousel";
 import {
-  BrandStory,
-  PopularProducts,
-  PromoBanner,
+  FeaturedProducts,
+  HomeAbout,
+  HomeCategories,
+  HomeCta,
+  HomeCustomers,
+  HomeHero,
+  HomeStats,
+  HomeSteps,
 } from "@/components/shop/HomeSections";
 import { HomeSeoContent } from "@/components/shop/HomeSeoContent";
 import { SearchForm } from "@/components/shop/SearchForm";
-import { TrustBar } from "@/components/shop/TrustBar";
 import {
   faqPageJsonLd,
   organizationJsonLd,
@@ -19,11 +22,16 @@ import { buildHomeMetadata } from "@/lib/seo/metadata";
 import { socialLinks } from "@/lib/site-settings";
 import { getBanners } from "@/server/services/banner.service";
 import { listFeaturedProducts } from "@/server/services/catalog.service";
+import { listFeaturedCategories } from "@/server/services/catalog-page.service";
 import {
   getSeoContext,
   getSeoSettings,
 } from "@/server/services/seo-settings.service";
 import { getSiteSettings } from "@/server/services/site-settings.service";
+import {
+  getBusinessSettings,
+  getHomeSettings,
+} from "@/server/services/store-content.service";
 
 /** بازسازی دوره‌ای؛ تغییر محصول در ادمین هم با revalidatePath فوراً اعمال می‌شود. */
 export const revalidate = 300;
@@ -45,16 +53,20 @@ function profileUrls(hrefs: string[]): string[] {
 }
 
 export default async function HomePage() {
-  const [featured, banners, seo, context, site] = await Promise.all([
-    listFeaturedProducts(),
-    getBanners(),
-    getSeoSettings(),
-    getSeoContext(),
-    getSiteSettings(),
-  ]);
+  const [featured, categories, banners, seo, context, site, home, business] =
+    await Promise.all([
+      listFeaturedProducts(),
+      listFeaturedCategories(),
+      getBanners(),
+      getSeoSettings(),
+      getSeoContext(),
+      getSiteSettings(),
+      getHomeSettings(),
+      getBusinessSettings(),
+    ]);
 
   return (
-    <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6 px-5 pt-4 md:gap-12 md:px-5 md:pt-5">
+    <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-12 px-5 pt-4 md:gap-16 md:px-11 md:pt-6">
       <JsonLd
         data={[
           organizationJsonLd({
@@ -63,7 +75,7 @@ export default async function HomePage() {
             alternateNames: seo.alternateNames,
             legalName: seo.orgLegalName || null,
             logoUrl: seo.orgLogoUrl || null,
-            phone: site.contact.phone || null,
+            phone: business.phone || null,
             email: site.contact.email || null,
             sameAs: profileUrls(socialLinks(site.social).map((s) => s.href)),
           }),
@@ -76,15 +88,19 @@ export default async function HomePage() {
         ]}
       />
       <SearchForm className="md:hidden" />
-      {banners.heroSlides.length > 0 ? (
-        <HeroCarousel slides={banners.heroSlides} h1={seo.home.h1} />
-      ) : (
-        <h1 className="text-2xl font-extrabold">{seo.home.h1}</h1>
-      )}
-      <TrustBar />
-      <PopularProducts products={featured} />
-      <BrandStory images={banners.images.story} />
-      <PromoBanner images={banners.images.promo} />
+      <HomeHero
+        h1={seo.home.h1}
+        home={home}
+        phone={business.phone}
+        images={banners.heroSlides[0] ?? banners.images.story}
+      />
+      <HomeCategories categories={categories} />
+      <HomeSteps home={home} />
+      <FeaturedProducts title={home.featuredTitle} products={featured} />
+      <HomeAbout home={home} images={banners.images.story} />
+      <HomeCustomers home={home} />
+      <HomeStats home={home} />
+      <HomeCta home={home} phone={business.phone} />
       <HomeSeoContent content={seo.home.content} faq={seo.home.faq} />
     </div>
   );

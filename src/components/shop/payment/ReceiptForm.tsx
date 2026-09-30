@@ -127,7 +127,7 @@ export function ReceiptForm({ orderNumber }: { orderNumber: string }) {
           aria-describedby={describedBy("file")}
           className={cn(
             shopInput,
-            "file:bg-accent file:text-surface-alt file:me-3 file:rounded-full file:border-0 file:px-4 file:py-1.5 file:text-sm file:font-bold",
+            "file:bg-accent file:text-on-accent file:me-3 file:rounded-full file:border-0 file:px-4 file:py-1.5 file:text-sm file:font-bold",
           )}
         />
       </ShopField>

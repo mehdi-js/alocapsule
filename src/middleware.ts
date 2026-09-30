@@ -40,7 +40,7 @@ function shouldCheckRedirect(request: NextRequest): boolean {
 /** پاسخ 410 (Gone): page component نمی‌تواند 410 بدهد، پس همین‌جا */
 function goneResponse(): NextResponse {
   return new NextResponse(
-    `<!doctype html><html lang="fa-IR" dir="rtl"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>این صفحه حذف شده است</title></head><body style="font-family:Tahoma,sans-serif;background:#0b1a0f;color:#f5f0e8;display:grid;place-items:center;min-height:100vh;margin:0"><main style="text-align:center;padding:24px"><h1>این صفحه برای همیشه حذف شده است</h1><p><a href="/" style="color:#2fa84f">بازگشت به صفحه‌ی اصلی</a></p></main></body></html>`,
+    `<!doctype html><html lang="fa-IR" dir="rtl"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta name="viewport" content="width=device-width,initial-scale=1"><title>این صفحه حذف شده است</title></head><body style="font-family:Tahoma,sans-serif;background:#fafaf9;color:#1c1917;display:grid;place-items:center;min-height:100vh;margin:0"><main style="text-align:center;padding:24px"><h1>این صفحه برای همیشه حذف شده است</h1><p><a href="/" style="color:#c2410c">بازگشت به صفحه‌ی اصلی</a></p></main></body></html>`,
     {
       status: 410,
       headers: {

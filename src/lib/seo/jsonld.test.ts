@@ -202,3 +202,21 @@ describe("localBusinessJsonLd", () => {
     ).toBeUndefined();
   });
 });
+
+describe("productJsonLd: محصول استعلامی", () => {
+  it("🔴 بدون قیمت (variants خالی) ⇒ offers تولید نمی‌شود", () => {
+    const data = productJsonLd({
+      siteUrl: "https://alocapsule.ir",
+      brandName: "الو کپسول",
+      name: "شارژ کپسول اکسیژن",
+      slug: "charge-oxygen-40kg",
+      description: null,
+      categoryName: "سایر گازها",
+      images: [],
+      variants: [],
+      available: true,
+    });
+    expect(data.offers).toBeUndefined();
+    expect(data["@type"]).toBe("Product");
+  });
+});

@@ -6,10 +6,14 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { Accordion } from "@/components/shop/Accordion";
 import { Breadcrumb } from "@/components/shop/Breadcrumb";
 import { FaqSection } from "@/components/shop/FaqSection";
+import { InquiryBox } from "@/components/shop/InquiryBox";
 import { ProductGallery } from "@/components/shop/ProductGallery";
+import { ProductInfoRow } from "@/components/shop/ProductInfoRow";
 import { ProductPurchase } from "@/components/shop/ProductPurchase";
 import { ProductUnavailable } from "@/components/shop/ProductUnavailable";
 import { RelatedProducts } from "@/components/shop/RelatedProducts";
+import { ServiceBadge } from "@/components/shop/ServiceBadge";
+import { ServiceTermsBox } from "@/components/shop/ServiceTermsBox";
 import { TrustTiles } from "@/components/shop/TrustBar";
 import { RichText } from "@/components/ui/RichText";
 import {
@@ -19,8 +23,10 @@ import {
 } from "@/lib/seo/jsonld";
 import { buildProductMetadata } from "@/lib/seo/metadata";
 import { safeDecode } from "@/lib/utils";
+import { resolveServiceTerms } from "@/lib/validation/product";
 import {
   getProductPage,
+  getProductShippingInfo,
   listRelatedProducts,
   type ProductPageDto,
 } from "@/server/services/catalog-page.service";
@@ -30,6 +36,7 @@ import {
 } from "@/server/services/seo-settings.service";
 import { getMaxQuantityPerItem } from "@/server/services/settings.service";
 import { getSiteSettings } from "@/server/services/site-settings.service";
+import { getBusinessSettings } from "@/server/services/store-content.service";
 
 type Params = Promise<{ slug: string }>;
 
@@ -82,14 +89,33 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: { params: Params }) {
   const product = await requireProduct(params);
-  const [related, maxQuantity, { shippingNote }, context, seo] =
-    await Promise.all([
-      listRelatedProducts(product),
-      getMaxQuantityPerItem(),
-      getSiteSettings(),
-      getSeoContext(),
-      getSeoSettings(),
-    ]);
+  const [
+    related,
+    maxQuantity,
+    { shippingNote },
+    context,
+    seo,
+    business,
+    shipping,
+  ] = await Promise.all([
+    listRelatedProducts(product),
+    getMaxQuantityPerItem(),
+    getSiteSettings(),
+    getSeoContext(),
+    getSeoSettings(),
+    getBusinessSettings(),
+    getProductShippingInfo(),
+  ]);
+  const inquiry = product.pricingMode === "INQUIRY";
+  const serviceTerms = resolveServiceTerms(
+    product,
+    business.serviceDefaultTerms,
+  );
+  // قیمت هر کیلو با `catalog.showPricePerKg` (برای الو کپسول خاموش)
+  const variants = product.variants.map((variant) => ({
+    ...variant,
+    pricePerKg: business.showPricePerKg ? variant.pricePerKg : null,
+  }));
 
   const crumbs = [
     { name: "خانه", path: "/" },
@@ -148,6 +174,9 @@ export default async function ProductPage({ params }: { params: Params }) {
 
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-3.5">
+              {product.kind === "SERVICE" ? (
+                <ServiceBadge className="w-fit" />
+              ) : null}
               <h1 className="text-[28px] font-extrabold tracking-[-0.01em] md:text-4xl">
                 {product.name}
               </h1>
@@ -160,9 +189,15 @@ export default async function ProductPage({ params }: { params: Params }) {
 
             <div aria-hidden className="h-px bg-accent/14" />
 
-            {product.available ? (
+            {product.available && serviceTerms ? (
+              <ServiceTermsBox terms={serviceTerms} />
+            ) : null}
+
+            {product.available && inquiry ? (
+              <InquiryBox phone={business.phone} whatsapp={business.whatsapp} />
+            ) : product.available ? (
               <ProductPurchase
-                variants={product.variants}
+                variants={variants}
                 isGram={product.unit === "GRAM"}
                 maxQuantity={maxQuantity}
               />
@@ -172,6 +207,14 @@ export default async function ProductPage({ params }: { params: Params }) {
                 categorySlug={product.categorySlug}
               />
             )}
+
+            {product.available && !inquiry ? (
+              <ProductInfoRow
+                pickupHours={business.pickupHours}
+                pickupAvailable={shipping.pickupAvailable}
+                freeAboveQuantity={shipping.freeAboveQuantity}
+              />
+            ) : null}
 
             <TrustTiles />
             <Accordion items={accordionItems} />

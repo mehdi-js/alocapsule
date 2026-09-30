@@ -80,6 +80,14 @@ export const homeSettingsSchema = z.object({
   heroTitle: text("تیتر هیرو", 3, 80),
   heroSubtitle: text("توضیح هیرو", 10, 240),
   heroPrimaryCta: text("متن دکمه‌ی اول", 2, 30),
+  heroPrimaryHref: z
+    .string()
+    .trim()
+    .max(200, "مقصد حداکثر ۲۰۰ کاراکتر باشد")
+    .refine(
+      (value) => /^\/(?!\/)\S*$/.test(value),
+      "مقصد باید مسیر داخلی سایت باشد (مثل /category/lpg-charge)",
+    ),
   heroSecondaryCta: text("متن دکمه‌ی تماس", 2, 30),
   stepsTitle: text("عنوان بخش مراحل", 3, 80),
   steps: z

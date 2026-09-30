@@ -68,6 +68,26 @@ test.describe.serial("محصول نمونه", () => {
     }
   });
 
+  test("صفحه‌ی اصلی: دقیقاً یک H1 و متن‌ها در HTML اولیه (بدون JS)", async ({
+    request,
+  }) => {
+    const html = await (await request.get("/")).text();
+    const visible = html.replace(/<script\b[\s\S]*?<\/script>/gi, "");
+    expect(visible.match(/<h1[\s>]/g)).toHaveLength(1);
+    // متن‌های بخش‌های صفحه (از تنظیمات) و شماره‌ی تماس در HTML سروری‌اند
+    for (const text of [
+      "شارژ کپسول چطور انجام می‌شود؟",
+      "دسته‌بندی‌ها",
+      "مشتریان ما",
+      "کپسول خالی را تحویل دهید",
+    ]) {
+      expect(visible).toContain(text);
+    }
+    expect(visible).toContain("tel:+989126270595");
+    // آمار پیش‌فرض خالی است ⇒ بخش آمار (و عدد ساختگی) وجود ندارد
+    expect(visible).not.toContain('aria-label="آمار"');
+  });
+
   test("خرید شارژ بوتان تا ثبت سفارش و پیامک بدون اثر برند مبدأ", async ({
     page,
   }) => {

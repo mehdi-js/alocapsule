@@ -125,7 +125,7 @@ export function CouponBox({ cart }: { cart: CartViewDto }) {
         <button
           type="submit"
           disabled={pending || code.trim() === ""}
-          className="bg-accent hover:bg-accent-hover text-surface-alt rounded-full px-5 py-2 text-sm font-bold transition disabled:opacity-50"
+          className="bg-accent hover:bg-accent-hover text-on-accent rounded-full px-5 py-2 text-sm font-bold transition disabled:opacity-50"
         >
           {pending ? "…" : "اعمال"}
         </button>

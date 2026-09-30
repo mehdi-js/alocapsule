@@ -9,41 +9,48 @@
   /*
    * رنگ‌ها — توکن‌های معنایی. هیچ کامپوننتی رنگ خام (هگز/rgb) نمی‌نویسد؛
    * تغییر تم فقط با عوض کردن مقدار همین توکن‌هاست.
+   * تم: روشن و فنی/خدماتی با نارنجی. قید کنتراست (WCAG AA، ۴٫۵:۱ برای متن
+   * معمولی): متن روی نارنجی فقط با `brand-strong` یا تیره‌تر؛ `brand` (روشن)
+   * فقط برای آیکون، خط و المان‌های بزرگ تزئینی است. جدول کنتراست:
+   * docs/DESIGN_TOKENS.md
    */
   /* سطوح */
-  --color-surface: #071009;
-  --color-surface-alt: #0b1f16;
-  --color-surface-alt-hover: #183c27;
-  --color-surface-deep: #081a11;
-  --color-panel: #0f2a1d;
-  --color-card: #12301f;
-  --color-placeholder: #2b342e;
-  --color-placeholder-ink: #a7b2ab;
-  /* برند: آیکون، خط و المان‌های تزئینی */
-  --color-brand: #2fa84f;
-  /* برند: دکمه‌ی اصلی، لینک/متن برجسته (با `on-brand` روی آن) */
-  --color-brand-strong: #2fa84f;
-  --color-brand-strong-hover: #38bd5c;
-  --color-brand-deep: #22713a;
-  --color-brand-deep-hover: #2a8546;
-  --color-brand-soft: rgb(47 168 79 / 0.08);
-  --color-on-brand: #08200f;
-  /* تأکید دوم: عنوان‌های کوچک، لینک، حاشیه */
-  --color-accent: #c9a876;
-  --color-accent-hover: #dbbc8c;
-  --color-on-accent: #1b1408;
+  --color-surface: #ffffff;
+  --color-surface-alt: #fafaf9;
+  --color-surface-alt-hover: #f5f5f4;
+  --color-surface-deep: #ffffff;
+  --color-panel: #ffffff;
+  --color-card: #fafaf9;
+  --color-placeholder: #f5f5f4;
+  --color-placeholder-ink: #57534e;
+  /* برند: آیکون، خط و المان‌های تزئینی (هرگز متن معمولی) */
+  --color-brand: #f97316;
+  /* برند: دکمه‌ی اصلی (با `on-brand` روی آن) و متن/لینک برجسته */
+  --color-brand-strong: #c2410c;
+  --color-brand-strong-hover: #9a3412;
+  --color-brand-deep: #9a3412;
+  --color-brand-deep-hover: #7c2d12;
+  --color-brand-soft: #fff7ed;
+  --color-on-brand: #ffffff;
+  /* تأکید دوم: عنوان‌های کوچک و لینک (روی سطح روشن) */
+  --color-accent: #c2410c;
+  --color-accent-hover: #9a3412;
+  --color-on-accent: #ffffff;
   /* متن */
-  --color-ink: #f5f0e8;
-  --color-ink-soft: #b4bfb8;
-  --color-muted: #94a29a;
-  --color-faint: #88968d;
-  --color-danger: #e06b5b;
+  --color-ink: #1c1917;
+  --color-ink-soft: #44403c;
+  --color-muted: #57534e;
+  --color-faint: #6b6560;
+  --color-danger: #b91c1c;
   /* روی تصویر/رسانه (همیشه روشن) و پرده‌ی تیره‌ی روی تصویر */
-  --color-on-media: #f5f0e8;
-  --color-scrim: #071009;
-  /* پایه‌ی خط‌های مویی و نوار اسکرول */
-  --color-line: #c9a876;
-  --color-scrollbar: #2b3f33;
+  --color-on-media: #ffffff;
+  --color-scrim: #1c1917;
+  /* حاشیه‌ها (مویی، کنترل، برجسته، فوکوس) و نوار اسکرول */
+  --color-border: #e7e5e4;
+  --color-border-control: #d6d3d1;
+  --color-border-outline: #a8a29e;
+  --color-border-strong: #78716c;
+  --color-scrollbar: #d6d3d1;
 
   /* شعاع گوشه */
   --radius-card: 24px;
@@ -52,18 +59,18 @@
   --radius-thumb: 14px;
 }
 
-/* سطوح حاشیه: مویی، کنترل، برجسته و فوکوس */
+/* سطوح حاشیه: مویی، کنترل، برجسته و فوکوس (مقدار از توکن‌های border) */
 @utility border-hair {
-  border-color: color-mix(in srgb, var(--color-line) 14%, transparent);
+  border-color: var(--color-border);
 }
 @utility border-control {
-  border-color: color-mix(in srgb, var(--color-line) 22%, transparent);
+  border-color: var(--color-border-control);
 }
 @utility border-outline {
-  border-color: color-mix(in srgb, var(--color-line) 45%, transparent);
+  border-color: var(--color-border-outline);
 }
 @utility border-strong {
-  border-color: color-mix(in srgb, var(--color-line) 55%, transparent);
+  border-color: var(--color-border-strong);
 }
 
 /* پرده‌ی تیره‌ی روی عکس برای خوانایی متن (دسکتاپ از راست، موبایل از پایین) */
@@ -92,14 +99,14 @@ body {
   font-family: var(--font-sans);
 }
 
-/* گوشه‌ی فوکوس قابل دیدن روی پس‌زمینه‌ی تیره */
+/* حلقه‌ی فوکوس قابل دیدن با رنگ برند */
 :focus-visible {
   outline: 2px solid var(--color-brand-strong);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* اسکرول‌بار تیره تا با پس‌زمینه هماهنگ باشد */
+/* اسکرول‌بار هم‌رنگ سطوح */
 @supports (scrollbar-color: auto) {
   html {
     scrollbar-color: var(--color-scrollbar) var(--color-surface-alt);

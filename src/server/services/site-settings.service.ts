@@ -13,10 +13,24 @@ import {
   upsertSetting,
 } from "@/server/repositories/setting.repository";
 
-/** محتوای قابل ویرایش سایت (یک‌بار در هر درخواست خوانده می‌شود) */
+import { getBusinessSettings } from "./store-content.service";
+
+/**
+ * محتوای قابل ویرایش سایت (یک‌بار در هر درخواست خوانده می‌شود). شماره‌ی تماس
+ * تنها منبعش `business.phone` است (تنظیمات ← کسب‌وکار و خدمت) و مقدار قدیمی
+ * `site.content.contact.phone` نادیده گرفته می‌شود.
+ */
 export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
   if (isBuildWithoutDb()) return DEFAULT_SITE_SETTINGS;
-  return parseSiteSettings(await getSetting(SITE_CONTENT_KEY));
+  const [site, business] = await Promise.all([
+    getSetting(SITE_CONTENT_KEY),
+    getBusinessSettings(),
+  ]);
+  const settings = parseSiteSettings(site);
+  return {
+    ...settings,
+    contact: { ...settings.contact, phone: business.phone },
+  };
 });
 
 export async function saveSiteSettings(settings: SiteSettings): Promise<void> {

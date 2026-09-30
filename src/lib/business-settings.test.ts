@@ -77,6 +77,23 @@ describe("تنظیمات صفحه‌ی اصلی", () => {
     expect(d.heroSecondaryCta).toBe("تماس تلفنی");
   });
 
+  it("مقصد دکمه‌ی اول: فقط مسیر داخلی؛ خارجی/نامعتبر ⇒ پیش‌فرض", () => {
+    const parse = (value: unknown) =>
+      parseHomeSettings(
+        new Map<string, unknown>([[HOME_KEYS.heroPrimaryHref, value]]),
+      ).heroPrimaryHref;
+    expect(parse("/category/x")).toBe("/category/x");
+    for (const bad of [
+      "https://evil.com",
+      "//evil.com",
+      "javascript:alert(1)",
+      "",
+      5,
+    ]) {
+      expect(parse(bad)).toBe(HOME_SETTING_DEFAULTS[HOME_KEYS.heroPrimaryHref]);
+    }
+  });
+
   it("آمار معتبر خوانده می‌شود و عنصر ناقص حذف می‌شود", () => {
     const parsed = parseHomeSettings(
       new Map<string, unknown>([

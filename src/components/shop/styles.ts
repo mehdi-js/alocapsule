@@ -8,7 +8,7 @@ export const btnPrimary =
 
 /** دکمه‌ی CTA روی عکس (تیره‌تر، برای خوانایی روی تصویر) */
 export const btnDeep =
-  "inline-flex items-center gap-3 rounded-full bg-brand-deep py-2.5 pe-3 ps-7 text-[15px] font-bold text-ink shadow-[0_20px_44px_-24px_color-mix(in_srgb,var(--color-brand)_80%,transparent)] transition hover:bg-brand-deep-hover";
+  "inline-flex items-center gap-3 rounded-full bg-brand-deep py-2.5 pe-3 ps-7 text-[15px] font-bold text-on-brand shadow-[0_20px_44px_-24px_color-mix(in_srgb,var(--color-brand)_80%,transparent)] transition hover:bg-brand-deep-hover";
 
 /** دکمه‌ی ثانویه: شفاف با حاشیه‌ی طلایی */
 export const btnOutline =
@@ -18,12 +18,9 @@ export const btnOutline =
 export const iconButton =
   "relative flex size-[42px] items-center justify-center rounded-full border border-control bg-card text-ink transition hover:border-strong";
 
-/** دکمه‌ی گرد کنترل کاروسل روی عکس */
-export const carouselButton =
-  "flex size-10 items-center justify-center rounded-full border border-on-media/28 text-ink transition hover:bg-on-media/12";
-
-/** پنل بخش‌ها */
-export const panel = "rounded-[22px] border border-hair bg-panel";
+/** پنل بخش‌ها: گوشه‌ی متوسط و حاشیه‌ی ملایم */
+export const panel =
+  "rounded-2xl border border-hair bg-panel shadow-[0_1px_2px_rgba(28,25,23,0.04)]";
 
 /** خط مویی طلایی */
 export const hairline = "border-hair";

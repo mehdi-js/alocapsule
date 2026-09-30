@@ -94,20 +94,9 @@ export function GeneralSettingsForm({
           <Field
             label="تلفن"
             htmlFor="contact.phone"
-            error={err("contact.phone")}
-            required
+            hint="از «کسب‌وکار و خدمت» تنظیم می‌شود (تنها منبع شماره‌ی تماس)."
           >
-            <Input
-              id="contact.phone"
-              value={values.contact.phone}
-              onChange={(e) =>
-                setValues((v) => ({
-                  ...v,
-                  contact: { ...v.contact, phone: e.target.value },
-                }))
-              }
-              {...field("contact.phone")}
-            />
+            <Input id="contact.phone" value={values.contact.phone} disabled />
           </Field>
           <Field
             label="ایمیل"

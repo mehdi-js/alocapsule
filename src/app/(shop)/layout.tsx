@@ -2,14 +2,21 @@ import type { ReactNode } from "react";
 
 import { BottomTabBar } from "@/components/shop/BottomTabBar";
 import { ShopProviders } from "@/components/shop/cart/ShopProviders";
+import { FloatingCall } from "@/components/shop/FloatingCall";
 import { Footer } from "@/components/shop/Footer";
 import { ShopHeader } from "@/components/shop/ShopHeader";
+import { getBusinessSettings } from "@/server/services/store-content.service";
 
 /**
  * پوسته‌ی فروشگاه. سبد در کلاینت (CartProvider) بارگذاری می‌شود تا صفحات
  * کش‌شده به کوکی وابسته نشوند.
  */
-export default function ShopLayout({ children }: { children: ReactNode }) {
+export default async function ShopLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const { phone } = await getBusinessSettings();
   return (
     <ShopProviders>
       <div className="flex min-h-screen flex-col pb-24 md:pb-0">
@@ -24,6 +31,7 @@ export default function ShopLayout({ children }: { children: ReactNode }) {
           {children}
         </main>
         <Footer />
+        <FloatingCall phone={phone} />
         <BottomTabBar />
       </div>
     </ShopProviders>

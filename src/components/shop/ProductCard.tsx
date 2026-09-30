@@ -5,6 +5,7 @@ import type { ProductCardDto } from "@/server/services/catalog.service";
 
 import { QuickAdd } from "./cart/QuickAdd";
 import { MediaImage } from "./Placeholder";
+import { ServiceBadge } from "./ServiceBadge";
 
 /** کارت محصول طبق سند طراحی؛ دکمه‌ی + انتخاب سریع متغیر و افزودن به سبد است. */
 export function ProductCard({ product }: { product: ProductCardDto }) {
@@ -24,11 +25,14 @@ export function ProductCard({ product }: { product: ProductCardDto }) {
         />
       </Link>
 
-      {product.badge ? (
-        <span className="bg-accent absolute top-6 start-6 rounded-full px-2.5 py-1 text-[11px] font-extrabold text-surface-alt">
-          {product.badge}
-        </span>
-      ) : null}
+      <div className="absolute top-6 start-6 flex flex-wrap items-center gap-1.5">
+        {product.badge ? (
+          <span className="bg-accent text-on-accent rounded-full px-2.5 py-1 text-[11px] font-extrabold">
+            {product.badge}
+          </span>
+        ) : null}
+        {product.kind === "SERVICE" ? <ServiceBadge /> : null}
+      </div>
 
       <div className="flex flex-col gap-1.5">
         <h3 className="text-lg font-bold">
@@ -44,14 +48,22 @@ export function ProductCard({ product }: { product: ProductCardDto }) {
       </div>
 
       <div className="mt-0.5 flex items-center justify-between gap-2.5">
-        <p className="text-[17px] font-bold">
-          {product.hasRange ? (
-            <span className="text-muted text-xs font-medium">از </span>
-          ) : null}
-          {formatToman(product.price)}{" "}
-          <span className="text-muted text-xs font-medium">تومان</span>
-        </p>
-        <QuickAdd product={product} />
+        {product.price === null ? (
+          <p className="text-brand-strong text-[15px] font-bold">
+            استعلام قیمت
+          </p>
+        ) : (
+          <p className="text-[17px] font-bold">
+            {product.hasRange ? (
+              <span className="text-muted text-xs font-medium">از </span>
+            ) : null}
+            {formatToman(product.price)}{" "}
+            <span className="text-muted text-xs font-medium">تومان</span>
+          </p>
+        )}
+        {product.pricingMode === "FIXED" && product.variants.length > 0 ? (
+          <QuickAdd product={product} />
+        ) : null}
       </div>
     </article>
   );

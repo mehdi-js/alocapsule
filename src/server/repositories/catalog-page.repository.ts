@@ -66,6 +66,21 @@ export function listCategoryTree() {
   });
 }
 
+/** دسته‌های فعال با پرچم «نمایش در صفحه‌ی اصلی» (`isFeatured`) */
+export function findFeaturedCategories() {
+  return db.category.findMany({
+    where: { isActive: true, isFeatured: true },
+    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      description: true,
+      imageUrl: true,
+    },
+  });
+}
+
 export function findActiveCategoryPageRow(slug: string) {
   return db.category.findFirst({ where: { slug, isActive: true } });
 }

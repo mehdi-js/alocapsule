@@ -1,4 +1,4 @@
-import type { ProductUnit } from "@prisma/client";
+import type { PricingMode, ProductKind, ProductUnit } from "@prisma/client";
 import { cache } from "react";
 
 import { isBuildWithoutDb } from "@/lib/build-phase";
@@ -9,6 +9,7 @@ import type { FaqItem } from "@/lib/validation/seo";
 import {
   findActiveCategoryPageRow,
   findCategoryRedirectInfo,
+  findFeaturedCategories,
   findProductPageRow,
   findProductRedirectInfo,
   findSellableInCategories,
@@ -16,6 +17,7 @@ import {
   listCategoryTree,
   listTopCategories,
 } from "@/server/repositories/catalog-page.repository";
+import { listActiveShippingMethods } from "@/server/repositories/shipping.repository";
 
 import { type ProductCardDto, toProductCard } from "./catalog.service";
 
@@ -55,6 +57,11 @@ export interface ProductPageDto {
   shortDescription: string | null;
   description: string | null;
   unit: ProductUnit;
+  kind: ProductKind;
+  /** استعلامی ⇒ بدون متغیر/قیمت/افزودن به سبد؛ جعبه‌ی «استعلام قیمت» */
+  pricingMode: PricingMode;
+  /** متن اختصاصی شرایط خدمت؛ خالی ⇒ متن پیش‌فرض `service.defaultTerms` */
+  serviceTerms: string | null;
   seoTitle: string | null;
   metaDescription: string | null;
   noindex: boolean;
@@ -75,7 +82,7 @@ export interface ProductPageDto {
   }[];
   /** متغیرهای فعال (قابل انتخاب) */
   variants: CatalogVariantDto[];
-  /** قابل سفارش: محصول فعال با حداقل یک متغیر فعال */
+  /** نمایش‌پذیر: قیمت‌دار با حداقل یک متغیر فعال، یا استعلامی (فعال) */
   available: boolean;
   /** قیمت‌های schema: فعال‌ها، یا برای محصول ناموجود همه‌ی متغیرها */
   schemaVariants: { price: number; sku: string | null }[];
@@ -135,7 +142,8 @@ export async function getProductPage(
   }
 
   const active = row.variants.filter((variant) => variant.isActive);
-  const available = row.isActive && active.length > 0;
+  const inquiry = row.pricingMode === "INQUIRY";
+  const available = row.isActive && (inquiry || active.length > 0);
   const trail = categoryTrail(await listCategoryTree(), row.categoryId);
 
   return {
@@ -147,6 +155,9 @@ export async function getProductPage(
       shortDescription: row.shortDescription,
       description: row.description,
       unit: row.unit,
+      kind: row.kind,
+      pricingMode: row.pricingMode,
+      serviceTerms: row.serviceTerms,
       seoTitle: row.seoTitle,
       metaDescription: row.metaDescription,
       noindex: row.noindex,
@@ -164,7 +175,8 @@ export async function getProductPage(
         width: image.width,
         height: image.height,
       })),
-      variants: active.map((variant) => ({
+      // استعلامی متغیر قابل‌فروش ندارد (حتی اگر متغیر غیرفعال قدیمی مانده باشد)
+      variants: (inquiry ? [] : active).map((variant) => ({
         id: variant.id,
         unitValue: variant.unitValue,
         title: resolveVariantTitle(row.unit, variant.unitValue, variant.title),
@@ -178,10 +190,13 @@ export async function getProductPage(
         sku: variant.sku,
       })),
       available,
-      schemaVariants: (available ? active : row.variants).map((variant) => ({
-        price: variant.price,
-        sku: variant.sku,
-      })),
+      // 🔴 قیمت ساختگی ممنوع: برای استعلامی offers تولید نمی‌شود
+      schemaVariants: (inquiry ? [] : available ? active : row.variants).map(
+        (variant) => ({
+          price: variant.price,
+          sku: variant.sku,
+        }),
+      ),
     },
   };
 }
@@ -261,6 +276,53 @@ export const getFooterCategories = cache(
     return categories.map((category) => ({
       name: category.name,
       path: `/category/${category.slug}`,
+    }));
+  },
+);
+
+/**
+ * اطلاعات ارسال برای ردیف اطلاعات صفحه‌ی محصول — از داده‌ی `ShippingMethod`،
+ * نه متن ثابت: آستانه‌ی ارسال رایگان تعدادی (کمترین بین روش‌های هزینه‌دار با
+ * آدرس) و وجود تحویل حضوری.
+ */
+export interface ProductShippingInfo {
+  freeAboveQuantity: number | null;
+  pickupAvailable: boolean;
+}
+
+export async function getProductShippingInfo(): Promise<ProductShippingInfo> {
+  if (isBuildWithoutDb()) {
+    return { freeAboveQuantity: null, pickupAvailable: false };
+  }
+  const methods = await listActiveShippingMethods();
+  const thresholds = methods
+    .filter((method) => method.requiresAddress && method.cost > 0)
+    .flatMap((method) =>
+      method.freeAboveQuantity === null ? [] : [method.freeAboveQuantity],
+    );
+  return {
+    freeAboveQuantity: thresholds.length > 0 ? Math.min(...thresholds) : null,
+    pickupAvailable: methods.some((method) => !method.requiresAddress),
+  };
+}
+
+export interface FeaturedCategoryDto {
+  id: string;
+  name: string;
+  path: string;
+  description: string | null;
+}
+
+/** دسته‌های بخش «دسته‌بندی‌ها»ی صفحه‌ی اصلی؛ از دیتابیس، نه فهرست ثابت در کد */
+export const listFeaturedCategories = cache(
+  async (): Promise<FeaturedCategoryDto[]> => {
+    if (isBuildWithoutDb()) return [];
+    const categories = await findFeaturedCategories();
+    return categories.map((category) => ({
+      id: category.id,
+      name: category.name,
+      path: `/category/${category.slug}`,
+      description: category.description,
     }));
   },
 );

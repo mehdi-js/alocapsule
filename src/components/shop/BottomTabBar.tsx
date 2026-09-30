@@ -30,7 +30,7 @@ export function BottomTabBar() {
   return (
     <nav
       aria-label="ناوبری پایین"
-      className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between border-t border-hair bg-[#09160E] px-4 pt-2.5 pb-[max(1.625rem,env(safe-area-inset-bottom))] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between border-t border-hair bg-surface px-4 pt-2.5 pb-[max(1.625rem,env(safe-area-inset-bottom))] md:hidden"
     >
       {TABS.map(({ href, label, Icon }) => {
         const active = isActiveLink(pathname, href);
@@ -46,7 +46,7 @@ export function BottomTabBar() {
           >
             <Icon size={21} />
             {href === "/cart" && cartCount > 0 ? (
-              <span className="bg-accent absolute top-0 end-[calc(50%-20px)] flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-extrabold text-surface-alt">
+              <span className="bg-brand-strong text-on-brand absolute top-0 end-[calc(50%-20px)] flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-extrabold">
                 {toPersianDigits(cartCount)}
               </span>
             ) : null}

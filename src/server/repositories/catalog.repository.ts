@@ -5,8 +5,9 @@ import { db } from "@/lib/db";
 
 /**
  * خواندن کاتالوگ عمومی. در همه‌ی کوئری‌ها فقط محصول و متغیر `isActive` و
- * محصولی که دست‌کم یک متغیر فعال دارد برگردانده می‌شود (محصول بدون متغیر فعال
- * قیمتی برای نمایش ندارد).
+ * محصولی که دست‌کم یک متغیر فعال دارد برگردانده می‌شود (محصول قیمت‌دار بدون
+ * متغیر فعال قیمتی برای نمایش ندارد). محصول **استعلامی** متغیر ندارد و همیشه
+ * نمایش داده می‌شود (با «استعلام قیمت»)، مگر فیلتر قیمت/بسته فعال باشد.
  *
  * 🔴 هیچ شرط یا فیلد موجودی اینجا وجود ندارد (بخش ۷.۱ سند).
  */
@@ -21,10 +22,10 @@ export const primaryFirstImages = {
   orderBy: [{ isPrimary: "desc" as const }, { sortOrder: "asc" as const }],
 };
 
-/** محصول فعال که دست‌کم یک متغیر فعال دارد */
+/** محصول فعال: قیمت‌دار با حداقل یک متغیر فعال، یا استعلامی */
 export const SELLABLE: Prisma.ProductWhereInput = {
   isActive: true,
-  variants: { some: { isActive: true } },
+  OR: [{ pricingMode: "INQUIRY" }, { variants: { some: { isActive: true } } }],
 };
 
 export const cardSelect = {
@@ -33,6 +34,8 @@ export const cardSelect = {
   name: true,
   shortDescription: true,
   unit: true,
+  kind: true,
+  pricingMode: true,
   createdAt: true,
   variants: {
     ...activeVariants,
@@ -81,11 +84,15 @@ function buildWhere(filters: CatalogFilters): Prisma.ProductWhereInput {
       variants: { some: { ...variant, unitValue: { in: values } } },
     }));
 
+  // فیلتر قیمت/بسته فقط قیمت‌دارها را می‌گیرد؛ بدون فیلتر، استعلامی‌ها هم می‌آیند
+  const filtered = packConditions.length > 0 || Object.keys(price).length > 0;
   return {
     isActive: true,
     ...(packConditions.length > 0
       ? { OR: packConditions }
-      : { variants: { some: variant } }),
+      : filtered
+        ? { variants: { some: variant } }
+        : SELLABLE),
     ...(filters.categorySlugs.length > 0
       ? { category: { slug: { in: filters.categorySlugs } } }
       : {}),
@@ -155,16 +162,20 @@ export async function findCatalogProducts(params: {
       const rank = new Map(searchIds.map((id, index) => [id, index]));
       all.sort((a, b) => (rank.get(a.id) ?? 0) - (rank.get(b.id) ?? 0));
     } else {
+      // استعلامی قیمتی ندارد ⇒ در هر دو ترتیب آخر لیست
       const minPriceOf = (row: ProductCardRow) =>
         row.variants.reduce(
           (min, variant) => Math.min(min, variant.price),
           Number.POSITIVE_INFINITY,
         );
-      all.sort((a, b) =>
-        params.sort === "cheapest"
-          ? minPriceOf(a) - minPriceOf(b)
-          : minPriceOf(b) - minPriceOf(a),
-      );
+      all.sort((a, b) => {
+        const priceA = minPriceOf(a);
+        const priceB = minPriceOf(b);
+        const noPriceA = !Number.isFinite(priceA);
+        const noPriceB = !Number.isFinite(priceB);
+        if (noPriceA || noPriceB) return Number(noPriceA) - Number(noPriceB);
+        return params.sort === "cheapest" ? priceA - priceB : priceB - priceA;
+      });
     }
     return {
       items: all.slice(params.skip, params.skip + params.take),

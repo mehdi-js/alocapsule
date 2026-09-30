@@ -16,6 +16,7 @@ type TextKey =
   | "heroTitle"
   | "heroSubtitle"
   | "heroPrimaryCta"
+  | "heroPrimaryHref"
   | "heroSecondaryCta"
   | "stepsTitle"
   | "featuredTitle"
@@ -139,6 +140,9 @@ export function HomeSettingsForm({ initial }: { initial: HomeSettings }) {
           {text("heroTitle", "تیتر")}
           {text("heroSubtitle", "توضیح یک‌خطی", { multiline: true })}
           {text("heroPrimaryCta", "دکمه‌ی اول (سفارش شارژ)")}
+          {text("heroPrimaryHref", "مقصد دکمه‌ی اول", {
+            hint: "مسیر داخلی، مثل /category/lpg-charge",
+          })}
           {text("heroSecondaryCta", "دکمه‌ی دوم (تماس تلفنی)")}
         </div>
       </Section>

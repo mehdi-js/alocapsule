@@ -22,7 +22,7 @@ export function Placeholder({
   return (
     <div
       className={cn(
-        "bg-placeholder flex flex-col items-center justify-center gap-1.5 border border-dashed border-on-media/22 text-center",
+        "bg-placeholder flex flex-col items-center justify-center gap-1.5 border border-dashed border-control text-center",
         className,
       )}
     >
