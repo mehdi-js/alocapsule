@@ -55,7 +55,7 @@ async function createViaPanel(page: Page, combo: Combo) {
 
   if (combo.terms) await page.locator("#serviceTerms").fill(combo.terms);
   if (combo.pricingMode === "FIXED") {
-    await page.getByLabel("وزن (گرم)").fill("11000");
+    await page.getByLabel("وزن ارسال (گرم)").fill("11000");
     await page.getByLabel("قیمت (تومان)").fill(String(combo.price));
   }
   await page.getByRole("button", { name: "ساخت محصول" }).click();
@@ -137,7 +137,7 @@ test.describe.serial("پنل ادمین: نوع محصول و حالت قیمت"
     await page.goto(`/admin/products/${product.id}/edit`);
     await page.locator("#pricingMode").selectOption("INQUIRY");
     await expect(
-      page.getByText("با ذخیره، ۱ متغیر", { exact: false }),
+      page.getByText("با ذخیره، ۱ ترکیب", { exact: false }),
     ).toBeVisible();
     await page.getByRole("button", { name: "ذخیره‌ی تغییرات" }).click();
     await page.waitForURL("**/admin/products");

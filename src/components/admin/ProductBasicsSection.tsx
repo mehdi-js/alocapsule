@@ -19,7 +19,6 @@ export function ProductBasicsSection({
   unitLocked,
   error,
   onName,
-  onUnit,
   onChange,
 }: {
   state: ProductFormState;
@@ -29,7 +28,6 @@ export function ProductBasicsSection({
   unitLocked: boolean;
   error: (field: string) => string | undefined;
   onName: (name: string) => void;
-  onUnit: (unit: ProductUnit) => void;
   onChange: (update: Partial<ProductFormState>) => void;
 }) {
   return (
@@ -79,22 +77,24 @@ export function ProductBasicsSection({
           </Select>
         </Field>
         <Field
-          label="واحد فروش"
+          label="واحد فروش (اختیاری)"
           htmlFor="unit"
           error={error("unit")}
           hint={
             unitLocked
               ? "پس از ثبت اولین سفارش، واحد فروش قابل تغییر نیست."
-              : "گرمی: وزنی (۵۰۰ گرم، ۱ کیلوگرم) — عددی: تعدادی (۶ عددی، ۱۲ عددی)"
+              : "فقط برای محصول قدیمیِ وزنی/تعدادی؛ محصول دارای گزینه‌ها آن را خالی می‌گذارد."
           }
-          required
         >
           <Select
             id="unit"
             value={state.unit}
             disabled={unitLocked}
-            onChange={(event) => onUnit(event.target.value as ProductUnit)}
+            onChange={(event) =>
+              onChange({ unit: event.target.value as ProductUnit | "" })
+            }
           >
+            <option value="">بدون واحد (گزینه‌ها)</option>
             <option value="GRAM">گرمی (وزنی)</option>
             <option value="PIECE">عددی (تعدادی)</option>
           </Select>

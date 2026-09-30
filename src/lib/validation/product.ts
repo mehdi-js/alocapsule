@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+import {
+  MAX_OPTION_GROUPS,
+  MAX_OPTION_VALUES,
+  OPTION_CODE_PATTERN,
+  validateOptionDefinitions,
+} from "@/lib/product-options";
+
 import { canonicalUrlSchema, latinSlugSchema, seoFieldsSchema } from "./seo";
 
 /** سقف Int در Postgres */
@@ -10,8 +17,10 @@ export const MAX_SERVICE_TERMS_LENGTH = 5000;
 export const PRODUCT_KINDS = ["PHYSICAL", "SERVICE"] as const;
 export const PRICING_MODES = ["FIXED", "INQUIRY"] as const;
 
+export const NO_PRICE_ACTIVE_MESSAGE = "ترکیب بدون قیمت نمی‌تواند فعال شود";
+
 export const FIXED_NEEDS_VARIANT_MESSAGE =
-  "محصول قیمت‌دار حداقل یک متغیر (با قیمت) لازم دارد";
+  "محصول قیمت‌دار حداقل یک ترکیب (با قیمت) لازم دارد";
 
 function intField(label: string, min: number, max: number) {
   return z
@@ -30,18 +39,56 @@ function optionalText(label: string, max: number) {
     .transform((value) => value || null);
 }
 
-export const variantInputSchema = z.object({
-  /** خالی ⇒ متغیر جدید */
+const optionCodeSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .min(1, "کد را وارد کنید")
+  .max(20, "کد حداکثر ۲۰ کاراکتر باشد")
+  .regex(OPTION_CODE_PATTERN, "کد فقط حروف کوچک انگلیسی، عدد و خط تیره باشد");
+
+export const optionValueInputSchema = z.object({
+  /** خالی ⇒ مقدار جدید */
   id: z.string().min(1).optional(),
-  unitValue: intField("مقدار واحد", 1, 1_000_000),
+  label: z
+    .string()
+    .trim()
+    .min(1, "برچسب مقدار را وارد کنید")
+    .max(40, "برچسب حداکثر ۴۰ کاراکتر باشد"),
+  code: optionCodeSchema,
+  /** مقدار غیرفعال در ساخت ترکیب‌های جدید نمی‌آید و ترکیب‌هایش غیرفعال می‌شوند */
+  isActive: z.boolean().default(true),
+});
+
+export const optionInputSchema = z.object({
+  id: z.string().min(1).optional(),
+  name: z
+    .string()
+    .trim()
+    .min(2, "نام گروه حداقل ۲ کاراکتر باشد")
+    .max(40, "نام گروه حداکثر ۴۰ کاراکتر باشد"),
+  code: optionCodeSchema,
+  values: z
+    .array(optionValueInputSchema)
+    .min(1, "هر گروه حداقل یک مقدار لازم دارد")
+    .max(MAX_OPTION_VALUES, `حداکثر ${MAX_OPTION_VALUES} مقدار مجاز است`),
+});
+
+/** ترکیب = یک variant با قیمت مستقل؛ `price = 0` یعنی «بدون قیمت» (فقط غیرفعال) */
+export const variantInputSchema = z.object({
+  /** خالی ⇒ ترکیب جدید */
+  id: z.string().min(1).optional(),
+  /** کد گروه ⇒ کد مقدار (برای محصول بدون گزینه خالی) */
+  selection: z.record(z.string(), z.string()).default({}),
+  /** خالی ⇒ عنوان خودکار از برچسب‌ها */
   title: optionalText("عنوان", 60),
   sku: optionalText("کد کالا (SKU)", 40),
-  price: intField("قیمت", 1, MAX_INT),
+  price: intField("قیمت", 0, MAX_INT),
   comparePrice: intField("قیمت قبل از تخفیف", 1, MAX_INT)
     .nullish()
     .transform((value) => value ?? null),
-  shippingWeightGrams: intField("وزن ارسال", 1, 10_000_000),
-  /** فقط برای متغیر جدید؛ وضعیت متغیر موجود با کلید فوری عوض می‌شود. */
+  shippingWeightGrams: intField("وزن ارسال", 0, 10_000_000),
+  /** فقط برای ترکیب جدید؛ وضعیت ترکیب موجود با کلید فوری عوض می‌شود. */
   isActive: z.boolean().optional(),
 });
 
@@ -54,7 +101,11 @@ export const productInputSchema = z
       .max(120, "نام محصول حداکثر ۱۲۰ کاراکتر باشد"),
     slug: latinSlugSchema,
     categoryId: z.string().min(1, "دسته‌بندی را انتخاب کنید"),
-    unit: z.enum(["GRAM", "PIECE"], { error: "واحد فروش را انتخاب کنید" }),
+    /** اختیاری: فقط برای محصول قدیمی وزنی/تعدادی؛ محصول دارای گزینه‌ها ندارد */
+    unit: z
+      .enum(["GRAM", "PIECE"], { error: "واحد فروش را انتخاب کنید" })
+      .nullish()
+      .transform((value) => value ?? null),
     kind: z
       .enum(PRODUCT_KINDS, { error: "نوع محصول را انتخاب کنید" })
       .default("PHYSICAL"),
@@ -70,13 +121,23 @@ export const productInputSchema = z
     sortOrder: intField("ترتیب نمایش", 0, 9999).default(0),
     /** فقط هنگام ساخت؛ در ویرایش با کلید فوری عوض می‌شود. */
     isActive: z.boolean().optional(),
+    /** محصول متناظر (شارژ N ↔ خرید N)؛ خالی ⇒ بدون جفت. رابطه دوطرفه ذخیره می‌شود */
+    pairedProductId: z
+      .string()
+      .nullish()
+      .transform((value) => value || null),
+    /** گروه‌های گزینه (حداکثر ۳)؛ استعلامی ⇒ نادیده گرفته می‌شود */
+    options: z
+      .array(optionInputSchema)
+      .max(MAX_OPTION_GROUPS, `حداکثر ${MAX_OPTION_GROUPS} گروه گزینه مجاز است`)
+      .default([]),
     /**
-     * قیمت‌دار ⇒ حداقل یک متغیر. استعلامی ⇒ متغیر ندارد و ورودی متغیرها نادیده
-     * گرفته می‌شود (متغیرهای موجود غیرفعال می‌شوند، حذف نمی‌شوند).
+     * ترکیب‌ها. قیمت‌دار ⇒ حداقل یکی. استعلامی ⇒ بدون ترکیب و ورودی نادیده
+     * گرفته می‌شود (ترکیب‌های موجود غیرفعال می‌شوند، حذف نمی‌شوند).
      */
     variants: z
       .array(variantInputSchema)
-      .max(MAX_VARIANTS, `حداکثر ${MAX_VARIANTS} متغیر مجاز است`)
+      .max(MAX_VARIANTS, `حداکثر ${MAX_VARIANTS} ترکیب مجاز است`)
       .default([]),
   })
   .superRefine((product, ctx) => {
@@ -88,17 +149,16 @@ export const productInputSchema = z
         message: FIXED_NEEDS_VARIANT_MESSAGE,
       });
     }
-    const seen = new Set<number>();
+    for (const issue of validateOptionDefinitions(product.options)) {
+      ctx.addIssue({
+        code: "custom",
+        path: issue.path
+          .split(".")
+          .map((part) => (/^\d+$/.test(part) ? Number(part) : part)),
+        message: issue.message,
+      });
+    }
     product.variants.forEach((variant, index) => {
-      if (seen.has(variant.unitValue)) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["variants", index, "unitValue"],
-          message: "مقدار واحد تکراری است",
-        });
-      }
-      seen.add(variant.unitValue);
-
       if (
         variant.comparePrice !== null &&
         variant.comparePrice <= variant.price
@@ -107,6 +167,25 @@ export const productInputSchema = z
           code: "custom",
           path: ["variants", index, "comparePrice"],
           message: "قیمت قبل از تخفیف باید بیشتر از قیمت باشد",
+        });
+      }
+      // ترکیبِ فعال همیشه قیمت دارد (بدون قیمت فقط غیرفعال)؛ وزن فقط برای ترکیب جدید
+      if (variant.isActive === true && variant.price < 1) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["variants", index, "price"],
+          message: NO_PRICE_ACTIVE_MESSAGE,
+        });
+      }
+      if (
+        !variant.id &&
+        variant.isActive === true &&
+        variant.shippingWeightGrams < 1
+      ) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["variants", index, "shippingWeightGrams"],
+          message: "وزن ارسال ترکیب فعال باید مثبت باشد",
         });
       }
     });

@@ -1,3 +1,4 @@
+import {} from "@/lib/product-options";
 import { sanitizePlainText } from "@/lib/sanitize-text";
 import {
   canActivateProduct,
@@ -13,6 +14,7 @@ import {
   deleteProductWithRedirects,
   findProductArchiveInfo,
   findProductById,
+  findVariantForActivation,
   findVariantIdsUsedInOrders,
   productHasOrders,
   productSlugExists,
@@ -21,14 +23,19 @@ import {
 } from "@/server/repositories/product.repository";
 import { listProductImages } from "@/server/repositories/product-image.repository";
 import {
-  createProductWithVariants,
-  updateProductWithVariants,
-} from "@/server/repositories/product-write.repository";
+  createProductWithStructure,
+  type StructurePlan,
+  updateProductWithStructure,
+} from "@/server/repositories/product-structure.repository";
 import { listSlugHistory } from "@/server/repositories/seo.repository";
 
 import { deleteImageFilesByUrl } from "./product-image.service";
+import {
+  assertOptionCodesUnlocked,
+  assertPairable,
+  prepareStructure,
+} from "./product-structure.service";
 import { conflictWarning, getSeoConflicts } from "./seo-conflicts.service";
-import { planVariantSync } from "./variant-sync";
 
 /**
  * ساخت/ویرایش/بایگانی محصول در پنل ادمین؛ خواندن در
@@ -41,13 +48,13 @@ export interface ProductSaveResult {
   id: string;
   /** کلمه/عنوان/متای تکراری؛ ذخیره انجام شده و این فقط هشدار است */
   seoWarning: string | null;
-  /** تعداد متغیرهایی که به‌خاطر «استعلامی» شدن محصول غیرفعال شدند (نه حذف) */
+  /** تعداد ترکیب‌هایی که به‌خاطر «استعلامی» شدن محصول غیرفعال شدند (نه حذف) */
   deactivatedVariants: number;
 }
 
 export const CANNOT_ACTIVATE_MESSAGE =
-  "محصول قیمت‌دار برای فعال شدن حداقل یک متغیر فعال لازم دارد.";
-
+  "محصول قیمت‌دار برای فعال شدن حداقل یک ترکیب فعال لازم دارد.";
+export const VARIANT_NO_PRICE_MESSAGE = "ترکیب بدون قیمت نمی‌تواند فعال شود.";
 async function assertSlugFree(slug: string, excludeId?: string) {
   if (await productSlugExists(slug, excludeId)) {
     throw new UserFacingError(SLUG_TAKEN);
@@ -57,8 +64,8 @@ async function assertSlugFree(slug: string, excludeId?: string) {
 function translateConflict(error: unknown): never {
   const target = getUniqueViolationTarget(error);
   if (target?.includes("slug")) throw new UserFacingError(SLUG_TAKEN);
-  if (target?.includes("unitValue")) {
-    throw new UserFacingError("دو متغیر با مقدار واحد یکسان مجاز نیست");
+  if (target?.includes("optionKey")) {
+    throw new UserFacingError("دو ترکیب با گزینه‌های یکسان مجاز نیست");
   }
   throw error;
 }
@@ -110,14 +117,16 @@ export async function createProduct(
 ): Promise<ProductSaveResult> {
   await assertCategoryExists(input.categoryId);
   await assertSlugFree(input.slug);
-  // استعلامی هرگز متغیر ندارد؛ ورودی متغیرها نادیده گرفته می‌شود
-  const { creates } = planVariantSync(
-    [],
-    input.pricingMode === "INQUIRY" ? [] : input.variants,
-  );
+  await assertPairable(null, input.pairedProductId);
+  // استعلامی هرگز گزینه/ترکیب ندارد؛ ورودی نادیده گرفته می‌شود
+  const plan: StructurePlan =
+    input.pricingMode === "INQUIRY"
+      ? { options: [], variants: [] }
+      : prepareStructure(input, null);
   const activatable = canActivateProduct({
     pricingMode: input.pricingMode,
-    activeVariantCount: creates.filter((variant) => variant.isActive).length,
+    activeVariantCount: plan.variants.filter((variant) => variant.isActive)
+      .length,
   });
   if (input.isActive === true && !activatable) {
     throw new UserFacingError(CANNOT_ACTIVATE_MESSAGE);
@@ -125,9 +134,10 @@ export async function createProduct(
 
   let id: string;
   try {
-    ({ id } = await createProductWithVariants(
+    ({ id } = await createProductWithStructure(
       { ...productFields(input), isActive: input.isActive ?? activatable },
-      creates,
+      plan,
+      input.pairedProductId,
     ));
   } catch (error) {
     return translateConflict(error);
@@ -147,45 +157,49 @@ export async function updateProduct(
   if (!existing) throw new UserFacingError("محصول یافت نشد");
 
   await assertCategoryExists(input.categoryId);
-  if (input.unit !== existing.unit && (await productHasOrders(id))) {
+  await assertPairable(id, input.pairedProductId);
+  const hasOrders = await productHasOrders(id);
+  if (input.unit !== existing.unit && hasOrders) {
     throw new UserFacingError(
       "پس از ثبت اولین سفارش، تغییر واحد فروش (گرمی/عددی) ممکن نیست",
     );
   }
 
   const inquiry = input.pricingMode === "INQUIRY";
-  // استعلامی: متغیرها دست نمی‌خورند جز غیرفعال شدن (نه حذف)
-  const plan = planVariantSync(
-    existing.variants,
-    inquiry
-      ? existing.variants.map((variant) => ({
-          id: variant.id,
-          unitValue: variant.unitValue,
-          title: variant.title,
-          sku: variant.sku,
-          price: variant.price,
-          comparePrice: variant.comparePrice,
-          shippingWeightGrams: variant.shippingWeightGrams,
-        }))
-      : input.variants,
-  );
-  const usedInOrders = await findVariantIdsUsedInOrders(plan.deleteIds);
-  if (usedInOrders.length > 0) {
-    throw new UserFacingError(
-      "برخی از متغیرهای حذف‌شده در سفارش‌ها استفاده شده‌اند؛ به‌جای حذف، آن‌ها را غیرفعال کنید.",
+  // استعلامی: ساختار دست نمی‌خورد جز غیرفعال شدن ترکیب‌ها (نه حذف)
+  let plan: StructurePlan | undefined;
+  if (!inquiry) {
+    if (hasOrders) assertOptionCodesUnlocked(existing, input);
+    plan = prepareStructure(input, existing);
+    const plannedIds = new Set(
+      plan.variants.flatMap((v) => (v.id ? [v.id] : [])),
     );
+    const removed = existing.variants
+      .filter((variant) => !plannedIds.has(variant.id))
+      .map((variant) => variant.id);
+    const usedInOrders = await findVariantIdsUsedInOrders(removed);
+    if (usedInOrders.length > 0) {
+      throw new UserFacingError(
+        "برخی از ترکیب‌های حذف‌شده در سفارش‌ها استفاده شده‌اند؛ به‌جای حذف، آن‌ها را غیرفعال کنید.",
+      );
+    }
   }
 
   const slugChanged = input.slug !== existing.slug;
   if (slugChanged) await assertSlugFree(input.slug, id);
   let deactivatedVariants = 0;
   try {
-    ({ deactivatedVariants } = await updateProductWithVariants(
+    ({ deactivatedVariants } = await updateProductWithStructure(
       id,
       productFields(input),
-      plan,
-      slugChanged ? { from: existing.slug, to: input.slug } : null,
-      { deactivateVariants: inquiry },
+      {
+        plan,
+        deactivateVariants: inquiry,
+        slugChange: slugChanged
+          ? { from: existing.slug, to: input.slug }
+          : null,
+        pairedProductId: input.pairedProductId,
+      },
     ));
   } catch (error) {
     return translateConflict(error);
@@ -230,6 +244,17 @@ export async function changeVariantActive(
   id: string,
   isActive: boolean,
 ): Promise<void> {
+  if (isActive) {
+    const variant = await findVariantForActivation(id);
+    if (!variant) throw new UserFacingError("ترکیب یافت نشد");
+    // ترکیب بدون قیمت یا دارای مقدار غیرفعال نمی‌تواند فعال شود
+    if (variant.price <= 0) throw new UserFacingError(VARIANT_NO_PRICE_MESSAGE);
+    if (variant.optionValues.some((link) => !link.optionValue.isActive)) {
+      throw new UserFacingError(
+        "این ترکیب مقدار غیرفعالِ گزینه دارد؛ اول آن مقدار را فعال کنید.",
+      );
+    }
+  }
   try {
     await setVariantActive(id, isActive);
   } catch (error) {

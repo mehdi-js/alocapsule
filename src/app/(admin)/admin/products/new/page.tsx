@@ -5,6 +5,7 @@ import { ProductForm } from "@/components/admin/ProductForm";
 import { SITE } from "@/lib/site-content";
 import { requireAdmin } from "@/server/auth/current-user";
 import { listCategories } from "@/server/services/category.service";
+import { listPairingOptions } from "@/server/services/product-query.service";
 import { getTitleSettings } from "@/server/services/seo-settings.service";
 import { getBusinessSettings } from "@/server/services/store-content.service";
 
@@ -12,11 +13,13 @@ export const metadata: Metadata = { title: "محصول جدید" };
 
 export default async function NewProductPage() {
   await requireAdmin();
-  const [categories, titleSettings, business] = await Promise.all([
-    listCategories(),
-    getTitleSettings(),
-    getBusinessSettings(),
-  ]);
+  const [categories, titleSettings, business, pairingOptions] =
+    await Promise.all([
+      listCategories(),
+      getTitleSettings(),
+      getBusinessSettings(),
+      listPairingOptions(null),
+    ]);
 
   return (
     <>
@@ -36,6 +39,7 @@ export default async function NewProductPage() {
         titleSettings={titleSettings}
         siteUrl={SITE.url}
         defaultServiceTerms={business.serviceDefaultTerms}
+        pairingOptions={pairingOptions}
       />
     </>
   );

@@ -25,10 +25,21 @@ let categoryId = "";
 const productIds: string[] = [];
 const userIds: string[] = [];
 
-const variant = (unitValue: number, price: number) => ({
-  unitValue,
+/** گروه گزینه‌ی «اندازه» (۱۱/۲۵/۳۳)؛ هر ترکیب یک variant با قیمت مستقل */
+const SIZE_OPTION = {
+  name: "اندازه",
+  code: "size",
+  values: [
+    { label: "۱۱ کیلویی", code: "11" },
+    { label: "۲۵ کیلویی", code: "25" },
+    { label: "۳۳ کیلویی", code: "33" },
+  ],
+};
+
+const variant = (size: number, price: number) => ({
+  selection: { size: String(size) },
   price,
-  shippingWeightGrams: unitValue,
+  shippingWeightGrams: size * 1000,
 });
 
 function input(slug: string, extra: Record<string, unknown> = {}) {
@@ -36,8 +47,8 @@ function input(slug: string, extra: Record<string, unknown> = {}) {
     name: `محصول ${slug}`,
     slug: `${slug}-${RUN}`,
     categoryId,
-    unit: "GRAM",
-    variants: [variant(11_000, 800_000), variant(25_000, 2_200_000)],
+    options: [SIZE_OPTION],
+    variants: [variant(11, 800_000), variant(25, 2_200_000)],
     ...extra,
   });
 }
@@ -46,7 +57,7 @@ async function track(result: { id: string }) {
   productIds.push(result.id);
   return db.product.findUniqueOrThrow({
     where: { id: result.id },
-    include: { variants: { orderBy: { unitValue: "asc" } } },
+    include: { variants: { orderBy: { optionKey: "asc" } } },
   });
 }
 
@@ -110,7 +121,7 @@ describe("ساخت محصول", () => {
 
   it("قیمت‌دار با متغیر غیرفعال ⇒ نمی‌تواند فعال ساخته شود", async () => {
     const inactive = {
-      ...variant(11_000, 800_000),
+      ...variant(11, 800_000),
       isActive: false,
     };
     await expect(
@@ -146,12 +157,12 @@ describe("تغییر حالت قیمت", () => {
     );
     const result = await updateProduct(
       created.id,
-      input("to-fixed", { variants: [variant(33_000, 2_450_000)] }),
+      input("to-fixed", { variants: [variant(33, 2_450_000)] }),
     );
     expect(result.deactivatedVariants).toBe(0);
     const product = await track(result);
     expect(product.pricingMode).toBe("FIXED");
-    expect(product.variants.map((v) => v.unitValue)).toEqual([33_000]);
+    expect(product.variants.map((v) => v.optionKey)).toEqual(["size:33"]);
   });
 
   it("ذخیره‌ی دوباره‌ی استعلامی چیزی حذف نمی‌کند", async () => {

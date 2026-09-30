@@ -102,6 +102,15 @@ export const shippingMethodSchema = z
       .optional(),
     /** `false` برای «تحویل حضوری» (بدون آدرس). `undefined` ⇒ دست‌نخورده */
     requiresAddress: z.boolean().optional(),
+    /** زمان تحویل برای نمایش، مثل «۱ تا ۴ ساعت»؛ خالی ⇒ نمایش داده نمی‌شود. `undefined` ⇒ دست‌نخورده */
+    deliveryEstimate: z
+      .string()
+      .trim()
+      .max(60, "زمان تحویل حداکثر ۶۰ کاراکتر باشد")
+      .transform((value) => value || null)
+      .optional(),
+    /** فقط در ساعات کاری قابل انتخاب است (ارسال فوری). `undefined` ⇒ دست‌نخورده */
+    businessHoursOnly: z.boolean().optional(),
     provinces: z
       .array(z.string())
       .refine(

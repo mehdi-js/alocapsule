@@ -97,6 +97,9 @@ async function seedCatalog() {
         variants: {
           create: variants.map((variant, variantIndex) => ({
             ...variant,
+            // چند اندازه بدون گروه گزینه (مدل قدیمی) تا بازسازی با گزینه‌ها (P2)
+            optionKey:
+              variants.length > 1 ? `legacy:${variant.unitValue}` : "default",
             sortOrder: variantIndex + 1,
           })),
         },

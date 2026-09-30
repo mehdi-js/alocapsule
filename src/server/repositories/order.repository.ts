@@ -27,6 +27,16 @@ export function findCheckoutItems(tx: DbClient, cartId: string) {
           unitValue: true,
           title: true,
           isActive: true,
+          optionValues: {
+            select: {
+              optionValue: {
+                select: {
+                  label: true,
+                  option: { select: { name: true, sortOrder: true } },
+                },
+              },
+            },
+          },
           product: {
             select: {
               id: true,
@@ -111,8 +121,10 @@ export interface OrderItemSnapshot {
   unitPrice: number;
   quantity: number;
   lineTotal: number;
-  unitValueSnapshot: number;
-  unitSnapshot: ProductUnit;
+  unitValueSnapshot: number | null;
+  unitSnapshot: ProductUnit | null;
+  /** آرایه‌ی `{ option, value }` ترکیب انتخاب‌شده (SEO.md §۴.۳)؛ خالی ⇒ بدون گزینه */
+  optionsSnapshot?: Prisma.InputJsonValue;
   /** نوع محصول در لحظه‌ی ثبت؛ خالی ⇒ PHYSICAL (پیش‌فرض دیتابیس) */
   productKindSnapshot?: ProductKind;
 }

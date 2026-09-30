@@ -17,6 +17,7 @@ import {
   restoreProduct,
   updateProduct,
 } from "@/server/services/product.service";
+import { duplicateProduct } from "@/server/services/product-duplicate.service";
 
 import {
   type ActionResult,
@@ -152,5 +153,20 @@ export async function deleteProductPermanentlyAction(
     await deleteProductPermanently(parsed.data);
     revalidateCatalog();
     return {};
+  });
+}
+
+/** «کپی محصول»: محصول جدید غیرفعال با همه‌ی گزینه‌ها، ترکیب‌ها، قیمت‌ها و تصاویر */
+export async function duplicateProductAction(
+  id: string,
+): Promise<ActionResult<{ id: string; copiedImages: number }>> {
+  await requireAdmin();
+  const parsed = idSchema.safeParse(id);
+  if (!parsed.success) return { ok: false, message: INVALID_INPUT_MESSAGE };
+
+  return runAction(async () => {
+    const copy = await duplicateProduct(parsed.data);
+    revalidateCatalog();
+    return copy;
   });
 }

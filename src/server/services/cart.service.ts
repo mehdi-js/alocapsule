@@ -51,7 +51,7 @@ export interface CartLineDto {
   productSlug: string;
   variantTitle: string;
   sku: string | null;
-  unit: ProductUnit;
+  unit: ProductUnit | null;
   /** خدمت (مثل شارژ) یا کالای فیزیکی؛ سبد مخلوط مجاز است */
   kind: ProductKind;
   unitPrice: number;

@@ -31,7 +31,7 @@ const categoryIds: string[] = [];
 let parentId: string;
 let childId: string;
 
-const variant = { unitValue: 500, price: 100_000, shippingWeightGrams: 600 };
+const variant = { price: 100_000, shippingWeightGrams: 600 };
 
 async function newCategory(slug: string, parent: string | null = null) {
   const { id } = await createCategory(

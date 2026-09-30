@@ -17,12 +17,14 @@ export function ProductEditView({
   titleSettings,
   siteUrl,
   defaultServiceTerms,
+  pairingOptions,
 }: {
   product: ProductEditDto;
   categories: CategoryDto[];
   titleSettings: TitleSettings;
   siteUrl: string;
   defaultServiceTerms: string;
+  pairingOptions: { id: string; name: string }[];
 }) {
   const [images, setImages] = useState<ProductImageDto[]>(product.images);
   return (
@@ -39,6 +41,7 @@ export function ProductEditView({
         titleSettings={titleSettings}
         siteUrl={siteUrl}
         defaultServiceTerms={defaultServiceTerms}
+        pairingOptions={pairingOptions}
       />
     </div>
   );

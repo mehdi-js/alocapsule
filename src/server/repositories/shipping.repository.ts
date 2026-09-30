@@ -18,6 +18,8 @@ export interface ShippingMethodData {
   freeAboveQuantity?: number | null;
   /** `false` ⇒ تحویل حضوری (بدون آدرس) */
   requiresAddress?: boolean;
+  deliveryEstimate?: string | null;
+  businessHoursOnly?: boolean;
   payOnDelivery: boolean;
   provinces: string[];
   isActive: boolean;

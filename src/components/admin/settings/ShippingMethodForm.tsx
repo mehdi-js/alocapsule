@@ -20,6 +20,8 @@ export interface ShippingRow {
   freeAboveAmount: number | null;
   freeAboveQuantity: number | null;
   requiresAddress: boolean;
+  deliveryEstimate: string | null;
+  businessHoursOnly: boolean;
   payOnDelivery: boolean;
   provinces: string[];
   isActive: boolean;
@@ -46,6 +48,8 @@ export function MethodForm({
       ? String(method.freeAboveQuantity)
       : "",
     requiresAddress: method?.requiresAddress ?? true,
+    deliveryEstimate: method?.deliveryEstimate ?? "",
+    businessHoursOnly: method?.businessHoursOnly ?? false,
     provinces: method?.provinces ?? [],
     payOnDelivery: method?.payOnDelivery ?? false,
     isActive: method?.isActive ?? true,
@@ -72,6 +76,8 @@ export function MethodForm({
             ? (parseIntegerInput(values.freeAboveQuantity) ?? Number.NaN)
             : null,
         requiresAddress: values.requiresAddress,
+        deliveryEstimate: values.deliveryEstimate,
+        businessHoursOnly: values.businessHoursOnly,
         payOnDelivery: values.payOnDelivery,
         // روش بدون آدرس (تحویل حضوری) به استان وابسته نیست
         provinces: values.requiresAddress ? values.provinces : [],
@@ -95,6 +101,7 @@ export function MethodForm({
       | "cost"
       | "freeAboveAmount"
       | "freeAboveQuantity"
+      | "deliveryEstimate"
       | "sortOrder",
     label: string,
     hint?: string,
@@ -121,6 +128,28 @@ export function MethodForm({
     <form onSubmit={submit} noValidate className="space-y-4">
       {text("name", "نام")}
       {text("description", "توضیح (اختیاری)")}
+      {text(
+        "deliveryEstimate",
+        "زمان تحویل (اختیاری)",
+        "مثل «۱ روزه» یا «۱ تا ۴ ساعت»؛ در تسویه، صفحه‌ی محصول و سوالات متداول نمایش داده می‌شود.",
+      )}
+      <label className="flex items-start gap-2 rounded-lg border border-neutral-200 p-3 text-sm">
+        <input
+          type="checkbox"
+          className="mt-1"
+          checked={values.businessHoursOnly}
+          onChange={(e) =>
+            setValues((v) => ({ ...v, businessHoursOnly: e.target.checked }))
+          }
+        />
+        <span>
+          فقط در ساعات کاری
+          <span className="block text-xs text-neutral-500">
+            خارج از ساعات کاری (تنظیمات ← کسب‌وکار و خدمت) این روش در تسویه
+            غیرفعال نمایش داده می‌شود (مثل ارسال فوری).
+          </span>
+        </span>
+      </label>
       <label className="flex items-start gap-2 rounded-lg border border-neutral-200 p-3 text-sm">
         <input
           type="checkbox"

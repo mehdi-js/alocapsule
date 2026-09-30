@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { DuplicateProductButton } from "@/components/admin/DuplicateProductButton";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { ProductEditView } from "@/components/admin/ProductEditView";
 import { SITE } from "@/lib/site-content";
 import { requireAdmin } from "@/server/auth/current-user";
 import { listCategories } from "@/server/services/category.service";
-import { getProductForEdit } from "@/server/services/product-query.service";
+import {
+  getProductForEdit,
+  listPairingOptions,
+} from "@/server/services/product-query.service";
 import { getTitleSettings } from "@/server/services/seo-settings.service";
 import { getBusinessSettings } from "@/server/services/store-content.service";
 
@@ -19,12 +23,14 @@ export default async function EditProductPage({
 }) {
   await requireAdmin();
   const { id } = await params;
-  const [product, categories, titleSettings, business] = await Promise.all([
-    getProductForEdit(id),
-    listCategories(),
-    getTitleSettings(),
-    getBusinessSettings(),
-  ]);
+  const [product, categories, titleSettings, business, pairingOptions] =
+    await Promise.all([
+      getProductForEdit(id),
+      listCategories(),
+      getTitleSettings(),
+      getBusinessSettings(),
+      listPairingOptions(id),
+    ]);
   if (!product) notFound();
 
   return (
@@ -35,6 +41,13 @@ export default async function EditProductPage({
           { label: "محصولات", href: "/admin/products" },
           { label: "ویرایش" },
         ]}
+        actions={
+          <DuplicateProductButton
+            productId={product.id}
+            productName={product.name}
+            size="md"
+          />
+        }
       />
       {product.archivedAt ? (
         <p className="mb-4 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900">
@@ -50,6 +63,7 @@ export default async function EditProductPage({
         titleSettings={titleSettings}
         siteUrl={SITE.url}
         defaultServiceTerms={business.serviceDefaultTerms}
+        pairingOptions={pairingOptions}
       />
     </>
   );

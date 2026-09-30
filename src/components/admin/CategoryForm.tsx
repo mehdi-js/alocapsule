@@ -99,6 +99,19 @@ export function CategoryForm({
               onChange={(event) => patch({ name: event.target.value })}
             />
           </Field>
+          <Field
+            label="H1 صفحه (اختیاری)"
+            htmlFor="cat-h1"
+            error={error("h1")}
+            hint="اگر با نام دسته فرق دارد (مثلاً «قیمت شارژ کپسول گاز»)؛ خالی ⇒ نام دسته."
+          >
+            <Input
+              id="cat-h1"
+              value={state.h1}
+              invalid={!!error("h1")}
+              onChange={(event) => patch({ h1: event.target.value })}
+            />
+          </Field>
           <SlugField
             value={state.slug}
             originalSlug={category?.slug ?? null}

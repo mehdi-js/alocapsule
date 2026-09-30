@@ -12,6 +12,8 @@ import {
 export interface CategoryFormState {
   name: string;
   slug: string;
+  /** H1 صفحه‌ی دسته؛ خالی ⇒ نام */
+  h1: string;
   parentId: string;
   /** زیرعنوان صفحه‌ی دسته */
   description: string;
@@ -31,6 +33,7 @@ export function categoryFormFrom(
     return {
       name: "",
       slug: "",
+      h1: "",
       parentId: "",
       description: "",
       sortOrder: "0",
@@ -44,6 +47,7 @@ export function categoryFormFrom(
   return {
     name: dto.name,
     slug: dto.slug,
+    h1: dto.h1 ?? "",
     parentId: dto.parentId ?? "",
     description: dto.description ?? "",
     sortOrder: String(dto.sortOrder),
@@ -59,6 +63,7 @@ export function toCategoryInput(state: CategoryFormState): CategoryFormInput {
   return {
     name: state.name,
     slug: state.slug,
+    h1: state.h1,
     parentId: state.parentId || null,
     description: state.description,
     // NaN (نه undefined) تا مقدار نامعتبر بی‌صدا به پیش‌فرض ۰ تبدیل نشود

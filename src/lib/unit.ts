@@ -29,12 +29,15 @@ export function getVariantTitle(unit: ProductUnit, unitValue: number): string {
 
 /** عنوان دستیِ ادمین اولویت دارد؛ اگر خالی بود عنوان خودکار. */
 export function resolveVariantTitle(
-  unit: ProductUnit,
-  unitValue: number,
+  unit: ProductUnit | null | undefined,
+  unitValue: number | null | undefined,
   customTitle?: string | null,
 ): string {
   const custom = customTitle?.trim();
-  return custom ? custom : getVariantTitle(unit, unitValue);
+  if (custom) return custom;
+  // محصول دارای گزینه‌ها واحد/مقدار ندارد؛ عنوانش از برچسب‌ها ساخته و ذخیره می‌شود
+  if (!unit || unitValue === null || unitValue === undefined) return "";
+  return getVariantTitle(unit, unitValue);
 }
 
 /**
@@ -42,11 +45,13 @@ export function resolveVariantTitle(
  * فقط برای محصولات GRAM معنا دارد؛ برای PIECE مقدار `null` برمی‌گردد.
  */
 export function calculatePricePerKg(
-  unit: ProductUnit,
+  unit: ProductUnit | null | undefined,
   price: number,
-  unitValue: number,
+  unitValue: number | null | undefined,
 ): number | null {
-  if (unit !== "GRAM") return null;
+  if (unit !== "GRAM" || unitValue === null || unitValue === undefined) {
+    return null;
+  }
   assertUnitValue(unitValue);
   if (!Number.isSafeInteger(price) || price < 0) {
     throw new RangeError(`Invalid price: ${price}`);
@@ -66,11 +71,13 @@ export const DEFAULT_PACKAGING_GRAMS = 0;
  * فقط برای GRAM قابل پیشنهاد است؛ برای PIECE وزن جعبه را ادمین وارد می‌کند.
  */
 export function suggestShippingWeightGrams(
-  unit: ProductUnit,
-  unitValue: number,
+  unit: ProductUnit | null | undefined,
+  unitValue: number | null | undefined,
   packagingGrams = DEFAULT_PACKAGING_GRAMS,
 ): number | null {
-  if (unit !== "GRAM") return null;
+  if (unit !== "GRAM" || unitValue === null || unitValue === undefined) {
+    return null;
+  }
   assertUnitValue(unitValue);
   return unitValue + packagingGrams;
 }

@@ -152,6 +152,8 @@ export async function saveShippingMethod(
         freeAboveAmount: input.freeAboveAmount,
         freeAboveQuantity: input.freeAboveQuantity,
         requiresAddress: input.requiresAddress,
+        deliveryEstimate: input.deliveryEstimate,
+        businessHoursOnly: input.businessHoursOnly,
       },
     });
   });

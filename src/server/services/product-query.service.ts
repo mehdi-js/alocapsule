@@ -1,11 +1,13 @@
 import type { PricingMode, ProductKind, ProductUnit } from "@prisma/client";
 
+import { parseOptionKey } from "@/lib/product-options";
 import { analyzeSeo, type SeoSummary, summarizeSeo } from "@/lib/seo/analyze";
 import { findSeoConflicts } from "@/lib/seo/conflicts";
 import { parseFaq } from "@/lib/seo/faq";
 import type { FaqItem } from "@/lib/validation/seo";
 import {
   findProductById,
+  listPairingCandidates,
   listProductLinks,
   listProductsForAdmin,
   productHasOrders,
@@ -37,7 +39,7 @@ export interface ProductListItem {
   name: string;
   slug: string;
   categoryName: string;
-  unit: ProductUnit;
+  unit: ProductUnit | null;
   kind: ProductKind;
   pricingMode: PricingMode;
   isActive: boolean;
@@ -58,9 +60,27 @@ export interface ProductListPage {
   pageCount: number;
 }
 
+export interface OptionValueDto {
+  id: string;
+  label: string;
+  code: string;
+  isActive: boolean;
+}
+
+export interface OptionDto {
+  id: string;
+  name: string;
+  code: string;
+  values: OptionValueDto[];
+}
+
 export interface VariantDto {
   id: string;
-  unitValue: number;
+  /** کلید ترکیب (`fill:filled|valve:persi`، `default`، `legacy:*`) */
+  optionKey: string;
+  /** کد گروه ⇒ کد مقدار (خالی برای default و legacy) */
+  selection: Record<string, string>;
+  unitValue: number | null;
   title: string | null;
   sku: string | null;
   price: number;
@@ -74,7 +94,7 @@ export interface ProductEditDto {
   name: string;
   slug: string;
   categoryId: string;
-  unit: ProductUnit;
+  unit: ProductUnit | null;
   kind: ProductKind;
   pricingMode: PricingMode;
   /** فقط برای خدمت؛ خالی ⇒ متن پیش‌فرض `service.defaultTerms` */
@@ -93,8 +113,13 @@ export interface ProductEditDto {
   archiveRedirectTo: string | null;
   sortOrder: number;
   isActive: boolean;
-  /** پس از اولین سفارش، `unit` قفل است */
+  /** پس از اولین سفارش، `unit` و کدهای گزینه قفل است */
   hasOrders: boolean;
+  options: OptionDto[];
+  /** آخرین تغییر قیمت یک ترکیب (خودکار) */
+  priceUpdatedAt: Date | null;
+  /** محصول متناظر همراه قیمت‌های فعالش (برای «محاسبه‌ی قیمت پرشده») */
+  paired: { id: string; name: string; activePrices: number[] } | null;
   variants: VariantDto[];
   /** به ترتیب نمایش */
   images: ProductImageDto[];
@@ -223,8 +248,29 @@ export async function getProductForEdit(
     sortOrder: product.sortOrder,
     isActive: product.isActive,
     hasOrders: await productHasOrders(id),
+    options: product.options.map((option) => ({
+      id: option.id,
+      name: option.name,
+      code: option.code,
+      values: option.values.map((value) => ({
+        id: value.id,
+        label: value.label,
+        code: value.code,
+        isActive: value.isActive,
+      })),
+    })),
+    priceUpdatedAt: product.priceUpdatedAt,
+    paired: product.pairedProduct
+      ? {
+          id: product.pairedProduct.id,
+          name: product.pairedProduct.name,
+          activePrices: product.pairedProduct.variants.map((v) => v.price),
+        }
+      : null,
     variants: product.variants.map((variant) => ({
       id: variant.id,
+      optionKey: variant.optionKey,
+      selection: parseOptionKey(variant.optionKey),
       unitValue: variant.unitValue,
       title: variant.title,
       sku: variant.sku,
@@ -265,4 +311,12 @@ export async function listArchiveTargets(): Promise<{
       path: `/products/${product.slug}`,
     })),
   };
+}
+
+/** فهرست محصولات برای انتخاب «محصول متناظر» */
+export async function listPairingOptions(
+  excludeId: string | null,
+): Promise<{ id: string; name: string }[]> {
+  const products = await listPairingCandidates(excludeId);
+  return products.map((product) => ({ id: product.id, name: product.name }));
 }

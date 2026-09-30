@@ -6,12 +6,12 @@ import {
   canActivateProduct,
   FIXED_NEEDS_VARIANT_MESSAGE,
   MAX_SERVICE_TERMS_LENGTH,
+  NO_PRICE_ACTIVE_MESSAGE,
   productInputSchema,
   resolveServiceTerms,
 } from "@/lib/validation/product";
 
 const validVariant = {
-  unitValue: 500,
   price: 265_000,
   shippingWeightGrams: 700,
 };
@@ -20,7 +20,6 @@ const validProduct = {
   name: "کپسول یزدی",
   slug: "charge-propane",
   categoryId: "cat-1",
-  unit: "GRAM" as const,
   variants: [validVariant],
 };
 
@@ -130,12 +129,10 @@ describe("productInputSchema", () => {
     });
   });
 
-  it("دو variant با unitValue یکسان ⇒ خطا روی همان ردیف", () => {
-    const errors = issues({
-      ...validProduct,
-      variants: [validVariant, { ...validVariant, price: 300_000 }],
-    });
-    expect(errors["variants.1.unitValue"]).toBe("مقدار واحد تکراری است");
+  it("ورودی قدیمی unitValue نگه داشته نمی‌شود (گزینه‌ها جایگزینش شده‌اند)", () => {
+    const parsed = productInputSchema.parse(validProduct);
+    expect(Object.keys(parsed.variants[0]!)).not.toContain("unitValue");
+    expect(parsed.variants[0]!.selection).toEqual({});
   });
 
   it("بدون variant ⇒ خطا", () => {
@@ -153,26 +150,44 @@ describe("productInputSchema", () => {
     expect(Object.keys(parsed).join(" ")).not.toMatch(/stock|inventory/i);
   });
 
-  it("قیمت و وزن باید مثبت و صحیح باشند", () => {
+  it("قیمت و وزن باید صحیح و غیرمنفی باشند؛ ترکیب جدیدِ فعال باید قیمت و وزن مثبت داشته باشد", () => {
     const errors = issues({
       ...validProduct,
-      variants: [{ unitValue: 0, price: 0, shippingWeightGrams: 1.5 }],
+      variants: [{ price: -1, shippingWeightGrams: 1.5 }],
     });
-    expect(errors["variants.0.unitValue"]).toBeDefined();
     expect(errors["variants.0.price"]).toBeDefined();
     expect(errors["variants.0.shippingWeightGrams"]).toBeDefined();
+
+    // بدون قیمت فقط غیرفعال (مثل «ساخت همه‌ی ترکیب‌ها»)
+    expect(
+      productInputSchema.safeParse({
+        ...validProduct,
+        variants: [{ price: 0, shippingWeightGrams: 0, isActive: false }],
+      }).success,
+    ).toBe(true);
+    const active = issues({
+      ...validProduct,
+      variants: [{ price: 0, shippingWeightGrams: 0, isActive: true }],
+    });
+    expect(active["variants.0.price"]).toBe(NO_PRICE_ACTIVE_MESSAGE);
+    expect(active["variants.0.shippingWeightGrams"]).toBeDefined();
+  });
+
+  it("ترکیبِ ذخیره‌شده‌ی بدون قیمت هم نمی‌تواند فعال بماند/شود", () => {
+    const errors = issues({
+      ...validProduct,
+      variants: [
+        { id: "v1", price: 0, shippingWeightGrams: 500, isActive: true },
+      ],
+    });
+    expect(errors["variants.0.price"]).toBe(NO_PRICE_ACTIVE_MESSAGE);
   });
 
   it("مقدار ناعدد پیام فارسی همان فیلد را می‌دهد", () => {
     const errors = issues({
       ...validProduct,
-      variants: [
-        { unitValue: undefined, price: Number.NaN, shippingWeightGrams: 700 },
-      ],
+      variants: [{ price: Number.NaN, shippingWeightGrams: 700 }],
     });
-    expect(errors["variants.0.unitValue"]).toBe(
-      "مقدار واحد باید عدد صحیح باشد",
-    );
     expect(errors["variants.0.price"]).toBe("قیمت باید عدد صحیح باشد");
   });
 

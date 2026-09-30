@@ -59,8 +59,18 @@ export async function createCatalog(): Promise<Catalog> {
       unit: "GRAM",
       variants: {
         create: [
-          { unitValue: 500, price: 400_000, shippingWeightGrams: 600 },
-          { unitValue: 1000, price: 750_000, shippingWeightGrams: 1100 },
+          {
+            unitValue: 500,
+            optionKey: "legacy:500",
+            price: 400_000,
+            shippingWeightGrams: 600,
+          },
+          {
+            unitValue: 1000,
+            optionKey: "legacy:1000",
+            price: 750_000,
+            shippingWeightGrams: 1100,
+          },
         ],
       },
     },

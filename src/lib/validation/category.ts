@@ -9,6 +9,13 @@ export const categoryInputSchema = z.object({
     .min(2, "نام دسته‌بندی حداقل ۲ کاراکتر باشد")
     .max(80, "نام دسته‌بندی حداکثر ۸۰ کاراکتر باشد"),
   slug: latinSlugSchema,
+  /** H1 صفحه‌ی دسته اگر با نام فرق دارد؛ خالی ⇒ نام (SEO.md §۲.۲) */
+  h1: z
+    .string()
+    .trim()
+    .max(120, "H1 حداکثر ۱۲۰ کاراکتر باشد")
+    .nullish()
+    .transform((value) => value || null),
   parentId: z
     .string()
     .nullish()

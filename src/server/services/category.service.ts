@@ -48,6 +48,7 @@ export interface CategoryEditDto {
   id: string;
   name: string;
   slug: string;
+  h1: string | null;
   parentId: string | null;
   description: string | null;
   sortOrder: number;
@@ -139,6 +140,7 @@ export async function getCategoryForEdit(
     id: category.id,
     name: category.name,
     slug: category.slug,
+    h1: category.h1,
     parentId: category.parentId,
     description: category.description,
     sortOrder: category.sortOrder,
@@ -211,6 +213,7 @@ function categoryFields(input: CategoryInput) {
   return {
     name: input.name,
     slug: input.slug,
+    h1: input.h1,
     parentId: input.parentId,
     description: input.description,
     sortOrder: input.sortOrder,

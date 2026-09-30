@@ -248,6 +248,8 @@ export async function findFilterBounds() {
 
   const seen = new Map<string, Pack>();
   for (const variant of variants) {
+    // محصول دارای گزینه‌ها واحد/مقدار ندارد و در فیلتر «وزن/تعداد» نمی‌آید
+    if (!variant.product.unit || variant.unitValue === null) continue;
     const pack = { unit: variant.product.unit, value: variant.unitValue };
     seen.set(`${pack.unit}:${pack.value}`, pack);
   }

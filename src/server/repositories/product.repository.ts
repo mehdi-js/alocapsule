@@ -51,9 +51,36 @@ export function findProductById(id: string) {
     where: { id },
     include: {
       category: true,
+      options: {
+        orderBy: { sortOrder: "asc" },
+        include: { values: { orderBy: { sortOrder: "asc" } } },
+      },
       variants: { orderBy: { sortOrder: "asc" } },
       images: orderedImages,
+      pairedProduct: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          variants: {
+            where: { isActive: true },
+            select: { price: true },
+          },
+        },
+      },
     },
+  });
+}
+
+/** محصولات بایگانی‌نشده برای انتخاب «محصول متناظر» */
+export function listPairingCandidates(excludeId: string | null) {
+  return db.product.findMany({
+    where: {
+      archivedAt: null,
+      ...(excludeId ? { id: { not: excludeId } } : {}),
+    },
+    select: { id: true, name: true, slug: true },
+    orderBy: [{ name: "asc" }],
   });
 }
 
@@ -129,6 +156,17 @@ export async function findVariantIdsUsedInOrders(
     distinct: ["variantId"],
   });
   return rows.flatMap((row) => (row.variantId ? [row.variantId] : []));
+}
+
+/** برای قاعده‌ی فعال شدن ترکیب: قیمت و مقدارهای گزینه‌اش */
+export function findVariantForActivation(id: string) {
+  return db.productVariant.findUnique({
+    where: { id },
+    select: {
+      price: true,
+      optionValues: { select: { optionValue: { select: { isActive: true } } } },
+    },
+  });
 }
 
 export function setVariantActive(id: string, isActive: boolean) {

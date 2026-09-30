@@ -36,7 +36,7 @@ function productInput(overrides: Record<string, unknown> = {}) {
     slug: `seo-test-${RUN}`,
     categoryId,
     unit: "GRAM",
-    variants: [{ unitValue: 500, price: 100_000, shippingWeightGrams: 600 }],
+    variants: [{ price: 100_000, shippingWeightGrams: 600 }],
     ...overrides,
   });
 }

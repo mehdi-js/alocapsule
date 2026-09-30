@@ -37,7 +37,7 @@ export type PageLookup<T> =
 
 export interface CatalogVariantDto {
   id: string;
-  unitValue: number;
+  unitValue: number | null;
   title: string;
   price: number;
   comparePrice: number | null;
@@ -56,7 +56,7 @@ export interface ProductPageDto {
   name: string;
   shortDescription: string | null;
   description: string | null;
-  unit: ProductUnit;
+  unit: ProductUnit | null;
   kind: ProductKind;
   /** استعلامی ⇒ بدون متغیر/قیمت/افزودن به سبد؛ جعبه‌ی «استعلام قیمت» */
   pricingMode: PricingMode;

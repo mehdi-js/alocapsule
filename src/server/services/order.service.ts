@@ -123,6 +123,10 @@ async function placeOrderTx(
       lineTotal: variant.price * row.quantity,
       unitValueSnapshot: variant.unitValue,
       unitSnapshot: product.unit,
+      optionsSnapshot: variant.optionValues
+        .map((link) => link.optionValue)
+        .sort((a, b) => a.option.sortOrder - b.option.sortOrder)
+        .map((value) => ({ option: value.option.name, value: value.label })),
       productKindSnapshot: product.kind,
     });
     serviceLines.push({

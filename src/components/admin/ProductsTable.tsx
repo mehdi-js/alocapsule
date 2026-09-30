@@ -12,6 +12,7 @@ import {
   ArchiveProductButton,
   type ArchiveTargets,
 } from "./ArchiveProductButton";
+import { DuplicateProductButton } from "./DuplicateProductButton";
 import { SeoStatusDot } from "./seo/SeoStatusDot";
 
 const UNIT_LABELS = { GRAM: "گرمی", PIECE: "عددی" } as const;
@@ -79,7 +80,7 @@ export function ProductsTable({
                 </span>
               ) : null}
             </TD>
-            <TD>{UNIT_LABELS[item.unit]}</TD>
+            <TD>{item.unit ? UNIT_LABELS[item.unit] : "—"}</TD>
             <TD>
               {toPersianDigits(item.variantCount)}
               {item.activeVariantCount < item.variantCount ? (
@@ -121,12 +122,18 @@ export function ProductsTable({
                     productName={item.name}
                   />
                 ) : (
-                  <ArchiveProductButton
-                    productId={item.id}
-                    productName={item.name}
-                    categorySlug={item.categorySlug}
-                    targets={targets}
-                  />
+                  <>
+                    <DuplicateProductButton
+                      productId={item.id}
+                      productName={item.name}
+                    />
+                    <ArchiveProductButton
+                      productId={item.id}
+                      productName={item.name}
+                      categorySlug={item.categorySlug}
+                      targets={targets}
+                    />
+                  </>
                 )}
               </div>
             </TD>

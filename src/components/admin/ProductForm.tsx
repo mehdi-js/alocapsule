@@ -9,7 +9,6 @@ import { Field } from "@/components/ui/Field";
 import { Input } from "@/components/ui/Input";
 import { useToast } from "@/components/ui/Toast";
 import type { TitleSettings } from "@/lib/seo/title";
-import type { ProductUnit } from "@/lib/unit";
 import { toPersianDigits } from "@/lib/utils";
 import {
   createProductAction,
@@ -18,21 +17,19 @@ import {
 import type { CategoryDto } from "@/server/services/category.service";
 import type { ProductEditDto } from "@/server/services/product-query.service";
 
+import { OptionsSection } from "./OptionsSection";
+import { PricingSection } from "./PricingSection";
 import {
   autoSlug,
   emptyProductForm,
-  emptyVariantRow,
   formFromDto,
   type ProductFormState,
   toProductInput,
-  type VariantRowState,
-  withSuggestedWeight,
 } from "./product-form-state";
 import { ProductActiveCard } from "./ProductActiveCard";
 import { ProductBasicsSection } from "./ProductBasicsSection";
 import { RichTextField } from "./seo/RichTextField";
 import { SeoSection } from "./seo/SeoSection";
-import { VariantRows } from "./VariantRows";
 
 const sectionClass =
   "space-y-4 rounded-xl border border-neutral-200 bg-white p-5";
@@ -44,6 +41,7 @@ export function ProductForm({
   titleSettings,
   siteUrl,
   defaultServiceTerms,
+  pairingOptions,
 }: {
   categories: CategoryDto[];
   /** اگر باشد حالت ویرایش است */
@@ -54,6 +52,8 @@ export function ProductForm({
   siteUrl: string;
   /** متن پیش‌فرض شرایط خدمت (`service.defaultTerms`) برای placeholder */
   defaultServiceTerms: string;
+  /** محصولات قابل انتخاب به‌عنوان «محصول متناظر» */
+  pairingOptions: { id: string; name: string }[];
 }) {
   const router = useRouter();
   const toast = useToast();
@@ -74,27 +74,6 @@ export function ProductForm({
 
   function changeName(name: string) {
     patch({ name, ...(state.slugTouched ? {} : { slug: autoSlug(name) }) });
-  }
-
-  function changeUnit(unit: ProductUnit) {
-    setState((current) => ({
-      ...current,
-      unit,
-      variants: current.variants.map((row) => withSuggestedWeight(row, unit)),
-    }));
-  }
-
-  function changeVariant(index: number, update: Partial<VariantRowState>) {
-    setState((current) => ({
-      ...current,
-      variants: current.variants.map((row, rowIndex) => {
-        if (rowIndex !== index) return row;
-        const next = { ...row, ...update };
-        return "unitValue" in update
-          ? withSuggestedWeight(next, current.unit)
-          : next;
-      }),
-    }));
   }
 
   function handleSubmit(event: FormEvent) {
@@ -146,7 +125,6 @@ export function ProductForm({
         unitLocked={unitLocked}
         error={error}
         onName={changeName}
-        onUnit={changeUnit}
         onChange={patch}
       />
 
@@ -179,42 +157,51 @@ export function ProductForm({
               role="alert"
               className="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-900"
             >
-              هشدار: با ذخیره، {toPersianDigits(originalVariantCount)} متغیر
+              هشدار: با ذخیره، {toPersianDigits(originalVariantCount)} ترکیب
               فعلی این محصول غیرفعال می‌شود (حذف نمی‌شوند) و از سبد مشتریانی که
               آن را دارند برداشته می‌شود.
             </p>
           ) : null}
         </section>
       ) : (
-        <section className={sectionClass}>
-          <div>
-            <h2 className="text-lg font-bold">متغیرها (وزن یا تعداد)</h2>
-            <p className="text-sm text-neutral-600">
-              مشتری فقط یکی از متغیرها را انتخاب می‌کند و در سبد تعداد آن را
-              تعیین می‌کند (مثلاً ۳ عدد جعبه‌ی ۱ کیلوگرمی).
-            </p>
-          </div>
-          <VariantRows
-            unit={state.unit}
-            rows={state.variants}
-            errors={errors}
-            onChange={changeVariant}
-            onAdd={() =>
-              setState((current) => ({
-                ...current,
-                variants: [...current.variants, emptyVariantRow()],
-              }))
-            }
-            onRemove={(index) =>
-              setState((current) => ({
-                ...current,
-                variants: current.variants.filter(
-                  (_, rowIndex) => rowIndex !== index,
-                ),
-              }))
-            }
-          />
-        </section>
+        <>
+          <section className={sectionClass}>
+            <div>
+              <h2 className="text-lg font-bold">گزینه‌ها</h2>
+              <p className="text-sm text-neutral-600">
+                گروه‌هایی مثل «نوع شیر (پرسی/بوتان)» یا «وضعیت تحویل
+                (خالی/پرشده)». هر ترکیب از مقدارها یک قیمت مستقل دارد.
+              </p>
+            </div>
+            <OptionsSection
+              options={state.options}
+              variants={state.variants}
+              codesLocked={product?.hasOrders ?? false}
+              error={error}
+              onChange={(next) => patch(next)}
+            />
+          </section>
+          <section className={sectionClass}>
+            <div>
+              <h2 className="text-lg font-bold">قیمت‌گذاری ترکیب‌ها</h2>
+              <p className="text-sm text-neutral-600">
+                مشتری یک ترکیب را انتخاب می‌کند و در سبد تعداد آن را تعیین
+                می‌کند. ترکیب بدون قیمت فعال نمی‌شود.
+              </p>
+            </div>
+            <PricingSection
+              options={state.options}
+              rows={state.variants}
+              errors={errors}
+              priceUpdatedAt={product?.priceUpdatedAt ?? null}
+              paired={product?.paired ?? null}
+              pairedProductId={state.pairedProductId}
+              pairingOptions={pairingOptions}
+              onRows={(variants) => patch({ variants })}
+              onPairedChange={(pairedProductId) => patch({ pairedProductId })}
+            />
+          </section>
+        </>
       )}
 
       <SeoSection
