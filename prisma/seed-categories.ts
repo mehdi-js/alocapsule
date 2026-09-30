@@ -18,6 +18,8 @@ export interface SeedCategory {
   /** متن با قالب `lib/rich-text.ts` (`##` سرتیتر، `[متن](/آدرس)` لینک) */
   bottomContent: string;
   noindex: boolean;
+  /** نمایش در بخش دسته‌های صفحه‌ی اصلی */
+  isFeatured: boolean;
   sortOrder: number;
 }
 
@@ -29,6 +31,7 @@ const base = {
   introText: "",
   bottomContent: "",
   noindex: false,
+  isFeatured: true,
 };
 
 export const catalogCategories: SeedCategory[] = [

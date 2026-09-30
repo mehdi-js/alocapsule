@@ -1,5 +1,8 @@
 import { sanitizePlainText } from "@/lib/sanitize-text";
-import type { ProductInput } from "@/lib/validation/product";
+import {
+  canActivateProduct,
+  type ProductInput,
+} from "@/lib/validation/product";
 import {
   getUniqueViolationTarget,
   isRecordNotFound,
@@ -38,7 +41,12 @@ export interface ProductSaveResult {
   id: string;
   /** کلمه/عنوان/متای تکراری؛ ذخیره انجام شده و این فقط هشدار است */
   seoWarning: string | null;
+  /** تعداد متغیرهایی که به‌خاطر «استعلامی» شدن محصول غیرفعال شدند (نه حذف) */
+  deactivatedVariants: number;
 }
+
+export const CANNOT_ACTIVATE_MESSAGE =
+  "محصول قیمت‌دار برای فعال شدن حداقل یک متغیر فعال لازم دارد.";
 
 async function assertSlugFree(slug: string, excludeId?: string) {
   if (await productSlugExists(slug, excludeId)) {
@@ -67,6 +75,10 @@ function productFields(input: ProductInput) {
     slug: input.slug,
     categoryId: input.categoryId,
     unit: input.unit,
+    kind: input.kind,
+    pricingMode: input.pricingMode,
+    // برای کالای فیزیکی ذخیره می‌شود ولی نادیده گرفته می‌شود (`resolveServiceTerms`)
+    serviceTerms: sanitizePlainText(input.serviceTerms),
     shortDescription: input.shortDescription,
     description: sanitizePlainText(input.description),
     sortOrder: input.sortOrder,
@@ -98,18 +110,33 @@ export async function createProduct(
 ): Promise<ProductSaveResult> {
   await assertCategoryExists(input.categoryId);
   await assertSlugFree(input.slug);
-  const { creates } = planVariantSync([], input.variants);
+  // استعلامی هرگز متغیر ندارد؛ ورودی متغیرها نادیده گرفته می‌شود
+  const { creates } = planVariantSync(
+    [],
+    input.pricingMode === "INQUIRY" ? [] : input.variants,
+  );
+  const activatable = canActivateProduct({
+    pricingMode: input.pricingMode,
+    activeVariantCount: creates.filter((variant) => variant.isActive).length,
+  });
+  if (input.isActive === true && !activatable) {
+    throw new UserFacingError(CANNOT_ACTIVATE_MESSAGE);
+  }
 
   let id: string;
   try {
     ({ id } = await createProductWithVariants(
-      { ...productFields(input), isActive: input.isActive ?? true },
+      { ...productFields(input), isActive: input.isActive ?? activatable },
       creates,
     ));
   } catch (error) {
     return translateConflict(error);
   }
-  return { id, seoWarning: await seoWarningFor(id, input) };
+  return {
+    id,
+    seoWarning: await seoWarningFor(id, input),
+    deactivatedVariants: 0,
+  };
 }
 
 export async function updateProduct(
@@ -126,7 +153,22 @@ export async function updateProduct(
     );
   }
 
-  const plan = planVariantSync(existing.variants, input.variants);
+  const inquiry = input.pricingMode === "INQUIRY";
+  // استعلامی: متغیرها دست نمی‌خورند جز غیرفعال شدن (نه حذف)
+  const plan = planVariantSync(
+    existing.variants,
+    inquiry
+      ? existing.variants.map((variant) => ({
+          id: variant.id,
+          unitValue: variant.unitValue,
+          title: variant.title,
+          sku: variant.sku,
+          price: variant.price,
+          comparePrice: variant.comparePrice,
+          shippingWeightGrams: variant.shippingWeightGrams,
+        }))
+      : input.variants,
+  );
   const usedInOrders = await findVariantIdsUsedInOrders(plan.deleteIds);
   if (usedInOrders.length > 0) {
     throw new UserFacingError(
@@ -136,17 +178,23 @@ export async function updateProduct(
 
   const slugChanged = input.slug !== existing.slug;
   if (slugChanged) await assertSlugFree(input.slug, id);
+  let deactivatedVariants = 0;
   try {
-    await updateProductWithVariants(
+    ({ deactivatedVariants } = await updateProductWithVariants(
       id,
       productFields(input),
       plan,
       slugChanged ? { from: existing.slug, to: input.slug } : null,
-    );
+      { deactivateVariants: inquiry },
+    ));
   } catch (error) {
     return translateConflict(error);
   }
-  return { id, seoWarning: await seoWarningFor(id, input) };
+  return {
+    id,
+    seoWarning: await seoWarningFor(id, input),
+    deactivatedVariants,
+  };
 }
 
 async function requireProduct(id: string) {
@@ -165,6 +213,15 @@ export async function changeProductActive(
     throw new UserFacingError(
       "این محصول بایگانی شده است؛ اول آن را از بایگانی خارج کنید.",
     );
+  }
+  if (
+    isActive &&
+    !canActivateProduct({
+      pricingMode: product.pricingMode,
+      activeVariantCount: product._count.variants,
+    })
+  ) {
+    throw new UserFacingError(CANNOT_ACTIVATE_MESSAGE);
   }
   await updateProductRecord(id, { isActive });
 }

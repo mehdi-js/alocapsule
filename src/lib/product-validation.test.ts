@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import { sanitizePlainText } from "@/lib/sanitize-text";
 import { categoryInputSchema } from "@/lib/validation/category";
-import { productInputSchema } from "@/lib/validation/product";
+import {
+  canActivateProduct,
+  FIXED_NEEDS_VARIANT_MESSAGE,
+  MAX_SERVICE_TERMS_LENGTH,
+  productInputSchema,
+  resolveServiceTerms,
+} from "@/lib/validation/product";
 
 const validVariant = {
   unitValue: 500,
@@ -25,6 +31,84 @@ function issues(input: unknown): Record<string, string> {
     result.error.issues.map((i) => [i.path.join("."), i.message]),
   );
 }
+
+describe("نوع محصول و حالت قیمت (FORK.md §۳.۲)", () => {
+  it("پیش‌فرض: کالای فیزیکی و قیمت‌دار", () => {
+    const parsed = productInputSchema.parse(validProduct);
+    expect(parsed.kind).toBe("PHYSICAL");
+    expect(parsed.pricingMode).toBe("FIXED");
+    expect(parsed.serviceTerms).toBeNull();
+  });
+
+  it("قیمت‌دار بدون متغیر معتبر نیست", () => {
+    const errors = issues({ ...validProduct, variants: [] });
+    expect(errors.variants).toBe(FIXED_NEEDS_VARIANT_MESSAGE);
+    expect(
+      issues({ ...validProduct, pricingMode: "FIXED", variants: undefined })
+        .variants,
+    ).toBe(FIXED_NEEDS_VARIANT_MESSAGE);
+  });
+
+  it("استعلامی بدون متغیر معتبر است", () => {
+    const parsed = productInputSchema.parse({
+      ...validProduct,
+      kind: "SERVICE",
+      pricingMode: "INQUIRY",
+      variants: [],
+    });
+    expect(parsed.variants).toEqual([]);
+    expect(
+      productInputSchema.safeParse({
+        ...validProduct,
+        pricingMode: "INQUIRY",
+        variants: undefined,
+      }).success,
+    ).toBe(true);
+  });
+
+  it("مقدار نامعتبر نوع/حالت رد می‌شود و متن شرایط خالی ⇒ null", () => {
+    expect(issues({ ...validProduct, kind: "GAS" }).kind).toBeTruthy();
+    expect(
+      issues({ ...validProduct, pricingMode: "FREE" }).pricingMode,
+    ).toBeTruthy();
+    const parsed = productInputSchema.parse({
+      ...validProduct,
+      kind: "SERVICE",
+      serviceTerms: "   ",
+    });
+    expect(parsed.serviceTerms).toBeNull();
+    expect(
+      issues({
+        ...validProduct,
+        kind: "SERVICE",
+        serviceTerms: "x".repeat(MAX_SERVICE_TERMS_LENGTH + 1),
+      }).serviceTerms,
+    ).toBeTruthy();
+  });
+
+  it("فعال شدن: قیمت‌دار فقط با متغیر فعال؛ استعلامی همیشه", () => {
+    expect(
+      canActivateProduct({ pricingMode: "FIXED", activeVariantCount: 0 }),
+    ).toBe(false);
+    expect(
+      canActivateProduct({ pricingMode: "FIXED", activeVariantCount: 2 }),
+    ).toBe(true);
+    expect(
+      canActivateProduct({ pricingMode: "INQUIRY", activeVariantCount: 0 }),
+    ).toBe(true);
+  });
+
+  it("متن شرایط مؤثر: فقط خدمت؛ خالی ⇒ پیش‌فرض؛ فیزیکی ⇒ نادیده", () => {
+    const own = { kind: "SERVICE" as const, serviceTerms: " متن اختصاصی " };
+    expect(resolveServiceTerms(own, "پیش‌فرض")).toBe("متن اختصاصی");
+    expect(
+      resolveServiceTerms({ kind: "SERVICE", serviceTerms: null }, "پیش‌فرض"),
+    ).toBe("پیش‌فرض");
+    expect(
+      resolveServiceTerms({ kind: "PHYSICAL", serviceTerms: "x" }, "پیش‌فرض"),
+    ).toBeNull();
+  });
+});
 
 describe("productInputSchema", () => {
   it("ورودی معتبر را می‌پذیرد و رشته‌های خالی را null می‌کند", () => {
@@ -56,7 +140,7 @@ describe("productInputSchema", () => {
 
   it("بدون variant ⇒ خطا", () => {
     expect(issues({ ...validProduct, variants: [] }).variants).toBe(
-      "حداقل یک متغیر لازم است",
+      FIXED_NEEDS_VARIANT_MESSAGE,
     );
   });
 

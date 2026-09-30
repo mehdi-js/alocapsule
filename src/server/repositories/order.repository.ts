@@ -1,4 +1,4 @@
-import type { Prisma, ProductUnit } from "@prisma/client";
+import { Prisma, type ProductKind, type ProductUnit } from "@prisma/client";
 
 import { db, type DbClient } from "@/lib/db";
 import {
@@ -99,6 +99,8 @@ export interface OrderItemSnapshot {
   lineTotal: number;
   unitValueSnapshot: number;
   unitSnapshot: ProductUnit;
+  /** نوع محصول در لحظه‌ی ثبت؛ خالی ⇒ PHYSICAL (پیش‌فرض دیتابیس) */
+  productKindSnapshot?: ProductKind;
 }
 
 export interface OrderRecordData {
@@ -112,7 +114,11 @@ export interface OrderRecordData {
   couponCode: string | null;
   shippingMethodName: string;
   shippingPayOnDelivery: boolean;
-  shippingAddressSnapshot: Prisma.InputJsonObject;
+  /** خالی برای «تحویل حضوری» (روش ارسال بدون آدرس) */
+  shippingAddressSnapshot: Prisma.InputJsonObject | null;
+  /** فقط برای سفارش دارای آیتم خدمت */
+  serviceTermsAcceptedAt?: Date | null;
+  serviceTermsSnapshot?: string | null;
   customerNote: string | null;
 }
 
@@ -122,9 +128,12 @@ export function createOrderRecord(
   data: OrderRecordData,
   items: OrderItemSnapshot[],
 ) {
+  const { shippingAddressSnapshot, ...rest } = data;
   return tx.order.create({
     data: {
-      ...data,
+      ...rest,
+      // `null` ⇒ NULL در دیتابیس (نه JSON null)
+      shippingAddressSnapshot: shippingAddressSnapshot ?? Prisma.DbNull,
       status: "PENDING_PAYMENT",
       items: { create: items },
       statusHistory: {

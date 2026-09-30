@@ -89,6 +89,19 @@ export const shippingMethodSchema = z
       .min(1, "آستانه باید مثبت باشد")
       .max(MAX_TOMAN * 10)
       .nullable(),
+    /**
+     * ارسال رایگان وقتی مجموع تعداد اقلام سبد ≥ این عدد (رایگان شدن: مبلغ یا
+     * تعداد، هرکدام برقرار باشد). `undefined` ⇒ دست‌نخورده (فرم قدیمی نمی‌فرستد).
+     */
+    freeAboveQuantity: z
+      .number({ error: "آستانه‌ی تعداد باید عدد صحیح باشد" })
+      .int("آستانه‌ی تعداد باید عدد صحیح باشد")
+      .min(1, "آستانه‌ی تعداد باید مثبت باشد")
+      .max(9999, "آستانه‌ی تعداد بیش از حد است")
+      .nullable()
+      .optional(),
+    /** `false` برای «تحویل حضوری» (بدون آدرس). `undefined` ⇒ دست‌نخورده */
+    requiresAddress: z.boolean().optional(),
     provinces: z
       .array(z.string())
       .refine(
@@ -102,7 +115,12 @@ export const shippingMethodSchema = z
   })
   .transform((method) =>
     method.payOnDelivery
-      ? { ...method, cost: 0, freeAboveAmount: null }
+      ? {
+          ...method,
+          cost: 0,
+          freeAboveAmount: null,
+          freeAboveQuantity: null,
+        }
       : method,
   );
 export type ShippingMethodInput = z.output<typeof shippingMethodSchema>;

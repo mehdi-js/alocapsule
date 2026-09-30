@@ -52,8 +52,11 @@ export function updateProductWithVariants(
   plan: VariantSyncPlan,
   /** تغییر نامک ⇒ نامک قبلی در `SlugHistory` (ریدایرکت 301 خودکار) */
   slugChange: { from: string; to: string } | null,
-) {
+  /** استعلامی شدن محصول: متغیرها غیرفعال می‌شوند (نه حذف) و تعدادشان برمی‌گردد */
+  options: { deactivateVariants?: boolean } = {},
+): Promise<{ deactivatedVariants: number }> {
   return db.$transaction(async (tx) => {
+    let deactivatedVariants = 0;
     if (plan.deleteIds.length > 0) {
       await tx.productVariant.deleteMany({
         where: { id: { in: plan.deleteIds }, productId },
@@ -77,6 +80,14 @@ export function updateProductWithVariants(
       await tx.productVariant.create({ data: { ...variant, productId } });
     }
 
+    if (options.deactivateVariants) {
+      const result = await tx.productVariant.updateMany({
+        where: { productId, isActive: true },
+        data: { isActive: false },
+      });
+      deactivatedVariants = result.count;
+    }
+
     await tx.product.update({ where: { id: productId }, data });
     if (slugChange) {
       await recordSlugChange(tx, {
@@ -86,5 +97,6 @@ export function updateProductWithVariants(
         newSlug: slugChange.to,
       });
     }
+    return { deactivatedVariants };
   });
 }

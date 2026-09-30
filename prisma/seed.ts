@@ -1,6 +1,8 @@
 import { type Prisma, PrismaClient } from "@prisma/client";
 
+import { BUSINESS_SETTING_DEFAULTS } from "@/lib/business-settings";
 import { jalaliToDate } from "@/lib/date";
+import { HOME_SETTING_DEFAULTS } from "@/lib/home-settings";
 import {
   DEFAULT_ORDER_NUMBER_PREFIX,
   ORDER_NUMBER_PREFIX_KEY,
@@ -147,6 +149,8 @@ async function seedStoreSettings() {
     "sms.templates": smsTemplates,
     [ORDER_NUMBER_PREFIX_KEY]: DEFAULT_ORDER_NUMBER_PREFIX,
     ...(SEO_SETTING_DEFAULTS as Record<string, Prisma.InputJsonValue>),
+    ...(BUSINESS_SETTING_DEFAULTS as Record<string, Prisma.InputJsonValue>),
+    ...(HOME_SETTING_DEFAULTS as Record<string, Prisma.InputJsonValue>),
   };
   // فقط اگر وجود ندارد؛ اجرای دوباره‌ی seed تنظیمات ادمین را بازنویسی نمی‌کند
   for (const [key, value] of Object.entries(settings)) {

@@ -1,4 +1,4 @@
-import type { ProductUnit } from "@prisma/client";
+import type { PricingMode, ProductKind, ProductUnit } from "@prisma/client";
 
 import { todo } from "@/lib/brand";
 
@@ -6,8 +6,8 @@ import { todo } from "@/lib/brand";
  * ۴ محصول نمونه (بخش ۶.۱ `FORK.md`) برای تست هر حالت؛ محتوای واقعی کاتالوگ از
  * `SEO.md` الو کپسول می‌آید.
  *
- * - محصول ۴ (اکسیژن) استعلامی است؛ تا افزودن `kind`/`pricingMode` (فاز F3)
- *   غیرفعال و بدون متغیر ساخته می‌شود.
+ * - محصول ۴ (اکسیژن) استعلامی است (`INQUIRY`): فعال، بدون متغیر و بدون قیمت.
+ * - `serviceTerms` خالی می‌ماند تا متن پیش‌فرض `service.defaultTerms` نمایش داده شود.
  * - قیمت‌ها و ارقام نمونه‌اند؛ هر ادعای واقعی با `todo()` علامت خورده است.
  * - محصولات دارای متغیر فعال‌اند تا چرخه‌ی کامل خرید قابل تست باشد.
  */
@@ -26,6 +26,8 @@ export interface SeedCatalogProduct {
   slug: string;
   categorySlug: string;
   unit: ProductUnit;
+  kind: ProductKind;
+  pricingMode: PricingMode;
   isActive: boolean;
   shortDescription: string;
   description: string;
@@ -48,6 +50,8 @@ export const catalogProducts: SeedCatalogProduct[] = [
     slug: "charge-butane",
     categorySlug: "lpg-charge",
     unit: "GRAM",
+    kind: "SERVICE",
+    pricingMode: "FIXED",
     isActive: true,
     shortDescription: "تعویض کپسول خالی شما با کپسول پرشده‌ی بوتان",
     description: paragraphs(
@@ -69,6 +73,8 @@ export const catalogProducts: SeedCatalogProduct[] = [
     slug: "buy-cylinder-11kg",
     categorySlug: "lpg-buy",
     unit: "PIECE",
+    kind: "PHYSICAL",
+    pricingMode: "FIXED",
     isActive: true,
     shortDescription: "کپسول گاز نو ۱۱ کیلویی",
     description: paragraphs(
@@ -92,6 +98,8 @@ export const catalogProducts: SeedCatalogProduct[] = [
     slug: "picnic-set",
     categorySlug: "picnic",
     unit: "PIECE",
+    kind: "PHYSICAL",
+    pricingMode: "FIXED",
     isActive: true,
     shortDescription: "کپسول و لوازم گازی پیک‌نیک",
     description: paragraphs(
@@ -107,8 +115,10 @@ export const catalogProducts: SeedCatalogProduct[] = [
     slug: "charge-oxygen-40kg",
     categorySlug: "other-gases",
     unit: "PIECE",
-    // استعلامی: بدون متغیر و غیرفعال تا فاز F3 (`pricingMode = INQUIRY`)
-    isActive: false,
+    kind: "SERVICE",
+    // استعلامی: بدون متغیر و بدون قیمت؛ فقط تماس
+    pricingMode: "INQUIRY",
+    isActive: true,
     shortDescription: "شارژ کپسول اکسیژن ۴۰ کیلویی (استعلام قیمت)",
     description: paragraphs(todo("توضیحات خدمت شارژ اکسیژن")),
     seoTitle: "شارژ کپسول اکسیژن ۴۰ کیلویی",

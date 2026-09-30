@@ -1,3 +1,6 @@
+-- CreateSchema
+CREATE SCHEMA IF NOT EXISTS "public";
+
 -- CreateExtension
 CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
@@ -5,7 +8,16 @@ CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 CREATE TYPE "UserRole" AS ENUM ('CUSTOMER', 'ADMIN');
 
 -- CreateEnum
+CREATE TYPE "LoginMethod" AS ENUM ('OTP', 'PASSWORD');
+
+-- CreateEnum
 CREATE TYPE "ProductUnit" AS ENUM ('GRAM', 'PIECE');
+
+-- CreateEnum
+CREATE TYPE "ProductKind" AS ENUM ('PHYSICAL', 'SERVICE');
+
+-- CreateEnum
+CREATE TYPE "PricingMode" AS ENUM ('FIXED', 'INQUIRY');
 
 -- CreateEnum
 CREATE TYPE "OrderStatus" AS ENUM ('PENDING_PAYMENT', 'PAYMENT_REVIEW', 'PAYMENT_REJECTED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELED');
@@ -29,10 +41,13 @@ CREATE TYPE "CouponType" AS ENUM ('PERCENT', 'FIXED', 'FREE_SHIPPING');
 CREATE TYPE "CouponScope" AS ENUM ('ALL', 'CATEGORY', 'PRODUCT');
 
 -- CreateEnum
-CREATE TYPE "NotificationType" AS ENUM ('ORDER_PLACED', 'PAYMENT_APPROVED', 'PAYMENT_REJECTED', 'ORDER_SHIPPED');
+CREATE TYPE "NotificationType" AS ENUM ('OTP', 'ORDER_PLACED', 'PAYMENT_APPROVED', 'PAYMENT_REJECTED', 'ORDER_SHIPPED', 'ORDER_CANCELED', 'ADMIN_RECEIPT_SUBMITTED', 'ADMIN_WALLET_PAID');
 
 -- CreateEnum
 CREATE TYPE "NotificationStatus" AS ENUM ('PENDING', 'SENT', 'FAILED');
+
+-- CreateEnum
+CREATE TYPE "SlugEntityType" AS ENUM ('PRODUCT', 'CATEGORY', 'PAGE', 'BRANCH');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -41,6 +56,8 @@ CREATE TABLE "User" (
     "fullName" TEXT,
     "email" TEXT,
     "role" "UserRole" NOT NULL DEFAULT 'CUSTOMER',
+    "passwordHash" TEXT,
+    "passwordChangedAt" TIMESTAMPTZ(3),
     "walletBalance" INTEGER NOT NULL DEFAULT 0,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -68,6 +85,7 @@ CREATE TABLE "Session" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "tokenHash" TEXT NOT NULL,
+    "method" "LoginMethod" NOT NULL DEFAULT 'OTP',
     "expiresAt" TIMESTAMPTZ(3) NOT NULL,
     "userAgent" TEXT,
     "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -95,6 +113,17 @@ CREATE TABLE "Category" (
     "imageUrl" TEXT,
     "sortOrder" INTEGER NOT NULL DEFAULT 0,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "isFeatured" BOOLEAN NOT NULL DEFAULT false,
+    "seoTitle" TEXT,
+    "metaDescription" TEXT,
+    "focusKeyword" TEXT,
+    "secondaryKeywords" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "introText" TEXT,
+    "bottomContent" TEXT,
+    "faq" JSONB,
+    "noindex" BOOLEAN NOT NULL DEFAULT false,
+    "ogImageUrl" TEXT,
+    "updatedAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
 );
@@ -108,10 +137,21 @@ CREATE TABLE "Product" (
     "description" TEXT,
     "categoryId" TEXT NOT NULL,
     "unit" "ProductUnit" NOT NULL,
+    "kind" "ProductKind" NOT NULL DEFAULT 'PHYSICAL',
+    "pricingMode" "PricingMode" NOT NULL DEFAULT 'FIXED',
+    "serviceTerms" TEXT,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "sortOrder" INTEGER NOT NULL DEFAULT 0,
-    "metaTitle" TEXT,
+    "seoTitle" TEXT,
     "metaDescription" TEXT,
+    "focusKeyword" TEXT,
+    "secondaryKeywords" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "noindex" BOOLEAN NOT NULL DEFAULT false,
+    "canonicalUrl" TEXT,
+    "ogImageUrl" TEXT,
+    "faq" JSONB,
+    "archivedAt" TIMESTAMPTZ(3),
+    "archiveRedirectTo" TEXT,
     "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMPTZ(3) NOT NULL,
 
@@ -139,7 +179,10 @@ CREATE TABLE "ProductImage" (
     "id" TEXT NOT NULL,
     "productId" TEXT NOT NULL,
     "url" TEXT NOT NULL,
-    "alt" TEXT,
+    "alt" TEXT NOT NULL,
+    "ogUrl" TEXT,
+    "width" INTEGER,
+    "height" INTEGER,
     "sortOrder" INTEGER NOT NULL DEFAULT 0,
     "isPrimary" BOOLEAN NOT NULL DEFAULT false,
 
@@ -247,7 +290,10 @@ CREATE TABLE "Order" (
     "couponId" TEXT,
     "couponCode" TEXT,
     "shippingMethodName" TEXT NOT NULL,
-    "shippingAddressSnapshot" JSONB NOT NULL,
+    "shippingPayOnDelivery" BOOLEAN NOT NULL DEFAULT false,
+    "shippingAddressSnapshot" JSONB,
+    "serviceTermsAcceptedAt" TIMESTAMPTZ(3),
+    "serviceTermsSnapshot" TEXT,
     "customerNote" TEXT,
     "adminNote" TEXT,
     "trackingCode" TEXT,
@@ -272,6 +318,7 @@ CREATE TABLE "OrderItem" (
     "lineTotal" INTEGER NOT NULL,
     "unitValueSnapshot" INTEGER NOT NULL,
     "unitSnapshot" "ProductUnit" NOT NULL,
+    "productKindSnapshot" "ProductKind" NOT NULL DEFAULT 'PHYSICAL',
 
     CONSTRAINT "OrderItem_pkey" PRIMARY KEY ("id")
 );
@@ -361,7 +408,11 @@ CREATE TABLE "ShippingMethod" (
     "name" TEXT NOT NULL,
     "description" TEXT,
     "cost" INTEGER NOT NULL,
+    "payOnDelivery" BOOLEAN NOT NULL DEFAULT false,
     "freeAboveAmount" INTEGER,
+    "freeAboveQuantity" INTEGER,
+    "requiresAddress" BOOLEAN NOT NULL DEFAULT true,
+    "provinces" TEXT[] DEFAULT ARRAY[]::TEXT[],
     "isActive" BOOLEAN NOT NULL DEFAULT true,
     "sortOrder" INTEGER NOT NULL DEFAULT 0,
 
@@ -388,6 +439,122 @@ CREATE TABLE "Setting" (
     "updatedAt" TIMESTAMPTZ(3) NOT NULL,
 
     CONSTRAINT "Setting_pkey" PRIMARY KEY ("key")
+);
+
+-- CreateTable
+CREATE TABLE "Menu" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "description" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMPTZ(3) NOT NULL,
+
+    CONSTRAINT "Menu_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "MenuCategory" (
+    "id" TEXT NOT NULL,
+    "menuId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "sortOrder" INTEGER NOT NULL DEFAULT 0,
+
+    CONSTRAINT "MenuCategory_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "MenuItem" (
+    "id" TEXT NOT NULL,
+    "categoryId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
+    "price" INTEGER NOT NULL,
+    "imageUrl" TEXT,
+    "sortOrder" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMPTZ(3) NOT NULL,
+
+    CONSTRAINT "MenuItem_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "SlugHistory" (
+    "id" TEXT NOT NULL,
+    "entityType" "SlugEntityType" NOT NULL,
+    "entityId" TEXT NOT NULL,
+    "oldSlug" TEXT NOT NULL,
+    "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "SlugHistory_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Redirect" (
+    "id" TEXT NOT NULL,
+    "fromPath" TEXT NOT NULL,
+    "toPath" TEXT NOT NULL,
+    "statusCode" INTEGER NOT NULL DEFAULT 301,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "hits" INTEGER NOT NULL DEFAULT 0,
+    "lastHitAt" TIMESTAMPTZ(3),
+    "note" TEXT,
+    "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Redirect_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "NotFoundLog" (
+    "id" TEXT NOT NULL,
+    "path" TEXT NOT NULL,
+    "hits" INTEGER NOT NULL DEFAULT 1,
+    "firstSeenAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastSeenAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "lastReferrer" TEXT,
+
+    CONSTRAINT "NotFoundLog_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Branch" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "city" TEXT NOT NULL,
+    "district" TEXT,
+    "address" TEXT NOT NULL,
+    "phone" TEXT NOT NULL,
+    "openingHours" JSONB NOT NULL,
+    "latitude" DOUBLE PRECISION,
+    "longitude" DOUBLE PRECISION,
+    "mapLinks" JSONB NOT NULL,
+    "imageUrl" TEXT,
+    "description" TEXT,
+    "seoTitle" TEXT,
+    "metaDescription" TEXT,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "sortOrder" INTEGER NOT NULL DEFAULT 0,
+    "updatedAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Branch_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Page" (
+    "id" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "seoTitle" TEXT,
+    "metaDescription" TEXT,
+    "noindex" BOOLEAN NOT NULL DEFAULT false,
+    "faq" JSONB,
+    "isPublished" BOOLEAN NOT NULL DEFAULT false,
+    "updatedAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Page_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -501,6 +668,33 @@ CREATE INDEX "AuditLog_entityType_entityId_idx" ON "AuditLog"("entityType", "ent
 -- CreateIndex
 CREATE INDEX "AuditLog_actorUserId_idx" ON "AuditLog"("actorUserId");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Menu_slug_key" ON "Menu"("slug");
+
+-- CreateIndex
+CREATE INDEX "MenuCategory_menuId_sortOrder_idx" ON "MenuCategory"("menuId", "sortOrder");
+
+-- CreateIndex
+CREATE INDEX "MenuItem_categoryId_sortOrder_idx" ON "MenuItem"("categoryId", "sortOrder");
+
+-- CreateIndex
+CREATE INDEX "SlugHistory_entityType_entityId_idx" ON "SlugHistory"("entityType", "entityId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "SlugHistory_entityType_oldSlug_key" ON "SlugHistory"("entityType", "oldSlug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Redirect_fromPath_key" ON "Redirect"("fromPath");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "NotFoundLog_path_key" ON "NotFoundLog"("path");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Branch_slug_key" ON "Branch"("slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Page_slug_key" ON "Page"("slug");
+
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -596,3 +790,10 @@ ALTER TABLE "NotificationLog" ADD CONSTRAINT "NotificationLog_orderId_fkey" FORE
 
 -- AddForeignKey
 ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_actorUserId_fkey" FOREIGN KEY ("actorUserId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MenuCategory" ADD CONSTRAINT "MenuCategory_menuId_fkey" FOREIGN KEY ("menuId") REFERENCES "Menu"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "MenuItem" ADD CONSTRAINT "MenuItem_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "MenuCategory"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+

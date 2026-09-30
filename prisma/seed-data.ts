@@ -10,9 +10,8 @@ import { DEFAULT_TEMPLATES } from "@/lib/notification-templates";
 export const smsTemplates = DEFAULT_TEMPLATES;
 
 /**
- * روش‌های ارسال نمونه. `requiresAddress` و `freeAboveQuantity` (بخش ۳.۳
- * `FORK.md`) در فاز F3 به این داده اضافه می‌شوند. هزینه‌ی پیک عدد نمونه است و
- * باید توسط الو کپسول تعیین شود.
+ * روش‌های ارسال نمونه (بخش ۶.۱ `FORK.md`). هزینه‌ی پیک عدد نمونه است و باید
+ * توسط الو کپسول تعیین شود؛ ارسال رایگان از ۱۰ عدد به بالا.
  */
 export const shippingMethods = [
   {
@@ -22,6 +21,8 @@ export const shippingMethods = [
     cost: 100_000,
     payOnDelivery: false,
     freeAboveAmount: null,
+    freeAboveQuantity: 10,
+    requiresAddress: true,
     provinces: [] as string[],
     sortOrder: 1,
   },
@@ -32,6 +33,8 @@ export const shippingMethods = [
     cost: 0,
     payOnDelivery: false,
     freeAboveAmount: null,
+    freeAboveQuantity: null,
+    requiresAddress: false,
     provinces: [] as string[],
     sortOrder: 2,
   },

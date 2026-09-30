@@ -26,6 +26,8 @@ export const categoryInputSchema = z.object({
     .max(9999)
     .default(0),
   isActive: z.boolean().optional(),
+  /** نمایش در بخش دسته‌های صفحه‌ی اصلی؛ `undefined` ⇒ دست‌نخورده */
+  isFeatured: z.boolean().optional(),
   /** یک پاراگراف کوتاه بالای فهرست محصولات */
   introText: z
     .string()

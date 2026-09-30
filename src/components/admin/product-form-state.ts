@@ -1,3 +1,5 @@
+import type { PricingMode, ProductKind } from "@prisma/client";
+
 import {
   emptySeoForm,
   seoFormFrom,
@@ -35,6 +37,10 @@ export interface ProductFormState {
   slugTouched: boolean;
   categoryId: string;
   unit: ProductUnit;
+  /** فیلدهای زیر تا فاز F5 در فرم نمایش داده نمی‌شوند ولی هنگام ذخیره حفظ می‌شوند */
+  kind: ProductKind;
+  pricingMode: PricingMode;
+  serviceTerms: string;
   shortDescription: string;
   description: string;
   seo: SeoFormState;
@@ -71,6 +77,9 @@ export function emptyProductForm(): ProductFormState {
     slugTouched: false,
     categoryId: "",
     unit: "GRAM",
+    kind: "PHYSICAL",
+    pricingMode: "FIXED",
+    serviceTerms: "",
     shortDescription: "",
     description: "",
     seo: emptySeoForm(),
@@ -88,6 +97,9 @@ export function formFromDto(dto: ProductEditDto): ProductFormState {
     slugTouched: true,
     categoryId: dto.categoryId,
     unit: dto.unit,
+    kind: dto.kind,
+    pricingMode: dto.pricingMode,
+    serviceTerms: dto.serviceTerms ?? "",
     shortDescription: dto.shortDescription ?? "",
     description: dto.description ?? "",
     seo: seoFormFrom(dto),
@@ -147,6 +159,9 @@ export function toProductInput(
     slug: state.slug,
     categoryId: state.categoryId,
     unit: state.unit,
+    kind: state.kind,
+    pricingMode: state.pricingMode,
+    serviceTerms: state.serviceTerms,
     shortDescription: state.shortDescription,
     description: state.description,
     ...toSeoInput(state.seo),

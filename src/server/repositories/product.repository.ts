@@ -140,7 +140,9 @@ export function findProductArchiveInfo(id: string) {
       slug: true,
       archivedAt: true,
       archiveRedirectTo: true,
+      pricingMode: true,
       category: { select: { slug: true } },
+      _count: { select: { variants: { where: { isActive: true } } } },
     },
   });
 }

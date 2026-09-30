@@ -14,6 +14,10 @@ export interface ShippingMethodData {
   description: string | null;
   cost: number;
   freeAboveAmount: number | null;
+  /** ارسال رایگان از این تعداد کل اقلام سبد به بالا */
+  freeAboveQuantity?: number | null;
+  /** `false` ⇒ تحویل حضوری (بدون آدرس) */
+  requiresAddress?: boolean;
   payOnDelivery: boolean;
   provinces: string[];
   isActive: boolean;

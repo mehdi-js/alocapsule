@@ -150,6 +150,8 @@ export async function saveShippingMethod(
         name: input.name,
         cost: input.cost,
         freeAboveAmount: input.freeAboveAmount,
+        freeAboveQuantity: input.freeAboveQuantity,
+        requiresAddress: input.requiresAddress,
       },
     });
   });

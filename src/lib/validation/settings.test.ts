@@ -116,3 +116,55 @@ describe("کد اینماد در تنظیمات عمومی", () => {
     expect(result.error?.issues[0]?.message).toContain("اینماد");
   });
 });
+
+describe("روش ارسال: تحویل حضوری و ارسال رایگان تعدادی (FORK.md §۳.۳)", () => {
+  const base = {
+    name: "روش نمونه",
+    description: "",
+    cost: 100_000,
+    freeAboveAmount: null,
+    provinces: [],
+    payOnDelivery: false,
+    isActive: true,
+    sortOrder: 1,
+  };
+
+  it("فیلدهای جدید اختیاری‌اند و نفرستادنشان مقدار قبلی را دست‌نخورده می‌گذارد", () => {
+    const parsed = shippingMethodSchema.parse(base);
+    expect(parsed.requiresAddress).toBeUndefined();
+    expect(parsed.freeAboveQuantity).toBeUndefined();
+  });
+
+  it("تحویل حضوری و آستانه‌ی تعداد", () => {
+    const parsed = shippingMethodSchema.parse({
+      ...base,
+      requiresAddress: false,
+      freeAboveQuantity: 10,
+    });
+    expect(parsed.requiresAddress).toBe(false);
+    expect(parsed.freeAboveQuantity).toBe(10);
+    expect(
+      shippingMethodSchema.parse({ ...base, freeAboveQuantity: null })
+        .freeAboveQuantity,
+    ).toBeNull();
+  });
+
+  it("آستانه‌ی تعداد باید عدد صحیح مثبت باشد", () => {
+    for (const bad of [0, -1, 2.5, 100_000]) {
+      expect(
+        shippingMethodSchema.safeParse({ ...base, freeAboveQuantity: bad })
+          .success,
+      ).toBe(false);
+    }
+  });
+
+  it("پرداخت درب منزل ⇒ آستانه‌ی تعداد هم صفر (null) می‌شود", () => {
+    const parsed = shippingMethodSchema.parse({
+      ...base,
+      payOnDelivery: true,
+      freeAboveQuantity: 10,
+    });
+    expect(parsed.freeAboveQuantity).toBeNull();
+    expect(parsed.cost).toBe(0);
+  });
+});

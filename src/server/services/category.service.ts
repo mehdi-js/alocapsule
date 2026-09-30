@@ -33,6 +33,7 @@ export interface CategoryDto {
   description: string | null;
   sortOrder: number;
   isActive: boolean;
+  isFeatured: boolean;
   productCount: number;
   childCount: number;
   /** عمق در درخت (۰ = دسته‌ی اصلی) برای تورفتگی در لیست */
@@ -51,6 +52,7 @@ export interface CategoryEditDto {
   description: string | null;
   sortOrder: number;
   isActive: boolean;
+  isFeatured: boolean;
   introText: string | null;
   bottomContent: string | null;
   seoTitle: string | null;
@@ -72,6 +74,7 @@ function toDto(category: CategoryRecord, depth: number): CategoryDto {
     description: category.description,
     sortOrder: category.sortOrder,
     isActive: category.isActive,
+    isFeatured: category.isFeatured,
     productCount: category._count.products,
     childCount: category._count.children,
     depth,
@@ -140,6 +143,7 @@ export async function getCategoryForEdit(
     description: category.description,
     sortOrder: category.sortOrder,
     isActive: category.isActive,
+    isFeatured: category.isFeatured,
     introText: category.introText,
     bottomContent: category.bottomContent,
     seoTitle: category.seoTitle,
@@ -250,6 +254,7 @@ export async function createCategory(
     ({ id } = await createCategoryRecord({
       ...categoryFields(input),
       isActive: input.isActive ?? true,
+      isFeatured: input.isFeatured ?? false,
     }));
   } catch (error) {
     return translateConflict(error);
@@ -273,6 +278,9 @@ export async function updateCategory(
       {
         ...categoryFields(input),
         ...(input.isActive === undefined ? {} : { isActive: input.isActive }),
+        ...(input.isFeatured === undefined
+          ? {}
+          : { isFeatured: input.isFeatured }),
       },
       slugChanged ? { from: existing.slug, to: input.slug } : null,
     );

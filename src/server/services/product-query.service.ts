@@ -1,4 +1,4 @@
-import type { ProductUnit } from "@prisma/client";
+import type { PricingMode, ProductKind, ProductUnit } from "@prisma/client";
 
 import { analyzeSeo, type SeoSummary, summarizeSeo } from "@/lib/seo/analyze";
 import { findSeoConflicts } from "@/lib/seo/conflicts";
@@ -35,6 +35,8 @@ export interface ProductListItem {
   slug: string;
   categoryName: string;
   unit: ProductUnit;
+  kind: ProductKind;
+  pricingMode: PricingMode;
   isActive: boolean;
   variantCount: number;
   activeVariantCount: number;
@@ -70,6 +72,10 @@ export interface ProductEditDto {
   slug: string;
   categoryId: string;
   unit: ProductUnit;
+  kind: ProductKind;
+  pricingMode: PricingMode;
+  /** فقط برای خدمت؛ خالی ⇒ متن پیش‌فرض `service.defaultTerms` */
+  serviceTerms: string | null;
   shortDescription: string | null;
   description: string | null;
   seoTitle: string | null;
@@ -140,6 +146,8 @@ export async function listProducts(
         slug: product.slug,
         categoryName: product.category.name,
         unit: product.unit,
+        kind: product.kind,
+        pricingMode: product.pricingMode,
         isActive: product.isActive,
         variantCount: product.variants.length,
         activeVariantCount: product.variants.filter((v) => v.isActive).length,
@@ -158,8 +166,8 @@ export async function listProducts(
             noindex: product.noindex,
             titleSettings,
             conflicts: findSeoConflicts(seoIndex, {
-              kind: "product",
               ...product,
+              kind: "product",
             }),
           }),
         ),
@@ -183,6 +191,9 @@ export async function getProductForEdit(
     slug: product.slug,
     categoryId: product.categoryId,
     unit: product.unit,
+    kind: product.kind,
+    pricingMode: product.pricingMode,
+    serviceTerms: product.serviceTerms,
     shortDescription: product.shortDescription,
     description: product.description,
     seoTitle: product.seoTitle,

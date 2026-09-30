@@ -74,7 +74,7 @@ describe("کاتالوگ seed", () => {
     ).toEqual(["۱۱ کیلوگرم", "۲۵ کیلوگرم", "۳۳ کیلوگرم", "۵۰ کیلوگرم"]);
   });
 
-  it("محصول فیزیکی ۱۱ کیلویی ۶٬۰۰۰٬۰۰۰ و استعلامی بدون متغیر و غیرفعال", () => {
+  it("محصول فیزیکی ۱۱ کیلویی ۶٬۰۰۰٬۰۰۰ و اکسیژن استعلامی بدون متغیر", () => {
     const buy = catalogProducts.find((p) => p.slug === "buy-cylinder-11kg")!;
     expect(buy.variants).toHaveLength(1);
     expect(buy.variants[0]!.price).toBe(6_000_000);
@@ -82,7 +82,24 @@ describe("کاتالوگ seed", () => {
       (p) => p.slug === "charge-oxygen-40kg",
     )!;
     expect(oxygen.variants).toHaveLength(0);
-    expect(oxygen.isActive).toBe(false);
+    expect(oxygen.pricingMode).toBe("INQUIRY");
+    expect(oxygen.kind).toBe("SERVICE");
+    expect(oxygen.isActive).toBe(true);
+  });
+
+  it("هر ۴ ترکیب نوع و حالت قیمت در محصولات نمونه هست", () => {
+    const combos = catalogProducts.map((p) => `${p.kind}/${p.pricingMode}`);
+    expect(new Set(combos)).toEqual(
+      new Set(["SERVICE/FIXED", "PHYSICAL/FIXED", "SERVICE/INQUIRY"]),
+    );
+    // قیمت‌دار ⇒ حداقل یک متغیر؛ استعلامی ⇒ هیچ
+    for (const product of catalogProducts) {
+      if (product.pricingMode === "INQUIRY") {
+        expect(product.variants).toHaveLength(0);
+      } else {
+        expect(product.variants.length).toBeGreaterThan(0);
+      }
+    }
   });
 
   it("متغیرها یکتا در هر محصول و وزن ارسال معتبر", () => {
