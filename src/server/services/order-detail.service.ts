@@ -2,16 +2,22 @@ import type {
   OrderStatus,
   PaymentMethod,
   PaymentStatus,
+  ProductKind,
   UserRole,
   WalletTxReason,
   WalletTxType,
 } from "@prisma/client";
 
 import { PAYABLE_STATUSES } from "@/lib/order-status";
+import {
+  type EmptyCylinderRow,
+  summarizeEmptyCylinders,
+} from "@/lib/service-order";
 import { findOrderForReview } from "@/server/repositories/payment.repository";
 
 import {
   type AddressSnapshot,
+  isPickupSnapshot,
   parseAddressSnapshot,
 } from "./order-query.service";
 
@@ -29,6 +35,12 @@ export interface OrderDetailDto {
     shippingMethodName: string;
     shippingPayOnDelivery: boolean;
     address: AddressSnapshot | null;
+    /** تحویل حضوری (بدون آدرس) */
+    pickup: boolean;
+    /** پذیرش شرایط خدمت هنگام ثبت (فقط سفارش دارای خدمت) */
+    serviceTerms: { acceptedAt: Date; text: string } | null;
+    /** «کپسول‌های خالی قابل تحویل گرفتن»: تعداد آیتم‌های خدمت به تفکیک محصول/متغیر */
+    emptyCylinders: EmptyCylinderRow[];
     customerNote: string | null;
     placedAt: Date;
     paidAt: Date | null;
@@ -42,6 +54,7 @@ export interface OrderDetailDto {
       unitPrice: number;
       quantity: number;
       lineTotal: number;
+      productKindSnapshot: ProductKind;
     }[];
   };
   customer: {
@@ -101,6 +114,15 @@ export async function getOrderDetail(
       shippingMethodName: order.shippingMethodName,
       shippingPayOnDelivery: order.shippingPayOnDelivery,
       address: parseAddressSnapshot(order.shippingAddressSnapshot),
+      pickup: isPickupSnapshot(order.shippingAddressSnapshot),
+      serviceTerms:
+        order.serviceTermsAcceptedAt && order.serviceTermsSnapshot
+          ? {
+              acceptedAt: order.serviceTermsAcceptedAt,
+              text: order.serviceTermsSnapshot,
+            }
+          : null,
+      emptyCylinders: summarizeEmptyCylinders(order.items),
       customerNote: order.customerNote,
       placedAt: order.placedAt,
       paidAt: order.paidAt,

@@ -161,7 +161,9 @@ export default async function MyOrderPage({
         <section
           className={cn(panel, "flex flex-col gap-3 p-5 text-sm md:p-6")}
         >
-          <h3 className="font-extrabold">ارسال به</h3>
+          <h3 className="font-extrabold">
+            {order.pickup ? "تحویل" : "ارسال به"}
+          </h3>
           {order.address ? (
             <>
               <p className="font-bold">
@@ -178,6 +180,8 @@ export default async function MyOrderPage({
                   : ""}
               </p>
             </>
+          ) : order.pickup ? (
+            <p className="font-bold">تحویل حضوری (بدون آدرس)</p>
           ) : null}
           {order.customerNote ? (
             <p className="text-muted leading-7">

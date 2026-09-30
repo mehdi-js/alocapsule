@@ -2,7 +2,7 @@
 
 import { formatToman } from "@/lib/money";
 import { PAY_ON_DELIVERY_LABEL, shippingCost } from "@/lib/order-pricing";
-import { cn } from "@/lib/utils";
+import { cn, toPersianDigits } from "@/lib/utils";
 import type { ShippingOptionDto } from "@/server/services/checkout.service";
 
 import { choiceCard, panel } from "../styles";
@@ -13,6 +13,7 @@ export function ShippingOptions({
   selectedId,
   onSelect,
   goodsAmount,
+  itemCount,
   freeShippingCoupon,
 }: {
   methods: ShippingOptionDto[];
@@ -20,6 +21,8 @@ export function ShippingOptions({
   onSelect: (id: string) => void;
   /** مبلغ کالا پس از تخفیف (مبنای آستانه‌ی ارسال رایگان) */
   goodsAmount: number;
+  /** مجموع تعداد اقلام سبد (مبنای ارسال رایگان تعدادی) */
+  itemCount: number;
   freeShippingCoupon: boolean;
 }) {
   return (
@@ -31,13 +34,11 @@ export function ShippingOptions({
         روش ارسال
       </h2>
       {methods.length === 0 ? (
-        <p className="text-danger text-sm">
-          برای آدرس انتخاب‌شده روش ارسالی در دسترس نیست.
-        </p>
+        <p className="text-danger text-sm">روش ارسالی در دسترس نیست.</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {methods.map((method) => {
-            const cost = shippingCost(method, goodsAmount);
+            const cost = shippingCost(method, goodsAmount, itemCount);
             const inputId = `shipping-${method.id}`;
             const free =
               !method.payOnDelivery && (cost === 0 || freeShippingCoupon);
@@ -63,6 +64,12 @@ export function ShippingOptions({
                     {method.description ? (
                       <span className="text-muted text-sm">
                         {method.description}
+                      </span>
+                    ) : null}
+                    {method.freeAboveQuantity !== null && cost > 0 ? (
+                      <span className="text-faint text-xs">
+                        ارسال رایگان از{" "}
+                        {toPersianDigits(method.freeAboveQuantity)} عدد به بالا
                       </span>
                     ) : null}
                     {method.freeAboveAmount !== null && cost > 0 ? (

@@ -137,7 +137,9 @@ export default async function OrderSuccessPage({
         </section>
 
         <section className={cn(panel, "flex flex-col gap-3 p-6 text-sm")}>
-          <h2 className="text-lg font-extrabold">ارسال به</h2>
+          <h2 className="text-lg font-extrabold">
+            {order.pickup ? "تحویل" : "ارسال به"}
+          </h2>
           {order.address ? (
             <>
               <p className="font-bold">
@@ -154,6 +156,8 @@ export default async function OrderSuccessPage({
                   : ""}
               </p>
             </>
+          ) : order.pickup ? (
+            <p className="font-bold">تحویل حضوری (بدون آدرس)</p>
           ) : null}
           {order.customerNote ? (
             <p className="text-muted leading-7">

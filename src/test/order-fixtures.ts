@@ -152,7 +152,11 @@ export async function createCoupon(
 /** همان محاسبه‌ای که صفحه‌ی تسویه در کلاینت انجام می‌دهد */
 export async function quote(
   customer: Customer,
-  shipping: { cost: number; freeAboveAmount: number | null },
+  shipping: {
+    cost: number;
+    freeAboveAmount: number | null;
+    freeAboveQuantity?: number | null;
+  },
 ): Promise<number> {
   const cart = await getCartView(customer.owner);
   const coupon = cart.coupon && !cart.coupon.error ? cart.coupon : null;
@@ -160,21 +164,40 @@ export async function quote(
     subtotal: cart.subtotal,
     itemsDiscount: coupon?.discount ?? 0,
     freeShippingCoupon: coupon?.freeShipping ?? false,
-    shipping,
+    shipping: {
+      ...shipping,
+      freeAboveQuantity: shipping.freeAboveQuantity ?? null,
+    },
+    itemCount: cart.itemCount,
   }).grandTotal;
 }
 
 /** ثبت سفارش با مبلغی که صفحه‌ی تسویه نشان می‌داد (مگر خلافش داده شود) */
 export async function placeOrder(
   customer: Customer,
-  shipping: { id: string; cost: number; freeAboveAmount: number | null },
-  overrides: { expectedGrandTotal?: number; customerNote?: string | null } = {},
+  shipping: {
+    id: string;
+    cost: number;
+    freeAboveAmount: number | null;
+    freeAboveQuantity?: number | null;
+  },
+  overrides: {
+    expectedGrandTotal?: number;
+    customerNote?: string | null;
+    /** `null` ⇒ بدون آدرس (تحویل حضوری) */
+    addressId?: string | null;
+    acceptServiceTerms?: boolean;
+  } = {},
 ) {
   const expectedGrandTotal =
     overrides.expectedGrandTotal ?? (await quote(customer, shipping));
   return createOrder(customer.owner, {
-    addressId: customer.addressId,
+    addressId:
+      overrides.addressId === undefined
+        ? customer.addressId
+        : overrides.addressId,
     shippingMethodId: shipping.id,
+    acceptServiceTerms: overrides.acceptServiceTerms ?? false,
     customerNote: overrides.customerNote ?? null,
     expectedGrandTotal,
   });

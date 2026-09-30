@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 
 import { SMS_OUTBOX } from "../playwright.config";
-import { db, RUN_ID, signUpWithOtp } from "./support";
+import { db, loginWithPassword, RUN_ID, signUpWithOtp } from "./support";
 
 /**
  * چرخه‌ی خرید با محصول نمونه‌ی seed («شارژ کپسول گاز بوتان») روی پیامک
@@ -80,16 +80,29 @@ test.describe.serial("محصول نمونه", () => {
     await expect(page.getByText("به سبد خرید اضافه شد")).toBeVisible();
 
     await page.goto("/cart");
+    // ۱۰ عدد به بالا رایگان است (روش پیک seed)
+    await expect(
+      page.getByText("با افزودن ۹ عدد دیگر، ارسال رایگان می‌شود."),
+    ).toBeVisible();
     await page.getByRole("link", { name: "ادامه و ثبت سفارش" }).click();
     await page.waitForURL("**/checkout");
     await page.getByLabel("نام گیرنده").fill("مشتری آزمایشی");
     await page.getByLabel("نشانی کامل").fill("تهران، خیابان آزمایش، پلاک ۱۰");
     await page.getByRole("button", { name: "ذخیره‌ی آدرس" }).click();
     await expect(page.getByRole("radio").first()).toBeChecked();
-    await page
+
+    const submit = page
       .getByRole("complementary", { name: "خلاصه سفارش" })
-      .getByRole("button", { name: "ثبت سفارش" })
-      .click();
+      .getByRole("button", { name: "ثبت سفارش" });
+    // خدمت: بدون پذیرش شرایط ثبت سفارش ممکن نیست
+    await expect(submit).toBeDisabled();
+    await page.getByRole("button", { name: "مشاهده‌ی شرایط" }).click();
+    await expect(page.getByText("همان کپسول خودتان نیست")).toBeVisible();
+    await page
+      .getByLabel("شرایط تعویض کپسول را خوانده‌ام و می‌پذیرم", { exact: false })
+      .check();
+    await expect(submit).toBeEnabled();
+    await submit.click();
 
     await page.waitForURL("**/checkout/success/**");
     const orderNumber = decodeURIComponent(page.url().split("/").pop() ?? "");
@@ -105,5 +118,37 @@ test.describe.serial("محصول نمونه", () => {
     const sms = readFileSync(SMS_OUTBOX, "utf8");
     expect(sms).toContain("الو کپسول");
     for (const pattern of FORBIDDEN) expect(sms).not.toMatch(pattern);
+  });
+
+  test("تحویل حضوری: آدرس پنهان، محل تحویل نمایش و سفارش بدون آدرس", async ({
+    page,
+  }) => {
+    await loginWithPassword(page, PHONE, PASSWORD, "/");
+    await page.goto("/products/buy-cylinder-11kg");
+    await page
+      .getByRole("button", { name: "افزودن به سبد خرید" })
+      .first()
+      .click();
+    await expect(page.getByText("به سبد خرید اضافه شد")).toBeVisible();
+
+    await page.goto("/checkout");
+    await page.getByRole("radio", { name: /تحویل حضوری/ }).check();
+    // آدرس لازم نیست: فرم آدرس نیست و محل تحویل دیده می‌شود
+    await expect(page.getByLabel("نشانی کامل")).toHaveCount(0);
+    await expect(page.getByText("محل تحویل:")).toBeVisible();
+
+    await page
+      .getByRole("complementary", { name: "خلاصه سفارش" })
+      .getByRole("button", { name: "ثبت سفارش" })
+      .click();
+    await page.waitForURL("**/checkout/success/**");
+    const orderNumber = decodeURIComponent(page.url().split("/").pop() ?? "");
+    await expect(page.getByText("تحویل حضوری (بدون آدرس)")).toBeVisible();
+
+    const order = await db().order.findUniqueOrThrow({
+      where: { orderNumber },
+    });
+    expect(order.shippingAddressSnapshot).toBeNull();
+    expect(order.shippingTotal).toBe(0);
   });
 });

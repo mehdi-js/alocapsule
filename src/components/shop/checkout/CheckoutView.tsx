@@ -19,6 +19,8 @@ import type { AddressFormDefaults } from "./AddressForm";
 import { AddressSection } from "./AddressSection";
 import { CheckoutSteps } from "./CheckoutSteps";
 import { CheckoutSummary } from "./CheckoutSummary";
+import { PickupInfo } from "./PickupInfo";
+import { ServiceConsent } from "./ServiceConsent";
 import { ShippingOptions } from "./ShippingOptions";
 
 const NOTE_MAX = 500;
@@ -50,6 +52,7 @@ export function CheckoutView({
   );
   const [methodId, setMethodId] = useState<string | null>(null);
   const [note, setNote] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,12 +64,17 @@ export function CheckoutView({
     addresses.find(
       (a) => a.id === addressId && isServedLocation(a.province, a.city),
     ) ?? null;
+  // روش بدون آدرس (تحویل حضوری) همیشه در دسترس است؛ بقیه به استان آدرس وابسته‌اند
   const methods = address
-    ? initial.shippingMethods.filter((m) =>
-        isShippingAvailableIn(m.provinces, address.province),
+    ? initial.shippingMethods.filter(
+        (m) =>
+          !m.requiresAddress ||
+          isShippingAvailableIn(m.provinces, address.province),
       )
     : initial.shippingMethods;
   const method = methods.find((m) => m.id === methodId) ?? methods[0] ?? null;
+  const needsAddress = method?.requiresAddress ?? true;
+  const needsConsent = cart.hasService && initial.service !== null;
 
   const coupon = cart.coupon && !cart.coupon.error ? cart.coupon : null;
   const itemsDiscount = coupon?.discount ?? 0;
@@ -76,16 +84,19 @@ export function CheckoutView({
         itemsDiscount,
         freeShippingCoupon: coupon?.freeShipping ?? false,
         shipping: method,
+        itemCount: cart.itemCount,
       })
     : null;
 
   const blocker = cart.coupon?.error
     ? "برای ادامه، مشکل کد تخفیف را در سبد خرید برطرف کنید."
-    : !address
-      ? "آدرس ارسال را انتخاب یا اضافه کنید."
-      : !method
-        ? "روش ارسالی برای این آدرس در دسترس نیست."
-        : null;
+    : !method
+      ? "روش ارسالی در دسترس نیست."
+      : needsAddress && !address
+        ? "آدرس ارسال را انتخاب یا اضافه کنید."
+        : needsConsent && !acceptedTerms
+          ? "برای ثبت سفارش، شرایط تعویض کپسول را بپذیرید."
+          : null;
 
   function handleAddresses(next: AddressDto[], selectId?: string) {
     setAddresses(next);
@@ -96,13 +107,14 @@ export function CheckoutView({
   }
 
   async function submit() {
-    if (pending || blocker || !address || !method || !pricing) return;
+    if (pending || blocker || !method || !pricing) return;
     setPending(true);
     setError(null);
     try {
       const result = await placeOrderAction({
-        addressId: address.id,
+        addressId: needsAddress ? (address?.id ?? null) : null,
         shippingMethodId: method.id,
+        acceptServiceTerms: needsConsent && acceptedTerms,
         customerNote: note,
         expectedGrandTotal: pricing.grandTotal,
       });
@@ -153,20 +165,36 @@ export function CheckoutView({
 
       <div className="grid items-start gap-6 lg:grid-cols-[1fr_370px]">
         <div className="flex flex-col gap-5">
-          <AddressSection
-            addresses={addresses}
-            selectedId={address?.id ?? null}
-            defaults={defaults}
-            onSelect={setAddressId}
-            onAddressesChange={handleAddresses}
-          />
           <ShippingOptions
             methods={methods}
             selectedId={method?.id ?? null}
             onSelect={setMethodId}
             goodsAmount={cart.subtotal - itemsDiscount}
+            itemCount={cart.itemCount}
             freeShippingCoupon={coupon?.freeShipping ?? false}
           />
+          {needsAddress ? (
+            <AddressSection
+              addresses={addresses}
+              selectedId={address?.id ?? null}
+              defaults={defaults}
+              onSelect={setAddressId}
+              onAddressesChange={handleAddresses}
+            />
+          ) : (
+            <PickupInfo
+              address={initial.pickup.address}
+              hours={initial.pickup.hours}
+            />
+          )}
+          {needsConsent && initial.service ? (
+            <ServiceConsent
+              label={initial.service.consentLabel}
+              terms={initial.service.terms}
+              accepted={acceptedTerms}
+              onChange={setAcceptedTerms}
+            />
+          ) : null}
           <section className={cn(panel, "flex flex-col gap-3 p-5 md:p-6")}>
             <label htmlFor="customer-note" className="text-lg font-extrabold">
               توضیحات سفارش{" "}

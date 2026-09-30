@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { RichText } from "@/components/ui/RichText";
 import { formatJalali, formatJalaliDateTime } from "@/lib/date";
 import { formatToman } from "@/lib/money";
 import { shippingCostLabel } from "@/lib/order-pricing";
@@ -122,6 +123,23 @@ export function OrderPanel({ detail }: { detail: OrderDetailDto }) {
   const { order, customer } = detail;
   return (
     <Card title={`سفارش ${order.orderNumber}`}>
+      {order.emptyCylinders.length > 0 ? (
+        <div
+          role="note"
+          className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm"
+        >
+          <p className="font-bold text-amber-900">
+            کپسول‌های خالی قابل تحویل گرفتن
+          </p>
+          <ul className="mt-1 space-y-0.5 text-amber-900">
+            {order.emptyCylinders.map((row) => (
+              <li key={row.label}>
+                {toPersianDigits(row.quantity)} × {row.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       <ul className="space-y-1.5 text-sm">
         {order.items.map((item) => (
           <li key={item.id} className="flex justify-between gap-3">
@@ -180,6 +198,26 @@ export function OrderPanel({ detail }: { detail: OrderDetailDto }) {
             ) — {order.address.province}، {order.address.city}،{" "}
             {order.address.line}
           </p>
+        ) : order.pickup ? (
+          <p className="font-bold text-neutral-700">تحویل حضوری (بدون آدرس)</p>
+        ) : null}
+        {order.serviceTerms ? (
+          <p className="text-xs text-neutral-500">
+            شرایط خدمت پذیرفته شد:{" "}
+            {formatJalaliDateTime(order.serviceTerms.acceptedAt)}
+          </p>
+        ) : null}
+        {order.serviceTerms ? (
+          <details className="text-xs text-neutral-600">
+            <summary className="cursor-pointer">
+              متن شرایط پذیرفته‌شده (عیناً)
+            </summary>
+            <RichText
+              text={order.serviceTerms.text}
+              headingLevel={3}
+              className="mt-2 text-sm leading-7"
+            />
+          </details>
         ) : null}
         {order.customerNote ? (
           <p className="text-neutral-600">

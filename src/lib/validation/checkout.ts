@@ -1,8 +1,15 @@
 import { z } from "zod";
 
 export const placeOrderSchema = z.object({
-  addressId: z.string().min(1, "آدرس ارسال را انتخاب کنید").max(64),
+  /** فقط وقتی روش ارسال آدرس لازم دارد (تحویل حضوری بدون آدرس)؛ سرور طبق روش ارسال بررسی می‌کند */
+  addressId: z
+    .string()
+    .max(64)
+    .nullish()
+    .transform((value) => value || null),
   shippingMethodId: z.string().min(1, "روش ارسال را انتخاب کنید").max(64),
+  /** پذیرش شرایط خدمت؛ فقط برای سبد دارای آیتم خدمت لازم است (سرور بررسی می‌کند) */
+  acceptServiceTerms: z.boolean().optional().default(false),
   customerNote: z
     .string()
     .trim()

@@ -1,5 +1,6 @@
 import { Prisma, type ProductKind, type ProductUnit } from "@prisma/client";
 
+import { BUSINESS_KEYS, parseBusinessSettings } from "@/lib/business-settings";
 import { db, type DbClient } from "@/lib/db";
 import {
   ORDER_NUMBER_PREFIX_KEY,
@@ -33,6 +34,9 @@ export function findCheckoutItems(tx: DbClient, cartId: string) {
               unit: true,
               categoryId: true,
               isActive: true,
+              kind: true,
+              pricingMode: true,
+              serviceTerms: true,
             },
           },
         },
@@ -50,6 +54,16 @@ export function findCartCoupon(tx: DbClient, cartId: string) {
 
 export function findActiveShippingMethod(tx: DbClient, id: string) {
   return tx.shippingMethod.findFirst({ where: { id, isActive: true } });
+}
+
+/** متن پیش‌فرض شرایط خدمت (`service.defaultTerms`)؛ نبود/نامعتبر ⇒ پیش‌فرض کد */
+export async function readServiceDefaultTerms(tx: DbClient): Promise<string> {
+  const row = await tx.setting.findUnique({
+    where: { key: BUSINESS_KEYS.serviceDefaultTerms },
+  });
+  return parseBusinessSettings(
+    new Map([[BUSINESS_KEYS.serviceDefaultTerms, row?.value]]),
+  ).serviceDefaultTerms;
 }
 
 /** پیشوند شماره‌ی سفارش از `Setting` (`order.numberPrefix`)؛ نبود/نامعتبر ⇒ پیش‌فرض */

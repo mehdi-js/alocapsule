@@ -1,9 +1,11 @@
 import { randomBytes } from "node:crypto";
 
-import type { ProductUnit } from "@prisma/client";
+import type { ProductKind, ProductUnit } from "@prisma/client";
 
 import { capMessage, clampQuantity, removedItemMessage } from "@/lib/cart-math";
 import { thumbnailUrl } from "@/lib/image/urls";
+import { itemsUntilFreeShipping } from "@/lib/order-pricing";
+import { isSellable } from "@/lib/service-order";
 import { resolveVariantTitle } from "@/lib/unit";
 import { UserFacingError } from "@/server/errors";
 import {
@@ -15,11 +17,12 @@ import {
   findCartByUserId,
   findCartItem,
   findCartItems,
-  findSellableVariant,
+  findVariantForCart,
   incrementItem,
   mergeCartInto,
   setItemQuantity,
 } from "@/server/repositories/cart.repository";
+import { listActiveShippingMethods } from "@/server/repositories/shipping.repository";
 
 import { type CartCouponDto, evaluateCartCoupon } from "./coupon.service";
 import { getMaxQuantityPerItem } from "./settings.service";
@@ -29,6 +32,9 @@ import { getMaxQuantityPerItem } from "./settings.service";
  * `userId`. قیمت‌ها هرگز در سبد ذخیره نمی‌شوند و هر بار از دیتابیس خوانده
  * می‌شوند (بند ۷.۲ سند).
  */
+
+export const INQUIRY_NOT_ORDERABLE_MESSAGE =
+  "قیمت این محصول استعلامی است و سفارش آنلاین ندارد؛ برای استعلام قیمت با ما تماس بگیرید.";
 
 /** کسی که سبد را می‌خواند یا تغییر می‌دهد */
 export interface CartOwner {
@@ -46,6 +52,8 @@ export interface CartLineDto {
   variantTitle: string;
   sku: string | null;
   unit: ProductUnit;
+  /** خدمت (مثل شارژ) یا کالای فیزیکی؛ سبد مخلوط مجاز است */
+  kind: ProductKind;
   unitPrice: number;
   quantity: number;
   lineTotal: number;
@@ -62,8 +70,12 @@ export interface CartViewDto {
   total: number;
   /** کد تخفیف فقط برای کاربر واردشده است */
   canUseCoupon: boolean;
-  /** مجموع تعداد اقلام (برای نشانگر هدر) */
+  /** مجموع تعداد اقلام (برای نشانگر هدر و ارسال رایگان تعدادی) */
   itemCount: number;
+  /** سبد حداقل یک آیتم خدمت دارد ⇒ پذیرش شرایط در تسویه الزامی است */
+  hasService: boolean;
+  /** چند عدد دیگر تا رایگان شدن ارسال با پیک؛ `null` = پیشنهادی نیست */
+  itemsUntilFreeShipping: number | null;
   subtotal: number;
   maxQuantity: number;
   /** پیام‌های فارسی برای کاربر (حذف اقلام غیرفعال، اصلاح تعداد) */
@@ -112,6 +124,8 @@ const EMPTY_VIEW = (
   total: 0,
   canUseCoupon,
   itemCount: 0,
+  hasService: false,
+  itemsUntilFreeShipping: null,
   subtotal: 0,
   maxQuantity,
   notices: [],
@@ -141,7 +155,14 @@ export async function getCartView(owner: CartOwner): Promise<CartViewDto> {
       variant.title,
     );
 
-    if (!variant.isActive || !product.isActive) {
+    if (
+      !isSellable({
+        variantActive: variant.isActive,
+        productActive: product.isActive,
+        pricingMode: product.pricingMode,
+      })
+    ) {
+      // غیرفعال یا (بعداً) استعلامی شده ⇒ با همان سازوکار حذف و اطلاع
       removedIds.push(row.id);
       notices.push(removedItemMessage(`${product.name} — ${variantTitle}`));
       continue;
@@ -164,6 +185,7 @@ export async function getCartView(owner: CartOwner): Promise<CartViewDto> {
       variantTitle,
       sku: variant.sku,
       unit: product.unit,
+      kind: product.kind,
       unitPrice: variant.price,
       quantity,
       lineTotal: variant.price * quantity,
@@ -180,13 +202,19 @@ export async function getCartView(owner: CartOwner): Promise<CartViewDto> {
       : null;
   const discountTotal = coupon?.discount ?? 0;
 
+  const itemCount = lines.reduce((sum, line) => sum + line.quantity, 0);
+  const shippingMethods =
+    lines.length > 0 ? await listActiveShippingMethods() : [];
+
   return {
     lines,
     coupon,
     discountTotal,
     total: subtotal - discountTotal,
     canUseCoupon,
-    itemCount: lines.reduce((sum, line) => sum + line.quantity, 0),
+    itemCount,
+    hasService: lines.some((line) => line.kind === "SERVICE"),
+    itemsUntilFreeShipping: itemsUntilFreeShipping(shippingMethods, itemCount),
     subtotal,
     maxQuantity,
     notices,
@@ -204,7 +232,19 @@ export async function addToCart(
   variantId: string,
   quantity: number,
 ): Promise<CartMutation> {
-  if (!(await findSellableVariant(variantId))) {
+  // 🔴 سمت سرور: محصول استعلامی هرگز وارد سبد نمی‌شود (نه فقط در UI)
+  const target = await findVariantForCart(variantId);
+  if (target?.product.pricingMode === "INQUIRY") {
+    throw new UserFacingError(INQUIRY_NOT_ORDERABLE_MESSAGE);
+  }
+  if (
+    !target ||
+    !isSellable({
+      variantActive: target.isActive,
+      productActive: target.product.isActive,
+      pricingMode: target.product.pricingMode,
+    })
+  ) {
     throw new UserFacingError("این محصول در حال حاضر قابل سفارش نیست.");
   }
 

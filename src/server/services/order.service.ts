@@ -12,8 +12,15 @@ import {
   isShippingAvailableIn,
   OUT_OF_AREA_MESSAGE,
 } from "@/lib/service-area";
+import {
+  collectServiceTerms,
+  isSellable,
+  SERVICE_TERMS_REQUIRED_MESSAGE,
+  type ServiceLine,
+} from "@/lib/service-order";
 import { resolveVariantTitle } from "@/lib/unit";
 import type { PlaceOrderInput } from "@/lib/validation/checkout";
+import { resolveServiceTerms } from "@/lib/validation/product";
 import { getUniqueViolationTarget, UserFacingError } from "@/server/errors";
 import { findUserAddress } from "@/server/repositories/address.repository";
 import { countUserRedemptions } from "@/server/repositories/coupon.repository";
@@ -29,9 +36,15 @@ import {
   nextOrderSequence,
   type OrderItemSnapshot,
   readOrderNumberPrefix,
+  readServiceDefaultTerms,
 } from "@/server/repositories/order.repository";
 
-import { type CartOwner, getCartView, resolveCart } from "./cart.service";
+import {
+  type CartOwner,
+  getCartView,
+  INQUIRY_NOT_ORDERABLE_MESSAGE,
+  resolveCart,
+} from "./cart.service";
 import { evaluateCoupon } from "./coupon.service";
 import { publishOrderEvent } from "./order-events";
 
@@ -74,7 +87,10 @@ async function placeOrderTx(
   // ۲) محاسبه‌ی مجدد قیمت از دیتابیس (هرگز از کلاینت)
   const items: OrderItemSnapshot[] = [];
   const couponLines: CouponLine[] = [];
+  const serviceLines: ServiceLine[] = [];
+  let itemCount = 0;
   for (const row of rows) {
+    itemCount += row.quantity;
     const { variant } = row;
     const { product } = variant;
     const variantTitle = resolveVariantTitle(
@@ -82,7 +98,17 @@ async function placeOrderTx(
       variant.unitValue,
       variant.title,
     );
-    if (!variant.isActive || !product.isActive) {
+    // 🔴 سمت سرور: استعلامی هرگز سفارش نمی‌شود (حتی اگر بعد از افزودن به سبد استعلامی شده)
+    if (product.pricingMode === "INQUIRY") {
+      throw new UserFacingError(INQUIRY_NOT_ORDERABLE_MESSAGE);
+    }
+    if (
+      !isSellable({
+        variantActive: variant.isActive,
+        productActive: product.isActive,
+        pricingMode: product.pricingMode,
+      })
+    ) {
       throw new UserFacingError(
         removedItemMessage(`${product.name} — ${variantTitle}`),
       );
@@ -97,6 +123,12 @@ async function placeOrderTx(
       lineTotal: variant.price * row.quantity,
       unitValueSnapshot: variant.unitValue,
       unitSnapshot: product.unit,
+      productKindSnapshot: product.kind,
+    });
+    serviceLines.push({
+      kind: product.kind,
+      productName: product.name,
+      terms: product.serviceTerms,
     });
     couponLines.push({
       productId: product.id,
@@ -106,23 +138,50 @@ async function placeOrderTx(
   }
   const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
 
-  const address = await findUserAddress(ctx.input.addressId, ctx.userId, tx);
-  if (!address) {
-    throw new UserFacingError(
-      "آدرس انتخاب‌شده پیدا نشد. آدرس را دوباره انتخاب کنید.",
-    );
-  }
-  if (!isServedLocation(address.province, address.city)) {
-    throw new UserFacingError(OUT_OF_AREA_MESSAGE);
-  }
-
   const method = await findActiveShippingMethod(tx, ctx.input.shippingMethodId);
   if (!method) {
     throw new UserFacingError("روش ارسال انتخاب‌شده در دسترس نیست.");
   }
-  if (!isShippingAvailableIn(method.provinces, address.province)) {
-    throw new UserFacingError(
-      `«${method.name}» به آدرس انتخاب‌شده ارسال ندارد.`,
+
+  // 🔴 سمت سرور: روشی که آدرس لازم دارد بدون آدرس رد می‌شود؛ روش بدون آدرس
+  // (تحویل حضوری) آدرس ذخیره نمی‌کند (حتی اگر کلاینت آدرس فرستاده باشد)
+  let address: Awaited<ReturnType<typeof findUserAddress>> = null;
+  if (method.requiresAddress) {
+    if (!ctx.input.addressId) {
+      throw new UserFacingError("آدرس ارسال را انتخاب کنید.");
+    }
+    address = await findUserAddress(ctx.input.addressId, ctx.userId, tx);
+    if (!address) {
+      throw new UserFacingError(
+        "آدرس انتخاب‌شده پیدا نشد. آدرس را دوباره انتخاب کنید.",
+      );
+    }
+    if (!isServedLocation(address.province, address.city)) {
+      throw new UserFacingError(OUT_OF_AREA_MESSAGE);
+    }
+    if (!isShippingAvailableIn(method.provinces, address.province)) {
+      throw new UserFacingError(
+        `«${method.name}» به آدرس انتخاب‌شده ارسال ندارد.`,
+      );
+    }
+  }
+
+  // 🔴 سمت سرور: سفارش دارای خدمت بدون پذیرش شرایط رد می‌شود؛ متن پذیرفته‌شده
+  // عیناً (شرایط همه‌ی محصولات خدمت، بدون تکرار) ذخیره می‌شود
+  let serviceTermsSnapshot: string | null = null;
+  if (serviceLines.some((line) => line.kind === "SERVICE")) {
+    if (!ctx.input.acceptServiceTerms) {
+      throw new UserFacingError(SERVICE_TERMS_REQUIRED_MESSAGE);
+    }
+    const defaultTerms = await readServiceDefaultTerms(tx);
+    serviceTermsSnapshot = collectServiceTerms(
+      serviceLines.map((line) => ({
+        ...line,
+        terms: resolveServiceTerms(
+          { kind: line.kind, serviceTerms: line.terms },
+          defaultTerms,
+        ),
+      })),
     );
   }
 
@@ -145,6 +204,7 @@ async function placeOrderTx(
     itemsDiscount: coupon?.ok ? coupon.discount : 0,
     freeShippingCoupon: coupon?.ok ? coupon.freeShipping : false,
     shipping: method,
+    itemCount,
   });
   if (pricing.grandTotal !== ctx.input.expectedGrandTotal) {
     throw new UserFacingError(PRICE_CHANGED_MESSAGE);
@@ -166,14 +226,18 @@ async function placeOrderTx(
       couponCode: applied?.code ?? null,
       shippingMethodName: method.name,
       shippingPayOnDelivery: method.payOnDelivery,
-      shippingAddressSnapshot: {
-        receiverName: address.receiverName,
-        receiverPhone: address.receiverPhone,
-        province: address.province,
-        city: address.city,
-        postalCode: address.postalCode,
-        line: address.line,
-      },
+      shippingAddressSnapshot: address
+        ? {
+            receiverName: address.receiverName,
+            receiverPhone: address.receiverPhone,
+            province: address.province,
+            city: address.city,
+            postalCode: address.postalCode,
+            line: address.line,
+          }
+        : null,
+      serviceTermsAcceptedAt: serviceTermsSnapshot ? ctx.now : null,
+      serviceTermsSnapshot,
       customerNote: ctx.input.customerNote,
     },
     items,

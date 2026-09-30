@@ -20,6 +20,7 @@ import {
 
 import {
   type AddressSnapshot,
+  isPickupSnapshot,
   parseAddressSnapshot,
 } from "./order-query.service";
 import { transitionOrderStatus } from "./order-status.service";
@@ -67,6 +68,8 @@ export interface MyOrderDto {
   shippingMethodName: string;
   shippingPayOnDelivery: boolean;
   address: AddressSnapshot | null;
+  /** سفارش تحویل حضوری (بدون آدرس) */
+  pickup: boolean;
   customerNote: string | null;
   trackingCode: string | null;
   placedAt: Date;
@@ -112,6 +115,7 @@ export async function getMyOrder(
     shippingMethodName: order.shippingMethodName,
     shippingPayOnDelivery: order.shippingPayOnDelivery,
     address: parseAddressSnapshot(order.shippingAddressSnapshot),
+    pickup: isPickupSnapshot(order.shippingAddressSnapshot),
     customerNote: order.customerNote,
     trackingCode: order.trackingCode,
     placedAt: order.placedAt,

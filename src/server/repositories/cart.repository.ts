@@ -65,11 +65,15 @@ export function findCartItem(cartId: string, variantId: string) {
   });
 }
 
-/** متغیر قابل فروش: خودش و محصولش فعال باشند */
-export function findSellableVariant(variantId: string) {
-  return db.productVariant.findFirst({
-    where: { id: variantId, isActive: true, product: { isActive: true } },
-    select: { id: true },
+/** متغیر همراه وضعیت محصولش؛ قابل‌فروش بودن را سرویس با `isSellable` می‌سنجد */
+export function findVariantForCart(variantId: string) {
+  return db.productVariant.findUnique({
+    where: { id: variantId },
+    select: {
+      id: true,
+      isActive: true,
+      product: { select: { isActive: true, pricingMode: true } },
+    },
   });
 }
 

@@ -147,6 +147,15 @@ export function findProductArchiveInfo(id: string) {
   });
 }
 
+/** نام، نوع و متن اختصاصی شرایط چند محصول (برای نمایش شرایط خدمت در تسویه) */
+export function findProductsForTerms(ids: string[]) {
+  return db.product.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, name: true, kind: true, serviceTerms: true },
+    orderBy: { name: "asc" },
+  });
+}
+
 export function updateProductRecord(
   id: string,
   data: Prisma.ProductUncheckedUpdateInput,

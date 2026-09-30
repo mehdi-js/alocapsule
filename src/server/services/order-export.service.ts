@@ -6,6 +6,8 @@ import { findOrdersForExport } from "@/server/repositories/order-admin.repositor
 
 import { parseAddressSnapshot } from "./order-query.service";
 
+const PICKUP_LABEL = "تحویل حضوری";
+
 /** سقف ردیف‌های هر خروجی (بازه را کوچک‌تر کنید) */
 export const MAX_EXPORT_ROWS = 10_000;
 
@@ -47,7 +49,8 @@ export async function exportOrdersCsv(filters: OrderFilters): Promise<string> {
       address?.receiverName,
       address?.receiverPhone,
       address ? `${address.province} - ${address.city}` : null,
-      address?.line,
+      // سفارش تحویل حضوری آدرس ندارد
+      address ? address.line : PICKUP_LABEL,
       order.shippingMethodName,
       order._count.items,
       order.subtotal,

@@ -9,14 +9,45 @@ export interface ShippingRate {
   cost: number;
   /** اگر مبلغ کالا پس از تخفیف به این آستانه برسد، ارسال رایگان است */
   freeAboveAmount: number | null;
+  /** اگر مجموع تعداد اقلام سبد به این عدد برسد، ارسال رایگان است */
+  freeAboveQuantity: number | null;
 }
 
-/** آستانه‌ی ارسال رایگان با مبلغ کالا **پس از تخفیف** مقایسه می‌شود */
-export function shippingCost(rate: ShippingRate, goodsAmount: number): number {
+/**
+ * ارسال رایگان وقتی **مبلغ کالا پس از تخفیف** ≥ `freeAboveAmount` **یا**
+ * **مجموع تعداد اقلام سبد** ≥ `freeAboveQuantity` (هرکدام برقرار باشد).
+ */
+export function shippingCost(
+  rate: ShippingRate,
+  goodsAmount: number,
+  itemCount: number,
+): number {
   if (rate.freeAboveAmount !== null && goodsAmount >= rate.freeAboveAmount) {
     return 0;
   }
+  if (rate.freeAboveQuantity !== null && itemCount >= rate.freeAboveQuantity) {
+    return 0;
+  }
   return rate.cost;
+}
+
+/**
+ * چند عدد دیگر تا رایگان شدن ارسال با پیک (برای پیام سبد)؛ `null` اگر روشی با
+ * آستانه‌ی تعداد نیست، هزینه ندارد یا از قبل رایگان است. کمترین کمبود بین
+ * روش‌ها را برمی‌گرداند.
+ */
+export function itemsUntilFreeShipping(
+  methods: { cost: number; freeAboveQuantity: number | null }[],
+  itemCount: number,
+): number | null {
+  let best: number | null = null;
+  for (const method of methods) {
+    if (method.cost <= 0 || method.freeAboveQuantity === null) continue;
+    const remaining = method.freeAboveQuantity - itemCount;
+    if (remaining <= 0) return null;
+    if (best === null || remaining < best) best = remaining;
+  }
+  return best;
 }
 
 /** برچسب هزینه‌ی پیک درب منزل (به‌جای «رایگان») */
@@ -42,6 +73,8 @@ export interface OrderPricingInput {
   /** کد از نوع FREE_SHIPPING: تخفیف = هزینه‌ی ارسال (بند ۷.۳) */
   freeShippingCoupon: boolean;
   shipping: ShippingRate;
+  /** مجموع تعداد اقلام سبد (مبنای ارسال رایگان تعدادی) */
+  itemCount: number;
 }
 
 export interface OrderPricing {
@@ -59,6 +92,7 @@ export function priceOrder(input: OrderPricingInput): OrderPricing {
   const shippingTotal = shippingCost(
     input.shipping,
     input.subtotal - itemsDiscount,
+    input.itemCount,
   );
   const discountTotal = input.freeShippingCoupon
     ? shippingTotal

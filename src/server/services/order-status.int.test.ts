@@ -35,6 +35,7 @@ async function placeWithCoupon() {
   const placed = await createOrder(customer.owner, {
     addressId: customer.addressId,
     shippingMethodId: catalog.post.id,
+    acceptServiceTerms: false,
     customerNote: null,
     expectedGrandTotal: await quote(customer, catalog.post),
   });

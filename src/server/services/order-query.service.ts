@@ -25,6 +25,8 @@ export interface OrderConfirmationDto {
   shippingMethodName: string;
   shippingPayOnDelivery: boolean;
   address: AddressSnapshot | null;
+  /** سفارش تحویل حضوری (بدون آدرس) */
+  pickup: boolean;
   customerNote: string | null;
   placedAt: Date;
   items: {
@@ -43,6 +45,11 @@ function readText(
 ): string | null {
   const field = value[key];
   return typeof field === "string" ? field : null;
+}
+
+/** سفارش تحویل حضوری: اسنپ‌شات آدرس خالی (NULL) ذخیره شده است */
+export function isPickupSnapshot(value: Prisma.JsonValue | null): boolean {
+  return value === null;
 }
 
 /** اسنپ‌شات JSON آدرس سفارش؛ شکل نامعتبر ⇒ `null` (نمایش بدون آدرس) */
@@ -88,6 +95,7 @@ export async function getOrderConfirmation(
     shippingMethodName: order.shippingMethodName,
     shippingPayOnDelivery: order.shippingPayOnDelivery,
     address: parseAddressSnapshot(order.shippingAddressSnapshot),
+    pickup: isPickupSnapshot(order.shippingAddressSnapshot),
     customerNote: order.customerNote,
     placedAt: order.placedAt,
     items: order.items,

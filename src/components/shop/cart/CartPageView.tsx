@@ -137,6 +137,15 @@ export function CartPageView({ initial }: { initial: CartViewDto }) {
                 )}
               </div>
             </dl>
+            {cart.itemsUntilFreeShipping !== null ? (
+              <p
+                role="status"
+                className="border-action/40 text-ink-2 rounded-[14px] border bg-[rgb(47_168_79/0.06)] px-4 py-3 text-sm leading-7"
+              >
+                با افزودن {toPersianDigits(cart.itemsUntilFreeShipping)} عدد
+                دیگر، ارسال رایگان می‌شود.
+              </p>
+            ) : null}
             <div className="flex items-center justify-between gap-3 border-t border-[rgb(201_168_118/0.14)] pt-4">
               <span className="font-bold">جمع پس از تخفیف</span>
               <span className="text-action text-2xl font-extrabold">
