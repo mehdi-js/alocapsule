@@ -11,7 +11,7 @@ export function ProductCard({ product }: { product: ProductCardDto }) {
   const href = `/products/${encodeURIComponent(product.slug)}`;
 
   return (
-    <article className="bg-card relative flex flex-col gap-3.5 rounded-[24px] border border-[rgb(201_168_118/0.16)] p-3.5 pb-4.5 transition hover:border-[rgb(201_168_118/0.35)]">
+    <article className="bg-card relative flex flex-col gap-3.5 rounded-[24px] border border-hair p-3.5 pb-4.5 transition hover:border-outline">
       <Link
         href={href}
         className="relative block h-[186px] overflow-hidden rounded-[18px]"
@@ -25,14 +25,14 @@ export function ProductCard({ product }: { product: ProductCardDto }) {
       </Link>
 
       {product.badge ? (
-        <span className="bg-gold absolute top-6 start-6 rounded-full px-2.5 py-1 text-[11px] font-extrabold text-canvas">
+        <span className="bg-accent absolute top-6 start-6 rounded-full px-2.5 py-1 text-[11px] font-extrabold text-surface-alt">
           {product.badge}
         </span>
       ) : null}
 
       <div className="flex flex-col gap-1.5">
         <h3 className="text-lg font-bold">
-          <Link href={href} className="hover:text-action transition">
+          <Link href={href} className="hover:text-brand-strong transition">
             {product.name}
           </Link>
         </h3>

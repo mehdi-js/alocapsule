@@ -45,7 +45,7 @@ export default async function MenuPage({ params }: { params: Params }) {
   if (!menu) notFound();
 
   return (
-    <main className="bg-canvas mx-auto flex min-h-screen w-full max-w-[560px] flex-col">
+    <main className="bg-surface-alt mx-auto flex min-h-screen w-full max-w-[560px] flex-col">
       <header className="relative overflow-hidden px-5 pt-10 pb-8 text-center">
         <div
           aria-hidden
@@ -53,7 +53,7 @@ export default async function MenuPage({ params }: { params: Params }) {
         />
         <div className="relative flex flex-col items-center gap-3">
           <Logo size={30} priority />
-          <p className="text-gold mt-2 text-xs font-bold tracking-[0.3em]">
+          <p className="text-accent mt-2 text-xs font-bold tracking-[0.3em]">
             منو
           </p>
           <h1 className="text-[28px] leading-tight font-extrabold">
@@ -79,7 +79,7 @@ export default async function MenuPage({ params }: { params: Params }) {
         <p>همه‌ی قیمت‌ها به تومان است.</p>
         <Link
           href="/"
-          className="border-gold/50 text-ink hover:bg-card rounded-full border px-5 py-2.5 text-sm font-bold transition"
+          className="border-accent/50 text-ink hover:bg-card rounded-full border px-5 py-2.5 text-sm font-bold transition"
         >
           سفارش آنلاین از {SITE.name}
         </Link>

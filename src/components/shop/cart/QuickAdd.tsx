@@ -59,7 +59,7 @@ export function QuickAdd({ product }: { product: ProductCardDto }) {
         disabled={pending}
         aria-label={`افزودن ${product.name} به سبد`}
         aria-expanded={single ? undefined : open}
-        className="bg-action text-action-ink hover:bg-action-hover flex size-[42px] shrink-0 items-center justify-center rounded-full transition disabled:opacity-60"
+        className="bg-brand-strong text-on-brand hover:bg-brand-strong-hover flex size-[42px] shrink-0 items-center justify-center rounded-full transition disabled:opacity-60"
       >
         <PlusIcon size={18} />
       </button>
@@ -69,7 +69,7 @@ export function QuickAdd({ product }: { product: ProductCardDto }) {
           ref={panelRef}
           role="dialog"
           aria-label={`انتخاب ${product.name}`}
-          className="bg-panel absolute inset-x-2 bottom-2 z-10 flex animate-[fade_150ms_ease] flex-col gap-3 rounded-[18px] border border-[rgb(201_168_118/0.3)] p-3.5 shadow-[0_20px_40px_-20px_#000]"
+          className="bg-panel absolute inset-x-2 bottom-2 z-10 flex animate-[fade_150ms_ease] flex-col gap-3 rounded-[18px] border border-control p-3.5 shadow-[0_20px_40px_-20px_#000]"
         >
           <div className="flex items-center justify-between gap-2">
             <span className="text-sm font-bold">انتخاب بسته</span>

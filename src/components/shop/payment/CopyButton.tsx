@@ -33,8 +33,8 @@ export function CopyButton({
       onClick={copy}
       aria-label={label}
       className={cn(
-        "rounded-full border border-[rgb(201_168_118/0.35)] px-3.5 py-1.5 text-xs font-bold transition hover:bg-card",
-        copied ? "text-action" : "text-gold",
+        "rounded-full border border-outline px-3.5 py-1.5 text-xs font-bold transition hover:bg-card",
+        copied ? "text-brand-strong" : "text-accent",
         className,
       )}
     >

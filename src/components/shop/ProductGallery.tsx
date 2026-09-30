@@ -61,7 +61,7 @@ export function ProductGallery({
                 className={cn(
                   "relative block h-[72px] w-full overflow-hidden rounded-[14px] border transition md:h-[92px]",
                   index === active
-                    ? "border-action"
+                    ? "border-brand-strong"
                     : "border-transparent opacity-70 hover:opacity-100",
                 )}
               >

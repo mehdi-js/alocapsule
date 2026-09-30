@@ -41,9 +41,9 @@ export function PriceRange({
   return (
     <div className="flex flex-col gap-3">
       <div className="relative h-4">
-        <div className="absolute inset-x-0 top-1.5 h-1 rounded-full bg-[rgb(245_240_232/0.12)]" />
+        <div className="absolute inset-x-0 top-1.5 h-1 rounded-full bg-on-media/12" />
         <div
-          className="bg-action absolute top-1.5 h-1 rounded-full"
+          className="bg-brand-strong absolute top-1.5 h-1 rounded-full"
           style={{ right: `${lowPct}%`, left: `${100 - highPct}%` }}
         />
         <input

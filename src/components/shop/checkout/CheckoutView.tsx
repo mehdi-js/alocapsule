@@ -141,7 +141,7 @@ export function CheckoutView({
         <CheckoutSteps current={1} />
         <Link
           href="/cart"
-          className="text-gold hover:text-gold-hover flex items-center gap-2 text-sm transition"
+          className="text-accent hover:text-accent-hover flex items-center gap-2 text-sm transition"
         >
           بازگشت به سبد خرید
           <ArrowIcon />

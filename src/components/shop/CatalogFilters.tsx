@@ -39,8 +39,7 @@ export function CatalogFilters({
     startTransition(() => router.push(href, { scroll: false }));
   }
 
-  const sectionClass =
-    "flex flex-col gap-4 border-b border-[rgb(201_168_118/0.14)] pb-6";
+  const sectionClass = "flex flex-col gap-4 border-b border-hair pb-6";
 
   return (
     <div
@@ -76,9 +75,9 @@ export function CatalogFilters({
                       {/* چک‌باکس سفارشی طبق طراحی؛ input اصلی برای صفحه‌خوان و کیبورد می‌ماند */}
                       <span
                         aria-hidden
-                        className="bg-card peer-checked:border-action peer-checked:bg-action peer-focus-visible:outline-action flex size-4 items-center justify-center rounded-[5px] border border-[rgb(201_168_118/0.35)] peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 [&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100"
+                        className="bg-card peer-checked:border-brand-strong peer-checked:bg-brand-strong peer-focus-visible:outline-brand-strong flex size-4 items-center justify-center rounded-[5px] border border-outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 [&>svg]:opacity-0 peer-checked:[&>svg]:opacity-100"
                       >
-                        <CheckIcon size={11} className="text-action-ink" />
+                        <CheckIcon size={11} className="text-on-brand" />
                       </span>
                       {category.name}
                     </span>
@@ -144,7 +143,7 @@ export function CatalogFilters({
             search: "",
           })
         }
-        className="bg-card rounded-full border border-[rgb(201_168_118/0.3)] py-3 text-[15px] font-bold transition hover:border-[rgb(201_168_118/0.55)] disabled:cursor-not-allowed disabled:opacity-50"
+        className="bg-card rounded-full border border-control py-3 text-[15px] font-bold transition hover:border-strong disabled:cursor-not-allowed disabled:opacity-50"
       >
         حذف فیلترها
       </button>

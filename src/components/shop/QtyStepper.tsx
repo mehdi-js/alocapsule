@@ -5,7 +5,7 @@ import { cn, toPersianDigits } from "@/lib/utils";
 import { MinusIcon, PlusIcon } from "./icons";
 
 const stepButton =
-  "flex items-center justify-center rounded-full bg-canvas transition hover:bg-canvas-hover disabled:cursor-not-allowed disabled:opacity-40";
+  "flex items-center justify-center rounded-full bg-surface-alt transition hover:bg-surface-alt-hover disabled:cursor-not-allowed disabled:opacity-40";
 
 /** شمارنده‌ی تعداد؛ سقف = `maxQuantityPerItem` از تنظیمات (نه موجودی) */
 export function QtyStepper({
@@ -28,7 +28,7 @@ export function QtyStepper({
       role="group"
       aria-label="تعداد"
       className={cn(
-        "bg-card flex items-center rounded-full border border-[rgb(201_168_118/0.22)]",
+        "bg-card flex items-center rounded-full border border-control",
         small ? "gap-2 px-1.5 py-1" : "gap-3.5 px-2.5 py-2",
       )}
     >

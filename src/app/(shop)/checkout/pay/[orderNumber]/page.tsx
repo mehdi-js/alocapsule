@@ -36,9 +36,9 @@ function Banner({
       className={cn(
         "rounded-[18px] border px-5 py-4 text-sm leading-7",
         tone === "danger" && "border-danger/40 bg-danger/10 text-danger",
-        tone === "success" && "border-action/40 bg-action/10 text-ink",
-        tone === "info" &&
-          "border-[rgb(201_168_118/0.35)] bg-[rgb(201_168_118/0.08)]",
+        tone === "success" &&
+          "border-brand-strong/40 bg-brand-strong/10 text-ink",
+        tone === "info" && "border-outline bg-accent/8",
       )}
     >
       {children}
@@ -101,7 +101,7 @@ function Step({
   return (
     <section className={cn(panel, "flex flex-col gap-4 p-5 md:p-6")}>
       <h2 className="flex items-center gap-3 text-lg font-extrabold">
-        <span className="bg-action text-action-ink flex size-7 items-center justify-center rounded-full text-xs">
+        <span className="bg-brand-strong text-on-brand flex size-7 items-center justify-center rounded-full text-xs">
           {toPersianDigits(index)}
         </span>
         {title}
@@ -133,7 +133,7 @@ export default async function OrderPaymentPage({
         <h1 className="text-[28px] font-extrabold md:text-4xl">پرداخت سفارش</h1>
         <p className="text-muted text-sm">
           سفارش{" "}
-          <span dir="ltr" className="text-gold font-mono font-bold">
+          <span dir="ltr" className="text-accent font-mono font-bold">
             {page.orderNumber}
           </span>{" "}
           · {page.statusLabel}
@@ -150,9 +150,9 @@ export default async function OrderPaymentPage({
       >
         <span className="font-bold">مبلغ قابل پرداخت</span>
         <span className="flex items-center gap-3">
-          <span className="text-action text-2xl font-extrabold md:text-3xl">
+          <span className="text-brand-strong text-2xl font-extrabold md:text-3xl">
             {formatToman(page.grandTotal)}{" "}
-            <span className="text-ink-2 text-sm font-semibold">تومان</span>
+            <span className="text-ink-soft text-sm font-semibold">تومان</span>
           </span>
           {page.canPay ? (
             <CopyButton value={String(page.grandTotal)} label="کپی مبلغ" />

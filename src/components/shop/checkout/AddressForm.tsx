@@ -87,7 +87,7 @@ export function AddressForm({
       onSubmit={submit}
       noValidate
       aria-busy={pending}
-      className="bg-card/40 flex flex-col gap-4 rounded-[18px] border border-dashed border-[rgb(201_168_118/0.35)] p-4 md:p-5"
+      className="bg-card/40 flex flex-col gap-4 rounded-[18px] border border-dashed border-outline p-4 md:p-5"
     >
       <p className="font-bold">{address ? "ویرایش آدرس" : "آدرس جدید"}</p>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -208,7 +208,7 @@ export function AddressForm({
             type="checkbox"
             checked={values.isDefault}
             onChange={(event) => set("isDefault", event.target.checked)}
-            className="accent-action size-4"
+            className="accent-brand-strong size-4"
           />
           آدرس پیش‌فرض من باشد
         </label>

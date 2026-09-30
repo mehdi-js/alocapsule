@@ -53,7 +53,7 @@ export function ShippingOptions({
                   name="shipping"
                   checked={method.id === selectedId}
                   onChange={() => onSelect(method.id)}
-                  className="accent-action mt-1 size-4 shrink-0"
+                  className="accent-brand-strong mt-1 size-4 shrink-0"
                 />
                 <label
                   htmlFor={inputId}
@@ -82,7 +82,7 @@ export function ShippingOptions({
                   <span
                     className={cn(
                       "shrink-0 font-bold",
-                      free ? "text-action" : "text-ink",
+                      free ? "text-brand-strong" : "text-ink",
                     )}
                   >
                     {method.payOnDelivery

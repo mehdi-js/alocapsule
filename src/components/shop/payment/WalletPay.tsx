@@ -47,7 +47,9 @@ export function WalletPay({
     <div className="flex flex-col gap-3">
       <p className="text-sm">
         موجودی کیف پول شما:{" "}
-        <strong className="text-action">{formatToman(balance)} تومان</strong>
+        <strong className="text-brand-strong">
+          {formatToman(balance)} تومان
+        </strong>
       </p>
       {!enough ? (
         <p className="text-muted text-sm">

@@ -22,7 +22,7 @@ export function Placeholder({
   return (
     <div
       className={cn(
-        "bg-placeholder flex flex-col items-center justify-center gap-1.5 border border-dashed border-[rgb(245_240_232/0.22)] text-center",
+        "bg-placeholder flex flex-col items-center justify-center gap-1.5 border border-dashed border-on-media/22 text-center",
         className,
       )}
     >
@@ -30,7 +30,7 @@ export function Placeholder({
         <span
           dir="ltr"
           className={cn(
-            "font-mono text-[#a7b2ab]",
+            "font-mono text-placeholder-ink",
             compact ? "text-[10px]" : "text-xs",
           )}
         >
@@ -39,7 +39,10 @@ export function Placeholder({
       ) : null}
       {label ? (
         <span
-          className={cn("text-[#a7b2ab]", compact ? "text-[10px]" : "text-xs")}
+          className={cn(
+            "text-placeholder-ink",
+            compact ? "text-[10px]" : "text-xs",
+          )}
         >
           {label}
         </span>

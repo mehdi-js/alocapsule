@@ -35,13 +35,13 @@ export function MenuItemSheet({
         if (event.target === event.currentTarget) onClose();
       }}
       aria-label={item?.name}
-      className="bg-panel text-ink m-0 mt-auto w-full max-w-none rounded-t-[28px] border border-[rgb(201_168_118/0.18)] p-0 backdrop:bg-black/60 backdrop:backdrop-blur-sm sm:m-auto sm:max-w-md sm:rounded-[28px]"
+      className="bg-panel text-ink m-0 mt-auto w-full max-w-none rounded-t-[28px] border border-control p-0 backdrop:bg-black/60 backdrop:backdrop-blur-sm sm:m-auto sm:max-w-md sm:rounded-[28px]"
     >
       {item ? (
         <div className="flex flex-col items-center gap-4 px-6 pt-3 pb-8 text-center">
           <span
             aria-hidden
-            className="h-1 w-10 rounded-full bg-[rgb(201_168_118/0.3)] sm:hidden"
+            className="h-1 w-10 rounded-full bg-accent/30 sm:hidden"
           />
           <button
             type="button"
@@ -58,9 +58,11 @@ export function MenuItemSheet({
           />
           <h3 className="text-xl font-extrabold">{item.name}</h3>
           {item.description ? (
-            <p className="text-ink-2 text-sm leading-7">{item.description}</p>
+            <p className="text-ink-soft text-sm leading-7">
+              {item.description}
+            </p>
           ) : null}
-          <MenuPrice price={item.price} className="text-gold text-lg" />
+          <MenuPrice price={item.price} className="text-accent text-lg" />
         </div>
       ) : null}
     </dialog>

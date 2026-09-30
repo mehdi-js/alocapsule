@@ -18,7 +18,7 @@ export function MenuThumb({
   return (
     <span
       className={cn(
-        "bg-card relative block shrink-0 overflow-hidden border border-[rgb(201_168_118/0.14)]",
+        "bg-card relative block shrink-0 overflow-hidden border border-hair",
         className,
       )}
       style={{ width: size, height: size }}
@@ -73,7 +73,7 @@ export function MenuItemRow({
     <button
       type="button"
       onClick={onOpen}
-      className="bg-panel flex w-full items-center gap-3.5 rounded-[20px] border border-[rgb(201_168_118/0.1)] p-2.5 text-start transition hover:border-[rgb(201_168_118/0.35)] active:scale-[0.99]"
+      className="bg-panel flex w-full items-center gap-3.5 rounded-[20px] border border-hair p-2.5 text-start transition hover:border-outline active:scale-[0.99]"
     >
       <MenuThumb item={item} size={76} className="rounded-2xl" />
       <span className="flex min-w-0 flex-1 flex-col gap-1 py-1">

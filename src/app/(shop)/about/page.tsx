@@ -63,13 +63,13 @@ export default async function AboutPage() {
             <RichText
               text={page.content}
               headingLevel={3}
-              className="text-ink-2 text-[15px] leading-[2.1]"
+              className="text-ink-soft text-[15px] leading-[2.1]"
             />
           ) : (
             ABOUT_PAGE.story.paragraphs.map((paragraph) => (
               <p
                 key={paragraph}
-                className="text-ink-2 text-[15px] leading-[2.1]"
+                className="text-ink-soft text-[15px] leading-[2.1]"
               >
                 {paragraph}
               </p>
@@ -92,7 +92,7 @@ export default async function AboutPage() {
               key={stat.label}
               className="flex flex-col items-center gap-1 text-center"
             >
-              <span className="text-gold text-[30px] font-extrabold md:text-4xl">
+              <span className="text-accent text-[30px] font-extrabold md:text-4xl">
                 {stat.value}
               </span>
               <span className="text-muted text-sm">{stat.label}</span>
@@ -109,9 +109,9 @@ export default async function AboutPage() {
             return (
               <li
                 key={value.title}
-                className="bg-card flex flex-col gap-3 rounded-[24px] border border-[rgb(201_168_118/0.16)] p-6"
+                className="bg-card flex flex-col gap-3 rounded-[24px] border border-hair p-6"
               >
-                <span className="bg-panel text-action flex size-12 items-center justify-center rounded-full">
+                <span className="bg-panel text-brand-strong flex size-12 items-center justify-center rounded-full">
                   <ValueIcon size={22} />
                 </span>
                 <h3 className="text-lg font-bold">{value.title}</h3>
@@ -130,7 +130,7 @@ export default async function AboutPage() {
       <ContentPanel className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl font-extrabold">{ABOUT_PAGE.cta.title}</h2>
-          <p className="text-ink-2 max-w-xl text-[15px] leading-[2]">
+          <p className="text-ink-soft max-w-xl text-[15px] leading-[2]">
             {ABOUT_PAGE.cta.text}
           </p>
         </div>

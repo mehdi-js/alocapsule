@@ -41,7 +41,7 @@ export function SortSelect({
               ),
             );
           }}
-          className="bg-card text-ink appearance-none rounded-full border border-[rgb(201_168_118/0.22)] py-2.5 ps-5 pe-10 text-[15px] font-bold outline-none focus:border-[rgb(201_168_118/0.55)]"
+          className="bg-card text-ink appearance-none rounded-full border border-control py-2.5 ps-5 pe-10 text-[15px] font-bold outline-none focus:border-strong"
         >
           {(Object.keys(labels) as CatalogSortKey[]).map((key) => (
             <option key={key} value={key}>
@@ -51,7 +51,7 @@ export function SortSelect({
         </select>
         <ChevronDownIcon
           size={14}
-          className="text-gold pointer-events-none absolute end-4 top-1/2 -translate-y-1/2"
+          className="text-accent pointer-events-none absolute end-4 top-1/2 -translate-y-1/2"
         />
       </span>
     </label>

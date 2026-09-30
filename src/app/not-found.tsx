@@ -22,7 +22,7 @@ export default function NotFound() {
           <div
             className={`${panel} flex w-full flex-col items-center gap-5 px-6 py-20 text-center`}
           >
-            <p dir="ltr" className="text-gold font-mono text-5xl font-bold">
+            <p dir="ltr" className="text-accent font-mono text-5xl font-bold">
               404
             </p>
             <h1 className="text-2xl font-extrabold md:text-3xl">

@@ -152,13 +152,13 @@ export default async function ProductPage({ params }: { params: Params }) {
                 {product.name}
               </h1>
               {product.shortDescription ? (
-                <p className="text-ink-2 max-w-[520px] text-[15px] leading-[2]">
+                <p className="text-ink-soft max-w-[520px] text-[15px] leading-[2]">
                   {product.shortDescription}
                 </p>
               ) : null}
             </div>
 
-            <div aria-hidden className="h-px bg-[rgb(201_168_118/0.14)]" />
+            <div aria-hidden className="h-px bg-accent/14" />
 
             {product.available ? (
               <ProductPurchase

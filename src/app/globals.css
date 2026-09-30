@@ -6,26 +6,44 @@
     var(--font-vazirmatn), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     Tahoma, sans-serif;
 
-  /* رنگ‌ها */
-  --color-page: #071009;
-  --color-canvas: #0b1f16;
+  /*
+   * رنگ‌ها — توکن‌های معنایی. هیچ کامپوننتی رنگ خام (هگز/rgb) نمی‌نویسد؛
+   * تغییر تم فقط با عوض کردن مقدار همین توکن‌هاست.
+   */
+  /* سطوح */
+  --color-surface: #071009;
+  --color-surface-alt: #0b1f16;
+  --color-surface-alt-hover: #183c27;
+  --color-surface-deep: #081a11;
   --color-panel: #0f2a1d;
   --color-card: #12301f;
   --color-placeholder: #2b342e;
-  --color-action: #2fa84f;
-  --color-action-hover: #38bd5c;
-  --color-action-ink: #08200f;
-  --color-action-deep: #22713a;
-  --color-action-deep-hover: #2a8546;
-  --color-gold: #c9a876;
-  --color-gold-hover: #dbbc8c;
+  --color-placeholder-ink: #a7b2ab;
+  /* برند: آیکون، خط و المان‌های تزئینی */
+  --color-brand: #2fa84f;
+  /* برند: دکمه‌ی اصلی، لینک/متن برجسته (با `on-brand` روی آن) */
+  --color-brand-strong: #2fa84f;
+  --color-brand-strong-hover: #38bd5c;
+  --color-brand-deep: #22713a;
+  --color-brand-deep-hover: #2a8546;
+  --color-brand-soft: rgb(47 168 79 / 0.08);
+  --color-on-brand: #08200f;
+  /* تأکید دوم: عنوان‌های کوچک، لینک، حاشیه */
+  --color-accent: #c9a876;
+  --color-accent-hover: #dbbc8c;
+  --color-on-accent: #1b1408;
+  /* متن */
   --color-ink: #f5f0e8;
-  --color-ink-2: #b4bfb8;
+  --color-ink-soft: #b4bfb8;
   --color-muted: #94a29a;
   --color-faint: #88968d;
   --color-danger: #e06b5b;
-  /* حالت hover دکمه‌های گرد روی canvas */
-  --color-canvas-hover: #183c27;
+  /* روی تصویر/رسانه (همیشه روشن) و پرده‌ی تیره‌ی روی تصویر */
+  --color-on-media: #f5f0e8;
+  --color-scrim: #071009;
+  /* پایه‌ی خط‌های مویی و نوار اسکرول */
+  --color-line: #c9a876;
+  --color-scrollbar: #2b3f33;
 
   /* شعاع گوشه */
   --radius-card: 24px;
@@ -34,19 +52,40 @@
   --radius-thumb: 14px;
 }
 
-/* خط‌های مویی و حاشیه‌های طلایی (بخش border-gold سند طراحی) */
+/* سطوح حاشیه: مویی، کنترل، برجسته و فوکوس */
 @utility border-hair {
-  border-color: rgb(201 168 118 / 0.14);
+  border-color: color-mix(in srgb, var(--color-line) 14%, transparent);
 }
 @utility border-control {
-  border-color: rgb(201 168 118 / 0.22);
+  border-color: color-mix(in srgb, var(--color-line) 22%, transparent);
 }
 @utility border-outline {
-  border-color: rgb(201 168 118 / 0.45);
+  border-color: color-mix(in srgb, var(--color-line) 45%, transparent);
+}
+@utility border-strong {
+  border-color: color-mix(in srgb, var(--color-line) 55%, transparent);
+}
+
+/* پرده‌ی تیره‌ی روی عکس برای خوانایی متن (دسکتاپ از راست، موبایل از پایین) */
+@utility bg-scrim-side {
+  background-image: linear-gradient(
+    270deg,
+    color-mix(in srgb, var(--color-scrim) 97%, transparent) 6%,
+    color-mix(in srgb, var(--color-scrim) 86%, transparent) 34%,
+    color-mix(in srgb, var(--color-scrim) 10%, transparent) 66%
+  );
+}
+@utility bg-scrim-bottom {
+  background-image: linear-gradient(
+    0deg,
+    color-mix(in srgb, var(--color-scrim) 97%, transparent) 12%,
+    color-mix(in srgb, var(--color-scrim) 70%, transparent) 46%,
+    transparent 78%
+  );
 }
 
 html {
-  background: var(--color-page);
+  background: var(--color-surface);
 }
 
 body {
@@ -55,7 +94,7 @@ body {
 
 /* گوشه‌ی فوکوس قابل دیدن روی پس‌زمینه‌ی تیره */
 :focus-visible {
-  outline: 2px solid var(--color-action);
+  outline: 2px solid var(--color-brand-strong);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -63,7 +102,7 @@ body {
 /* اسکرول‌بار تیره تا با پس‌زمینه هماهنگ باشد */
 @supports (scrollbar-color: auto) {
   html {
-    scrollbar-color: #2b3f33 var(--color-canvas);
+    scrollbar-color: var(--color-scrollbar) var(--color-surface-alt);
   }
 }
 
@@ -106,7 +145,7 @@ body {
   height: 16px;
   border-radius: 999px;
   background: var(--color-ink);
-  border: 2px solid var(--color-action);
+  border: 2px solid var(--color-brand-strong);
   cursor: pointer;
   pointer-events: auto;
 }
@@ -115,7 +154,7 @@ body {
   height: 16px;
   border-radius: 999px;
   background: var(--color-ink);
-  border: 2px solid var(--color-action);
+  border: 2px solid var(--color-brand-strong);
   cursor: pointer;
   pointer-events: auto;
 }

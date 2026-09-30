@@ -20,7 +20,7 @@ export async function TrustBar() {
   return (
     <section
       aria-label={`مزیت‌های خرید از ${SITE.name}`}
-      className="bg-panel grid grid-cols-3 gap-3 rounded-[18px] border border-[rgb(201_168_118/0.14)] p-3 md:gap-0 md:px-9 md:py-6"
+      className="bg-panel grid grid-cols-3 gap-3 rounded-[18px] border border-hair p-3 md:gap-0 md:px-9 md:py-6"
     >
       {items.map((item, index) => {
         const TrustIcon = TRUST_ICONS[item.icon];
@@ -28,10 +28,10 @@ export async function TrustBar() {
           <div
             key={item.title}
             className={`flex flex-col items-center justify-center gap-2 text-center md:flex-row md:gap-3.5 ${
-              index === 1 ? "md:border-x md:border-[rgb(201_168_118/0.16)]" : ""
+              index === 1 ? "md:border-x md:border-hair" : ""
             }`}
           >
-            <span className="bg-card text-action flex size-12 shrink-0 items-center justify-center rounded-full max-md:size-10">
+            <span className="bg-card text-brand-strong flex size-12 shrink-0 items-center justify-center rounded-full max-md:size-10">
               <TrustIcon size={22} />
             </span>
             <span className="flex flex-col gap-0.5 md:items-start">
@@ -59,9 +59,9 @@ export async function TrustTiles() {
         return (
           <li
             key={item.title}
-            className="bg-panel flex flex-col items-center gap-2 rounded-[14px] border border-[rgb(201_168_118/0.14)] px-2 py-4 text-center"
+            className="bg-panel flex flex-col items-center gap-2 rounded-[14px] border border-hair px-2 py-4 text-center"
           >
-            <TrustIcon size={20} className="text-gold" />
+            <TrustIcon size={20} className="text-accent" />
             <span className="text-[13px] font-medium">{item.title}</span>
           </li>
         );

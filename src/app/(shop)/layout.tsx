@@ -15,7 +15,7 @@ export default function ShopLayout({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen flex-col pb-24 md:pb-0">
         <a
           href="#main"
-          className="bg-action text-action-ink sr-only rounded-full px-4 py-2 font-bold focus:not-sr-only focus:absolute focus:start-4 focus:top-4 focus:z-50"
+          className="bg-brand-strong text-on-brand sr-only rounded-full px-4 py-2 font-bold focus:not-sr-only focus:absolute focus:start-4 focus:top-4 focus:z-50"
         >
           پرش به محتوای اصلی
         </a>

@@ -24,7 +24,7 @@ export default async function BranchesPage() {
         imageLabel="نمای شعبه"
         images={banners.images.branchesHero}
       >
-        <p className="text-ink-2 text-[15px] leading-[2]">
+        <p className="text-ink-soft text-[15px] leading-[2]">
           برای تحویل حضوری سفارش، به یکی از این نشانی‌ها مراجعه کنید.
         </p>
       </PageHero>

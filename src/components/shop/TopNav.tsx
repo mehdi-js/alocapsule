@@ -23,7 +23,7 @@ export function TopNav({ contact }: { contact: HeaderContact }) {
   const { count: cartCount, openDrawer } = useCart();
 
   return (
-    <header className="border-b border-[rgb(201_168_118/0.12)]">
+    <header className="border-b border-hair">
       {/* دسکتاپ */}
       <div className="mx-auto hidden w-full max-w-[1400px] items-center justify-between gap-8 px-11 py-4 md:flex">
         <Logo priority />
@@ -42,7 +42,7 @@ export function TopNav({ contact }: { contact: HeaderContact }) {
                 className={cn(
                   "pb-1.5 transition",
                   active
-                    ? "border-action border-b-2 font-bold text-ink"
+                    ? "border-brand-strong border-b-2 font-bold text-ink"
                     : "text-muted hover:text-ink",
                 )}
               >
@@ -91,7 +91,7 @@ export function TopNav({ contact }: { contact: HeaderContact }) {
 function CartBadge({ count }: { count: number }) {
   return (
     <span /* در RTL سمت end همان چپ فیزیکی است (مطابق طراحی) */
-      className="bg-gold absolute top-[-5px] end-[-5px] flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-extrabold text-canvas"
+      className="bg-accent absolute top-[-5px] end-[-5px] flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-extrabold text-surface-alt"
     >
       {toPersianDigits(count)}
     </span>

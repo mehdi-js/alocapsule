@@ -18,10 +18,10 @@ export function PickupInfo({
       <h2 id="pickup-heading" className="text-lg font-extrabold">
         تحویل حضوری
       </h2>
-      <p className="text-ink-2 text-sm leading-7">
+      <p className="text-ink-soft text-sm leading-7">
         <span className="font-bold">محل تحویل:</span> {address}
       </p>
-      <p className="text-ink-2 text-sm leading-7">
+      <p className="text-ink-soft text-sm leading-7">
         <span className="font-bold">ساعت:</span> {hours}
       </p>
     </section>

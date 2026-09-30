@@ -33,7 +33,7 @@ export default async function MaintenancePage() {
         <Logo size={40} href={null} priority />
         <span
           aria-hidden
-          className="border-gold/40 bg-card flex size-20 items-center justify-center rounded-full border"
+          className="border-accent/40 bg-card flex size-20 items-center justify-center rounded-full border"
         >
           <svg
             width="34"
@@ -44,13 +44,15 @@ export default async function MaintenancePage() {
             strokeWidth={1.6}
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-gold"
+            className="text-accent"
           >
             <path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z" />
           </svg>
         </span>
         <h1 className="text-3xl font-extrabold">در حال بروزرسانی</h1>
-        <p className="text-ink-2 text-base leading-8">{maintenance.message}</p>
+        <p className="text-ink-soft text-base leading-8">
+          {maintenance.message}
+        </p>
         {phone ? (
           <p className="text-muted text-sm">
             تماس:{" "}

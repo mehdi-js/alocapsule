@@ -85,7 +85,7 @@ export function CatalogView({
             فیلترها
             <ChevronDownIcon
               size={16}
-              className="text-gold transition group-open:rotate-180"
+              className="text-accent transition group-open:rotate-180"
             />
           </summary>
           <div className="px-5 pb-5">{filters}</div>

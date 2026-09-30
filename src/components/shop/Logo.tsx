@@ -17,7 +17,7 @@ export function LogoMark({ size = 32 }: { size?: number }) {
       fill="none"
       aria-hidden
       focusable="false"
-      className="text-action shrink-0"
+      className="text-brand-strong shrink-0"
     >
       <rect x="13" y="3" width="8" height="4" rx="1.5" fill="currentColor" />
       <rect x="15" y="7" width="4" height="3" fill="currentColor" />

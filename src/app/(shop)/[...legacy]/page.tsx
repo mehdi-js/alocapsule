@@ -78,7 +78,7 @@ export default async function LegacyOrPage({ params }: { params: Params }) {
       <RichText
         text={page.content}
         headingLevel={2}
-        className="text-ink-2 text-[15px] [&_a]:text-action"
+        className="text-ink-soft text-[15px] [&_a]:text-brand-strong"
       />
       <FaqSection items={page.faq} id="page-faq" />
     </div>

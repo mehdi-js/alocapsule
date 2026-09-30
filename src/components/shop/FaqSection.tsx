@@ -23,16 +23,16 @@ export function FaqSection({
         {items.map((item, index) => (
           <details
             key={index}
-            className="bg-panel group rounded-[18px] border border-[rgb(201_168_118/0.14)]"
+            className="bg-panel group rounded-[18px] border border-hair"
           >
             <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5.5 py-4.5 font-bold">
               <h3 className="text-base">{item.question}</h3>
               <ChevronDownIcon
                 size={16}
-                className="text-gold shrink-0 transition group-open:rotate-180"
+                className="text-accent shrink-0 transition group-open:rotate-180"
               />
             </summary>
-            <p className="text-ink-2 px-5.5 pb-5 text-sm leading-[2.1] whitespace-pre-line">
+            <p className="text-ink-soft px-5.5 pb-5 text-sm leading-[2.1] whitespace-pre-line">
               {item.answer}
             </p>
           </details>

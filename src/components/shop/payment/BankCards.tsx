@@ -11,7 +11,7 @@ export async function BankCards({ cards }: { cards: BankCardDto[] }) {
     return (
       <p className="text-danger text-sm leading-7">
         اطلاعات کارت برای واریز در دسترس نیست؛ لطفاً با پشتیبانی به شماره‌ی{" "}
-        <a href={phoneHref(contact.phone)} className="text-gold underline">
+        <a href={phoneHref(contact.phone)} className="text-accent underline">
           {contact.phone}
         </a>{" "}
         تماس بگیرید.
@@ -24,7 +24,7 @@ export async function BankCards({ cards }: { cards: BankCardDto[] }) {
       {cards.map((card) => (
         <li
           key={card.id}
-          className="bg-card flex flex-col gap-3 rounded-[18px] border border-[rgb(201_168_118/0.22)] p-4 md:p-5"
+          className="bg-card flex flex-col gap-3 rounded-[18px] border border-control p-4 md:p-5"
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="font-bold">{card.bankName}</span>
@@ -35,14 +35,14 @@ export async function BankCards({ cards }: { cards: BankCardDto[] }) {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <span
               dir="ltr"
-              className="text-gold font-mono text-xl font-bold tracking-wider md:text-2xl"
+              className="text-accent font-mono text-xl font-bold tracking-wider md:text-2xl"
             >
               {card.cardNumber}
             </span>
             <CopyButton value={card.cardDigits} label="کپی شماره کارت" />
           </div>
           {card.shebaNumber ? (
-            <div className="text-ink-2 flex flex-wrap items-center justify-between gap-3 text-sm">
+            <div className="text-ink-soft flex flex-wrap items-center justify-between gap-3 text-sm">
               <span>
                 شبا:{" "}
                 <span dir="ltr" className="font-mono">

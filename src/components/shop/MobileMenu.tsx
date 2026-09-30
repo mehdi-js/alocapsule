@@ -25,7 +25,7 @@ function Ornaments() {
         cx="210"
         cy="210"
         r="180"
-        stroke="#2FA84F"
+        className="stroke-brand"
         strokeWidth="1.3"
         strokeDasharray="300 700"
       />
@@ -33,7 +33,7 @@ function Ornaments() {
         cx="210"
         cy="210"
         r="140"
-        stroke="#C9A876"
+        className="stroke-accent"
         strokeWidth="1"
         strokeDasharray="170 700"
       />
@@ -88,7 +88,7 @@ export function MobileMenu({ contact }: { contact: HeaderContact }) {
         <span className="bg-ink h-0.5 w-4 rounded-sm" />
         <span className="bg-ink h-0.5 w-4 rounded-sm" />
         {/* خط سوم کوتاه و طلایی، طبق طراحی */}
-        <span className="bg-gold me-[3px] h-0.5 w-2.5 self-end rounded-sm" />
+        <span className="bg-accent me-[3px] h-0.5 w-2.5 self-end rounded-sm" />
       </button>
 
       {open ? (
@@ -96,7 +96,7 @@ export function MobileMenu({ contact }: { contact: HeaderContact }) {
           role="dialog"
           aria-modal="true"
           aria-label="منوی اصلی"
-          className="fixed inset-0 z-50 flex animate-[fade_250ms_ease] flex-col overflow-y-auto bg-[#081A11] px-5 pt-4 pb-10"
+          className="fixed inset-0 z-50 flex animate-[fade_250ms_ease] flex-col overflow-y-auto bg-surface-deep px-5 pt-4 pb-10"
         >
           <Ornaments />
 
@@ -112,7 +112,7 @@ export function MobileMenu({ contact }: { contact: HeaderContact }) {
             </button>
           </div>
 
-          <p className="text-gold relative mt-9 text-[13px] font-bold">
+          <p className="text-accent relative mt-9 text-[13px] font-bold">
             منوی اصلی
           </p>
 
@@ -129,12 +129,12 @@ export function MobileMenu({ contact }: { contact: HeaderContact }) {
                   href={link.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "flex items-center justify-between border-b border-[rgb(201_168_118/0.14)] py-4 text-[22px] font-bold",
-                    active ? "text-action" : "text-ink",
+                    "flex items-center justify-between border-b border-hair py-4 text-[22px] font-bold",
+                    active ? "text-brand-strong" : "text-ink",
                   )}
                 >
                   {link.label}
-                  <ChevronLeftIcon size={20} className="text-gold" />
+                  <ChevronLeftIcon size={20} className="text-accent" />
                 </Link>
               );
             })}
@@ -154,7 +154,7 @@ export function MobileMenu({ contact }: { contact: HeaderContact }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={item.label}
-                    className={cn(iconButton, "text-gold")}
+                    className={cn(iconButton, "text-accent")}
                   >
                     <SocialIcon size={18} />
                   </a>
@@ -165,7 +165,7 @@ export function MobileMenu({ contact }: { contact: HeaderContact }) {
               href={phoneHref(contact.phone)}
               className="text-muted flex items-center gap-2 text-sm"
             >
-              <PhoneIcon size={15} className="text-gold" />
+              <PhoneIcon size={15} className="text-accent" />
               {contact.phone}
             </a>
           </div>

@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const rowClass =
-  "bg-card flex items-center gap-4 rounded-[18px] border border-[rgb(201_168_118/0.16)] p-5";
+  "bg-card flex items-center gap-4 rounded-[18px] border border-hair p-5";
 
 export default async function ContactPage() {
   const [{ contact, social }, banners, page] = await Promise.all([
@@ -49,7 +49,7 @@ export default async function ContactPage() {
         imageLabel="بنر تماس"
         images={banners.images.contactHero}
       >
-        <p className="text-ink-2 text-[15px] leading-[2]">
+        <p className="text-ink-soft text-[15px] leading-[2]">
           برای پیگیری سفارش، سفارش عمده یا هر پرسشی با ما در تماس باشید.
         </p>
       </PageHero>
@@ -59,7 +59,7 @@ export default async function ContactPage() {
           <RichText
             text={page.content}
             headingLevel={2}
-            className="text-ink-2 text-[15px] [&_a]:text-action"
+            className="text-ink-soft text-[15px] [&_a]:text-brand-strong"
           />
         </ContentPanel>
       ) : null}
@@ -67,9 +67,9 @@ export default async function ContactPage() {
       <div className="grid gap-5 md:grid-cols-3">
         <a
           href={phoneHref(contact.phone)}
-          className={cn(rowClass, "hover:border-[rgb(201_168_118/0.4)]")}
+          className={cn(rowClass, "hover:border-outline")}
         >
-          <span className="bg-panel text-action flex size-12 shrink-0 items-center justify-center rounded-full">
+          <span className="bg-panel text-brand-strong flex size-12 shrink-0 items-center justify-center rounded-full">
             <PhoneIcon size={20} />
           </span>
           <span className="flex flex-col gap-1">
@@ -79,9 +79,9 @@ export default async function ContactPage() {
         </a>
         <a
           href={`mailto:${contact.email}`}
-          className={cn(rowClass, "hover:border-[rgb(201_168_118/0.4)]")}
+          className={cn(rowClass, "hover:border-outline")}
         >
-          <span className="bg-panel text-action flex size-12 shrink-0 items-center justify-center rounded-full">
+          <span className="bg-panel text-brand-strong flex size-12 shrink-0 items-center justify-center rounded-full">
             <MailIcon size={20} />
           </span>
           <span className="flex flex-col gap-1">
@@ -92,7 +92,7 @@ export default async function ContactPage() {
           </span>
         </a>
         <div className={rowClass}>
-          <span className="bg-panel text-action flex size-12 shrink-0 items-center justify-center rounded-full">
+          <span className="bg-panel text-brand-strong flex size-12 shrink-0 items-center justify-center rounded-full">
             <MapPinIcon size={20} />
           </span>
           <span className="flex flex-col gap-1">
@@ -117,7 +117,7 @@ export default async function ContactPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={item.label}
-                  className={cn(iconButton, "text-gold")}
+                  className={cn(iconButton, "text-accent")}
                 >
                   <SocialIcon size={18} />
                 </a>

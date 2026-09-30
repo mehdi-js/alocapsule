@@ -49,10 +49,10 @@ export function CheckoutSummary({
     >
       <h2 className="text-lg font-extrabold">خلاصه سفارش</h2>
 
-      <ul className="flex flex-col gap-2.5 border-b border-[rgb(201_168_118/0.14)] pb-4 text-sm">
+      <ul className="flex flex-col gap-2.5 border-b border-hair pb-4 text-sm">
         {cart.lines.map((line) => (
           <li key={line.variantId} className="flex justify-between gap-3">
-            <span className="text-ink-2 min-w-0">
+            <span className="text-ink-soft min-w-0">
               {line.productName}{" "}
               <span className="text-muted">
                 ({line.variantTitle}) × {toPersianDigits(line.quantity)}
@@ -72,7 +72,7 @@ export function CheckoutSummary({
             payOnDelivery ? (
               <dd className="font-bold">{PAY_ON_DELIVERY_LABEL}</dd>
             ) : pricing.shippingTotal === 0 ? (
-              <dd className="text-action font-bold">رایگان</dd>
+              <dd className="text-brand-strong font-bold">رایگان</dd>
             ) : (
               <dd className="font-bold">
                 {formatToman(pricing.shippingTotal)} تومان
@@ -87,13 +87,13 @@ export function CheckoutSummary({
             label={
               <>
                 تخفیف{" "}
-                <span dir="ltr" className="text-gold font-mono text-xs">
+                <span dir="ltr" className="text-accent font-mono text-xs">
                   {coupon.code}
                 </span>
               </>
             }
           >
-            <dd className="text-gold font-bold">
+            <dd className="text-accent font-bold">
               −{formatToman(pricing.discountTotal)} تومان
             </dd>
           </Row>
@@ -103,17 +103,20 @@ export function CheckoutSummary({
       {coupon?.error ? (
         <p role="alert" className="text-danger text-sm leading-7">
           کد <span dir="ltr">{coupon.code}</span>: {coupon.error}{" "}
-          <Link href="/cart" className="text-gold underline underline-offset-4">
+          <Link
+            href="/cart"
+            className="text-accent underline underline-offset-4"
+          >
             اصلاح در سبد خرید
           </Link>
         </p>
       ) : null}
 
-      <div className="flex items-center justify-between gap-3 border-t border-[rgb(201_168_118/0.14)] pt-4">
+      <div className="flex items-center justify-between gap-3 border-t border-hair pt-4">
         <span className="font-bold">مبلغ قابل پرداخت</span>
-        <span className="text-action text-2xl font-extrabold">
+        <span className="text-brand-strong text-2xl font-extrabold">
           {pricing ? formatToman(pricing.grandTotal) : "—"}{" "}
-          <span className="text-ink-2 text-sm font-semibold">تومان</span>
+          <span className="text-ink-soft text-sm font-semibold">تومان</span>
         </span>
       </div>
 

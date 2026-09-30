@@ -55,7 +55,7 @@ export function CancelMyOrder({ orderNumber }: { orderNumber: string }) {
         type="button"
         onClick={() => setConfirming(false)}
         disabled={pending}
-        className="text-gold"
+        className="text-accent"
       >
         انصراف
       </button>

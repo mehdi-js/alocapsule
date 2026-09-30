@@ -5,7 +5,7 @@ import { cn, toPersianDigits } from "@/lib/utils";
 import { ChevronLeftIcon, ChevronRightIcon } from "./icons";
 
 const item =
-  "flex size-10 items-center justify-center rounded-full border border-[rgb(201_168_118/0.22)] text-sm transition hover:border-[rgb(201_168_118/0.55)]";
+  "flex size-10 items-center justify-center rounded-full border border-control text-sm transition hover:border-strong";
 
 /** صفحه‌بندی گرد شماره‌دار (صفحه‌ی فعال سبز) */
 export function ShopPagination({
@@ -46,7 +46,7 @@ export function ShopPagination({
             className={cn(
               item,
               value === page &&
-                "border-action bg-action text-action-ink hover:border-action font-bold",
+                "border-brand-strong bg-brand-strong text-on-brand hover:border-brand-strong font-bold",
             )}
           >
             {toPersianDigits(value)}

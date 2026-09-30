@@ -24,7 +24,7 @@ function Ornaments() {
         cx="210"
         cy="210"
         r="180"
-        stroke="#2FA84F"
+        className="stroke-brand"
         strokeWidth="1.3"
         strokeDasharray="300 700"
       />
@@ -32,7 +32,7 @@ function Ornaments() {
         cx="210"
         cy="210"
         r="140"
-        stroke="#C9A876"
+        className="stroke-accent"
         strokeWidth="1"
         strokeDasharray="170 700"
       />
@@ -112,8 +112,8 @@ export function HeroCarousel({
         />
       ))}
       {/* پوشش گرادیانی: دسکتاپ از راست، موبایل از پایین */}
-      <div className="absolute inset-0 hidden bg-[linear-gradient(270deg,rgba(7,16,9,.97)_6%,rgba(7,16,9,.86)_34%,rgba(7,16,9,.1)_66%)] md:block" />
-      <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(7,16,9,.97)_12%,rgba(7,16,9,.7)_46%,transparent_78%)] md:hidden" />
+      <div className="absolute inset-0 hidden bg-scrim-side md:block" />
+      <div className="absolute inset-0 bg-scrim-bottom md:hidden" />
       <Ornaments />
 
       <div
@@ -121,12 +121,12 @@ export function HeroCarousel({
         className="relative flex max-w-[640px] flex-col gap-3 p-5 md:me-auto md:gap-5.5 md:p-14"
       >
         {active === 0 ? (
-          <h1 className="text-action flex items-center gap-2.5 text-[15px] font-normal">
+          <h1 className="text-brand-strong flex items-center gap-2.5 text-[15px] font-normal">
             {h1}
             <ArrowIcon className="hidden md:block" />
           </h1>
         ) : slide.eyebrow ? (
-          <p className="text-action flex items-center gap-2.5 text-[15px]">
+          <p className="text-brand-strong flex items-center gap-2.5 text-[15px]">
             {slide.eyebrow}
             <ArrowIcon className="hidden md:block" />
           </p>
@@ -139,7 +139,7 @@ export function HeroCarousel({
           ))}
         </p>
         {slide.subtitle ? (
-          <p className="text-ink-2 hidden max-w-[430px] text-[17px] leading-[2] md:block">
+          <p className="text-ink-soft hidden max-w-[430px] text-[17px] leading-[2] md:block">
             {slide.subtitle}
           </p>
         ) : null}
@@ -148,11 +148,11 @@ export function HeroCarousel({
             href={slide.ctaHref}
             className={cn(
               btnDeep,
-              "whitespace-nowrap max-md:bg-action max-md:text-action-ink max-md:py-3 max-md:ps-5 max-md:pe-4",
+              "whitespace-nowrap max-md:bg-brand-strong max-md:text-on-brand max-md:py-3 max-md:ps-5 max-md:pe-4",
             )}
           >
             {slide.ctaLabel}
-            <span className="hidden size-8 items-center justify-center rounded-full bg-[rgb(245_240_232/0.14)] md:flex">
+            <span className="hidden size-8 items-center justify-center rounded-full bg-on-media/14 md:flex">
               <ChevronLeftIcon size={16} />
             </span>
             <ArrowIcon className="md:hidden" />
@@ -167,7 +167,7 @@ export function HeroCarousel({
 
       {total > 1 ? (
         <div className="absolute bottom-6 end-6 hidden items-center gap-3 md:flex">
-          <span dir="ltr" className="text-ink-2 font-mono text-[13px]">
+          <span dir="ltr" className="text-ink-soft font-mono text-[13px]">
             {toPersianDigits(String(active + 1).padStart(2, "0"))} /{" "}
             {toPersianDigits(String(total).padStart(2, "0"))}
           </span>

@@ -35,7 +35,7 @@ export function CartPageView({ initial }: { initial: CartViewDto }) {
         <CheckoutSteps current={0} />
         <Link
           href="/products"
-          className="text-gold hover:text-gold-hover flex items-center gap-2 text-sm transition"
+          className="text-accent hover:text-accent-hover flex items-center gap-2 text-sm transition"
         >
           ادامه خرید
           <ArrowIcon />
@@ -56,7 +56,7 @@ export function CartPageView({ initial }: { initial: CartViewDto }) {
           {initial.notices.map((notice) => (
             <li
               key={notice}
-              className="rounded-[14px] border border-[#E06B5B]/40 bg-[#E06B5B]/10 px-4 py-3 text-sm text-[#E06B5B]"
+              className="rounded-[14px] border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger"
             >
               {notice}
             </li>
@@ -71,7 +71,7 @@ export function CartPageView({ initial }: { initial: CartViewDto }) {
             "flex flex-col items-center gap-5 px-6 py-20 text-center",
           )}
         >
-          <span className="bg-card text-gold flex size-16 items-center justify-center rounded-full">
+          <span className="bg-card text-accent flex size-16 items-center justify-center rounded-full">
             <CartIcon size={28} />
           </span>
           <p className="text-xl font-extrabold">سبد خرید شما خالی است</p>
@@ -121,7 +121,7 @@ export function CartPageView({ initial }: { initial: CartViewDto }) {
               {cart.discountTotal > 0 ? (
                 <div className="flex justify-between gap-3">
                   <dt className="text-muted">تخفیف</dt>
-                  <dd className="text-gold font-bold">
+                  <dd className="text-accent font-bold">
                     −{formatToman(cart.discountTotal)} تومان
                   </dd>
                 </div>
@@ -129,7 +129,7 @@ export function CartPageView({ initial }: { initial: CartViewDto }) {
               <div className="flex justify-between gap-3">
                 <dt className="text-muted">هزینه ارسال</dt>
                 {freeShipping ? (
-                  <dd className="text-action font-bold">رایگان</dd>
+                  <dd className="text-brand-strong font-bold">رایگان</dd>
                 ) : (
                   <dd className="text-muted text-xs">
                     در مرحله‌ی ارسال محاسبه می‌شود
@@ -140,17 +140,19 @@ export function CartPageView({ initial }: { initial: CartViewDto }) {
             {cart.itemsUntilFreeShipping !== null ? (
               <p
                 role="status"
-                className="border-action/40 text-ink-2 rounded-[14px] border bg-[rgb(47_168_79/0.06)] px-4 py-3 text-sm leading-7"
+                className="border-brand-strong/40 text-ink-soft rounded-[14px] border bg-brand-soft px-4 py-3 text-sm leading-7"
               >
                 با افزودن {toPersianDigits(cart.itemsUntilFreeShipping)} عدد
                 دیگر، ارسال رایگان می‌شود.
               </p>
             ) : null}
-            <div className="flex items-center justify-between gap-3 border-t border-[rgb(201_168_118/0.14)] pt-4">
+            <div className="flex items-center justify-between gap-3 border-t border-hair pt-4">
               <span className="font-bold">جمع پس از تخفیف</span>
-              <span className="text-action text-2xl font-extrabold">
+              <span className="text-brand-strong text-2xl font-extrabold">
                 {formatToman(cart.total)}{" "}
-                <span className="text-ink-2 text-sm font-semibold">تومان</span>
+                <span className="text-ink-soft text-sm font-semibold">
+                  تومان
+                </span>
               </span>
             </div>
             <Link href="/checkout" className={cn(btnPrimary, "w-full")}>

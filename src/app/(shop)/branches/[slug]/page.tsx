@@ -128,24 +128,24 @@ export default async function BranchPage({ params }: { params: Params }) {
 
       <ContentPanel className="flex flex-col gap-4">
         <p className="flex items-start gap-2 text-[15px] leading-[2]">
-          <MapPinIcon size={17} className="text-gold mt-1.5 shrink-0" />
+          <MapPinIcon size={17} className="text-accent mt-1.5 shrink-0" />
           {[branch.city, branch.district, branch.address]
             .filter(Boolean)
             .join("، ")}
         </p>
         <p className="flex items-center gap-2 text-[15px]">
-          <PhoneIcon size={17} className="text-gold shrink-0" />
+          <PhoneIcon size={17} className="text-accent shrink-0" />
           <a
             href={phoneHref(branch.phone)}
             dir="ltr"
-            className="hover:text-action"
+            className="hover:text-brand-strong"
           >
             {branch.phone}
           </a>
         </p>
         {hours.length > 0 ? (
           <div className="flex items-start gap-2 text-[15px]">
-            <ClockIcon size={17} className="text-action mt-1 shrink-0" />
+            <ClockIcon size={17} className="text-brand-strong mt-1 shrink-0" />
             <ul className="flex flex-col gap-1">
               {hours.map((line) => (
                 <li key={line}>{line}</li>
@@ -157,7 +157,7 @@ export default async function BranchPage({ params }: { params: Params }) {
       </ContentPanel>
 
       {branch.description ? (
-        <section className="text-ink-2 text-[15px]">
+        <section className="text-ink-soft text-[15px]">
           <RichText text={branch.description} headingLevel={2} />
         </section>
       ) : null}

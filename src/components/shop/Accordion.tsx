@@ -25,7 +25,7 @@ export function Accordion({ items }: { items: AccordionItem[] }) {
         return (
           <div
             key={item.id}
-            className="bg-panel rounded-[18px] border border-[rgb(201_168_118/0.14)]"
+            className="bg-panel rounded-[18px] border border-hair"
           >
             <h2>
               <button
@@ -39,7 +39,7 @@ export function Accordion({ items }: { items: AccordionItem[] }) {
                 <ChevronDownIcon
                   size={16}
                   className={cn(
-                    "text-gold shrink-0 transition duration-200",
+                    "text-accent shrink-0 transition duration-200",
                     open && "rotate-180",
                   )}
                 />
@@ -49,7 +49,7 @@ export function Accordion({ items }: { items: AccordionItem[] }) {
               id={panelId}
               role="region"
               hidden={!open}
-              className="text-ink-2 px-5.5 pb-5 text-sm leading-[2.1]"
+              className="text-ink-soft px-5.5 pb-5 text-sm leading-[2.1]"
             >
               {item.content}
             </div>

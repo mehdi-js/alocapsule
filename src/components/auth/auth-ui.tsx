@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 /** ظاهر مشترک صفحه‌های ورود و تعیین رمز */
 export const authInputClass =
-  "w-full rounded-full border border-[rgb(201_168_118/0.22)] bg-card px-5 py-3.5 text-lg text-ink outline-none placeholder:text-faint focus:border-[rgb(201_168_118/0.55)] aria-[invalid=true]:border-danger";
+  "w-full rounded-full border border-control bg-card px-5 py-3.5 text-lg text-ink outline-none placeholder:text-faint focus:border-strong aria-[invalid=true]:border-danger";
 export const authPrimaryButton = cn(btnPrimary, "w-full");
 export const authLinkButton =
   "text-muted underline underline-offset-4 disabled:opacity-60";
@@ -18,7 +18,7 @@ export function AuthError({ message }: { message: string | null }) {
   return (
     <p
       role="alert"
-      className="rounded-[18px] border border-[#E06B5B]/40 bg-[#E06B5B]/10 px-4 py-3 text-sm text-[#E06B5B]"
+      className="rounded-[18px] border border-danger/40 bg-danger/10 px-4 py-3 text-sm text-danger"
     >
       {message}
     </p>

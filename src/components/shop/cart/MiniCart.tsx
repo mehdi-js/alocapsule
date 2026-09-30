@@ -45,8 +45,8 @@ export function MiniCart() {
         onClick={closeDrawer}
         className="absolute inset-0 bg-black/55"
       />
-      <aside className="bg-panel absolute inset-y-0 end-0 flex w-full max-w-[420px] animate-[fade_200ms_ease] flex-col border-s border-[rgb(201_168_118/0.16)]">
-        <div className="flex items-center justify-between gap-3 border-b border-[rgb(201_168_118/0.14)] px-5 py-4">
+      <aside className="bg-panel absolute inset-y-0 end-0 flex w-full max-w-[420px] animate-[fade_200ms_ease] flex-col border-s border-hair">
+        <div className="flex items-center justify-between gap-3 border-b border-hair px-5 py-4">
           <h2 className="text-lg font-extrabold">
             سبد خرید
             {cart && cart.itemCount > 0 ? (
@@ -67,7 +67,7 @@ export function MiniCart() {
 
         {lines.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
-            <span className="bg-card text-gold flex size-14 items-center justify-center rounded-full">
+            <span className="bg-card text-accent flex size-14 items-center justify-center rounded-full">
               <CartIcon size={24} />
             </span>
             <p className="font-bold">سبد خرید شما خالی است</p>
@@ -81,7 +81,7 @@ export function MiniCart() {
               {lines.map((line) => (
                 <li
                   key={line.variantId}
-                  className="border-b border-[rgb(201_168_118/0.1)] pb-4 last:border-0"
+                  className="border-b border-hair pb-4 last:border-0"
                 >
                   <CartLine
                     line={line}
@@ -93,11 +93,11 @@ export function MiniCart() {
                 </li>
               ))}
             </ul>
-            <div className="flex flex-col gap-4 border-t border-[rgb(201_168_118/0.14)] px-5 py-5">
+            <div className="flex flex-col gap-4 border-t border-hair px-5 py-5">
               {cart && cart.discountTotal > 0 ? (
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted">تخفیف</span>
-                  <span className="text-gold font-bold">
+                  <span className="text-accent font-bold">
                     −{formatToman(cart.discountTotal)} تومان
                   </span>
                 </div>
@@ -108,9 +108,9 @@ export function MiniCart() {
                     ? "جمع پس از تخفیف"
                     : "جمع کالاها"}
                 </span>
-                <span className="text-action text-xl font-extrabold">
+                <span className="text-brand-strong text-xl font-extrabold">
                   {formatToman(cart?.total ?? 0)}{" "}
-                  <span className="text-ink-2 text-sm font-semibold">
+                  <span className="text-ink-soft text-sm font-semibold">
                     تومان
                   </span>
                 </span>

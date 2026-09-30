@@ -20,12 +20,12 @@ export function HomeSeoContent({
       {content.trim() ? (
         <section
           aria-label="درباره‌ی خرید از ما"
-          className={`${panel} text-ink-2 p-6 text-[15px] md:p-10`}
+          className={`${panel} text-ink-soft p-6 text-[15px] md:p-10`}
         >
           <RichText
             text={content}
             headingLevel={2}
-            className="[&_a]:text-action [&_h2]:text-ink max-w-[900px] [&_h2]:text-xl md:[&_h2]:text-2xl"
+            className="[&_a]:text-brand-strong [&_h2]:text-ink max-w-[900px] [&_h2]:text-xl md:[&_h2]:text-2xl"
           />
         </section>
       ) : null}

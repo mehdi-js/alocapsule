@@ -16,7 +16,7 @@ export function CheckoutSteps({ current }: { current: 0 | 1 | 2 }) {
               aria-hidden
               className={cn(
                 "h-px w-6 md:w-12",
-                index <= current ? "bg-action" : "bg-[rgb(201_168_118/0.3)]",
+                index <= current ? "bg-brand-strong" : "bg-accent/30",
               )}
             />
           ) : null}
@@ -25,8 +25,8 @@ export function CheckoutSteps({ current }: { current: 0 | 1 | 2 }) {
             className={cn(
               "flex size-7 items-center justify-center rounded-full text-xs font-bold",
               index <= current
-                ? "bg-action text-action-ink"
-                : "bg-card text-muted border border-[rgb(201_168_118/0.22)]",
+                ? "bg-brand-strong text-on-brand"
+                : "bg-card text-muted border border-control",
             )}
           >
             {toPersianDigits(index + 1)}

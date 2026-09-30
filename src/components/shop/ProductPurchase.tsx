@@ -69,9 +69,9 @@ export function ProductPurchase({
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="flex flex-col gap-1.5">
             <span className="text-muted text-[13px]">قیمت {variant.title}</span>
-            <p className="text-action text-[26px] font-extrabold whitespace-nowrap md:text-[30px]">
+            <p className="text-brand-strong text-[26px] font-extrabold whitespace-nowrap md:text-[30px]">
               {formatToman(variant.price)}{" "}
-              <span className="text-ink-2 text-[15px] font-semibold">
+              <span className="text-ink-soft text-[15px] font-semibold">
                 تومان
               </span>
             </p>
@@ -91,7 +91,7 @@ export function ProductPurchase({
           </div>
         </div>
 
-        <div className="hidden items-center justify-between gap-4 border-t border-[rgb(201_168_118/0.14)] pt-4 md:flex">
+        <div className="hidden items-center justify-between gap-4 border-t border-hair pt-4 md:flex">
           <span className="text-muted text-sm">
             جمع سفارش ({toPersianDigits(qty)} × {variant.title})
           </span>
@@ -112,12 +112,12 @@ export function ProductPurchase({
       </div>
 
       {/* نوار چسبان موبایل */}
-      <div className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 border-t border-[rgb(201_168_118/0.16)] bg-[#09160E] px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 border-t border-hair bg-[#09160E] px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] md:hidden">
         <div className="flex min-w-0 flex-col">
           <span className="text-muted truncate text-[11px]">
             {toPersianDigits(qty)} × {variant.title}
           </span>
-          <span className="text-action text-sm font-extrabold whitespace-nowrap">
+          <span className="text-brand-strong text-sm font-extrabold whitespace-nowrap">
             {formatToman(total)}{" "}
             <span className="text-[11px] font-medium">تومان</span>
           </span>

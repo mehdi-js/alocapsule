@@ -124,14 +124,14 @@ export default async function CategoryPage({
         showCategories={false}
         intro={
           firstPage && category.introText ? (
-            <p className="text-ink-2 max-w-[860px] text-[15px] leading-[2.1]">
+            <p className="text-ink-soft max-w-[860px] text-[15px] leading-[2.1]">
               {category.introText}
             </p>
           ) : null
         }
       >
         {firstPage && category.bottomContent ? (
-          <section className="text-ink-2 max-w-[860px] text-[15px]">
+          <section className="text-ink-soft max-w-[860px] text-[15px]">
             <RichText text={category.bottomContent} headingLevel={2} />
           </section>
         ) : null}

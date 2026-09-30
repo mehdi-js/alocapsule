@@ -38,10 +38,10 @@ export function PageHero({
         priority
         className="absolute inset-0 rounded-[18px]"
       />
-      <div className="absolute inset-0 hidden bg-[linear-gradient(270deg,rgba(7,16,9,.97)_6%,rgba(7,16,9,.86)_34%,rgba(7,16,9,.1)_66%)] md:block" />
-      <div className="absolute inset-0 bg-[linear-gradient(0deg,rgba(7,16,9,.97)_12%,rgba(7,16,9,.7)_46%,transparent_78%)] md:hidden" />
+      <div className="absolute inset-0 hidden bg-scrim-side md:block" />
+      <div className="absolute inset-0 bg-scrim-bottom md:hidden" />
       <div className="relative flex max-w-[640px] flex-col gap-4 p-6 md:me-auto md:p-14">
-        <p className="text-gold text-[15px]">{eyebrow}</p>
+        <p className="text-accent text-[15px]">{eyebrow}</p>
         <h1 className="text-[30px] leading-[1.3] font-extrabold md:text-5xl">
           {title.map((line) => (
             <span key={line} className="block">
@@ -68,7 +68,7 @@ export async function BranchCards() {
       {branches.map((branch) => (
         <li
           key={branch.id}
-          className="bg-card flex flex-col gap-4 rounded-[24px] border border-[rgb(201_168_118/0.16)] p-3.5 pb-5"
+          className="bg-card flex flex-col gap-4 rounded-[24px] border border-hair p-3.5 pb-5"
         >
           <Placeholder
             size="600 × 400"
@@ -79,23 +79,23 @@ export async function BranchCards() {
             <h3 className="text-lg font-bold">
               <Link
                 href={`/branches/${branch.slug}`}
-                className="hover:text-action transition"
+                className="hover:text-brand-strong transition"
               >
                 {branch.name}
               </Link>
             </h3>
             <p className="text-muted flex items-start gap-2 text-sm leading-[1.9]">
-              <MapPinIcon size={15} className="text-gold mt-1 shrink-0" />
+              <MapPinIcon size={15} className="text-accent mt-1 shrink-0" />
               {branch.address}
             </p>
             <p className="text-muted flex items-center gap-2 text-sm">
-              <PhoneIcon size={15} className="text-gold shrink-0" />
+              <PhoneIcon size={15} className="text-accent shrink-0" />
               <span dir="ltr">{branch.phone}</span>
             </p>
             {formatOpeningHours(branch.openingHours).map((line) => (
               <p
                 key={line}
-                className="text-action flex items-center gap-2 text-sm"
+                className="text-brand-strong flex items-center gap-2 text-sm"
               >
                 <ClockIcon size={15} className="shrink-0" />
                 {line}
@@ -103,7 +103,7 @@ export async function BranchCards() {
             ))}
             <Link
               href={`/branches/${branch.slug}`}
-              className="text-gold w-fit text-sm font-bold underline underline-offset-4"
+              className="text-accent w-fit text-sm font-bold underline underline-offset-4"
             >
               جزئیات و مسیریابی
             </Link>
@@ -128,7 +128,7 @@ export function SectionTitle({
       <h2 id={id} className="shrink-0 text-2xl font-extrabold md:text-[32px]">
         {children}
       </h2>
-      <span aria-hidden className="h-px flex-1 bg-[rgb(201_168_118/0.2)]" />
+      <span aria-hidden className="h-px flex-1 bg-accent/20" />
     </div>
   );
 }

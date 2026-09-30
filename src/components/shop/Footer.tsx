@@ -28,7 +28,7 @@ export async function Footer() {
     .map((page) => ({ href: `/${page.slug}`, label: page.title }));
   const seal = enamad ? enamadUrls(enamad) : null;
   return (
-    <footer className="bg-panel mt-12 border-t border-[rgb(201_168_118/0.14)] px-5 pt-12 pb-6 lg:px-11">
+    <footer className="bg-panel mt-12 border-t border-hair px-5 pt-12 pb-6 lg:px-11">
       <div className="mx-auto w-full max-w-[1400px]">
         <div className="grid gap-10 md:grid-cols-[1.2fr_0.8fr_0.8fr_1.2fr]">
           <div className="flex flex-col gap-4">
@@ -44,7 +44,7 @@ export async function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={item.label}
-                    className={cn(iconButton, "text-gold")}
+                    className={cn(iconButton, "text-accent")}
                   >
                     <SocialIcon size={18} />
                   </a>
@@ -54,7 +54,7 @@ export async function Footer() {
           </div>
 
           <nav aria-label="دسترسی سریع" className="flex flex-col gap-3">
-            <h2 className="text-gold text-[15px] font-bold">دسترسی سریع</h2>
+            <h2 className="text-accent text-[15px] font-bold">دسترسی سریع</h2>
             {[...NAV_LINKS, ...infoLinks].map((link) => (
               <Link
                 key={link.href}
@@ -68,7 +68,9 @@ export async function Footer() {
 
           {categories.length > 0 ? (
             <nav aria-label="دسته‌بندی‌ها" className="flex flex-col gap-3">
-              <h2 className="text-gold text-[15px] font-bold">دسته‌بندی‌ها</h2>
+              <h2 className="text-accent text-[15px] font-bold">
+                دسته‌بندی‌ها
+              </h2>
               {categories.map((category) => (
                 <Link
                   key={category.path}
@@ -82,29 +84,29 @@ export async function Footer() {
           ) : null}
 
           <div className="flex flex-col gap-3">
-            <h2 className="text-gold text-[15px] font-bold">اطلاعات تماس</h2>
+            <h2 className="text-accent text-[15px] font-bold">اطلاعات تماس</h2>
             <a
               href={phoneHref(contact.phone)}
               className="text-muted hover:text-ink flex w-fit items-center gap-2.5 text-sm transition"
             >
-              <PhoneIcon size={15} className="text-gold shrink-0" />
+              <PhoneIcon size={15} className="text-accent shrink-0" />
               {contact.phone}
             </a>
             <a
               href={`mailto:${contact.email}`}
               className="text-muted hover:text-ink flex w-fit items-center gap-2.5 text-sm transition"
             >
-              <MailIcon size={15} className="text-gold shrink-0" />
+              <MailIcon size={15} className="text-accent shrink-0" />
               <span dir="ltr">{contact.email}</span>
             </a>
             <p className="text-muted flex items-start gap-2.5 text-sm leading-[1.8]">
-              <MapPinIcon size={15} className="text-gold mt-1.5 shrink-0" />
+              <MapPinIcon size={15} className="text-accent mt-1.5 shrink-0" />
               {contact.address}
             </p>
           </div>
         </div>
 
-        <div className="mt-9 flex flex-wrap items-center justify-between gap-4 border-t border-[rgb(201_168_118/0.14)] pt-4.5">
+        <div className="mt-9 flex flex-wrap items-center justify-between gap-4 border-t border-hair pt-4.5">
           <p className="text-faint text-[13px]">
             © ۲۰۲۵ {SITE.name}. تمامی حقوق محفوظ است.
           </p>

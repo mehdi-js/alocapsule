@@ -36,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fa-IR" dir="rtl" className={vazirmatn.variable}>
-      <body className="bg-canvas text-ink min-h-screen antialiased">
+      <body className="bg-surface-alt text-ink min-h-screen antialiased">
         {children}
         <MaintenancePreviewBar />
       </body>

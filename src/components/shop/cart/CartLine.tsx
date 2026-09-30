@@ -74,7 +74,7 @@ export function CartLine({
           <Link
             href={href}
             className={cn(
-              "hover:text-action truncate font-bold transition",
+              "hover:text-brand-strong truncate font-bold transition",
               small ? "text-sm" : "text-base md:text-lg",
             )}
           >

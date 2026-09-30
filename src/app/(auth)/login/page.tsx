@@ -42,7 +42,7 @@ export default async function LoginPage({
 
       {user ? (
         <div className="space-y-4">
-          <p className="bg-panel rounded-[18px] border border-[rgb(201_168_118/0.14)] px-5 py-4">
+          <p className="bg-panel rounded-[18px] border border-hair px-5 py-4">
             با شماره‌ی <span dir="ltr">{user.phone}</span> وارد شده‌اید.
           </p>
           <div className="flex gap-3">

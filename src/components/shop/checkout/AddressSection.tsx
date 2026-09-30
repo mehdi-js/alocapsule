@@ -15,7 +15,7 @@ import { choiceCard, panel } from "../styles";
 import { AddressForm, type AddressFormDefaults } from "./AddressForm";
 
 const linkButton =
-  "text-gold hover:text-gold-hover text-sm underline-offset-4 transition hover:underline disabled:opacity-50";
+  "text-accent hover:text-accent-hover text-sm underline-offset-4 transition hover:underline disabled:opacity-50";
 
 function AddressCard({
   address,
@@ -65,7 +65,7 @@ function AddressCard({
           checked={selected}
           onChange={onSelect}
           disabled={!served}
-          className="accent-action mt-1 size-4 shrink-0"
+          className="accent-brand-strong mt-1 size-4 shrink-0"
         />
       ) : null}
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
@@ -75,16 +75,16 @@ function AddressCard({
         >
           <span className="flex flex-wrap items-center gap-2 font-bold">
             {address.receiverName}
-            <span dir="ltr" className="text-ink-2 text-sm font-medium">
+            <span dir="ltr" className="text-ink-soft text-sm font-medium">
               {toPersianDigits(address.receiverPhone)}
             </span>
             {address.isDefault ? (
-              <span className="bg-gold/15 text-gold rounded-full px-2.5 py-0.5 text-xs">
+              <span className="bg-accent/15 text-accent rounded-full px-2.5 py-0.5 text-xs">
                 پیش‌فرض
               </span>
             ) : null}
           </span>
-          <span className="text-ink-2 text-sm leading-7">
+          <span className="text-ink-soft text-sm leading-7">
             {address.province}، {address.city}، {address.line}
             {address.postalCode ? (
               <> · کد پستی {toPersianDigits(address.postalCode)}</>

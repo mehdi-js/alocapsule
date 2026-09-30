@@ -127,7 +127,7 @@ export function ReceiptForm({ orderNumber }: { orderNumber: string }) {
           aria-describedby={describedBy("file")}
           className={cn(
             shopInput,
-            "file:bg-gold file:text-canvas file:me-3 file:rounded-full file:border-0 file:px-4 file:py-1.5 file:text-sm file:font-bold",
+            "file:bg-accent file:text-surface-alt file:me-3 file:rounded-full file:border-0 file:px-4 file:py-1.5 file:text-sm file:font-bold",
           )}
         />
       </ShopField>
@@ -136,7 +136,7 @@ export function ReceiptForm({ orderNumber }: { orderNumber: string }) {
         <img
           src={preview}
           alt="پیش‌نمایش رسید انتخاب‌شده"
-          className="max-h-64 w-fit rounded-[14px] border border-[rgb(201_168_118/0.22)] object-contain"
+          className="max-h-64 w-fit rounded-[14px] border border-control object-contain"
         />
       ) : null}
 

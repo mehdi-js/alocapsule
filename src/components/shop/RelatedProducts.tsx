@@ -13,7 +13,7 @@ export function RelatedProducts({ products }: { products: ProductCardDto[] }) {
         >
           محصولات مشابه
         </h2>
-        <span aria-hidden className="h-px flex-1 bg-[rgb(201_168_118/0.2)]" />
+        <span aria-hidden className="h-px flex-1 bg-accent/20" />
       </div>
       <div className="grid grid-cols-2 gap-3 md:gap-5 lg:grid-cols-4">
         {products.map((product) => (

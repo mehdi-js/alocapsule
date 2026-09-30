@@ -29,7 +29,7 @@ export function ProductUnavailable({
       </button>
       <Link
         href={`/category/${categorySlug}`}
-        className="text-action w-fit text-sm font-bold underline underline-offset-4"
+        className="text-brand-strong w-fit text-sm font-bold underline underline-offset-4"
       >
         مشاهده‌ی {categoryName}
       </Link>

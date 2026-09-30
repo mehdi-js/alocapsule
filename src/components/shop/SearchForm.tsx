@@ -16,7 +16,7 @@ export function SearchForm({
       method="get"
       role="search"
       className={cn(
-        "bg-card flex items-center gap-2.5 rounded-full border border-[rgb(201_168_118/0.2)] px-4.5 py-1 focus-within:border-[rgb(201_168_118/0.55)]",
+        "bg-card flex items-center gap-2.5 rounded-full border border-control px-4.5 py-1 focus-within:border-strong",
         className,
       )}
     >

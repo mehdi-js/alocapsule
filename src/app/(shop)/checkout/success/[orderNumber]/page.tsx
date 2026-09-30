@@ -62,7 +62,7 @@ export default async function OrderSuccessPage({
           "flex flex-col items-center gap-4 px-6 py-10 text-center",
         )}
       >
-        <span className="bg-action text-action-ink flex size-16 items-center justify-center rounded-full">
+        <span className="bg-brand-strong text-on-brand flex size-16 items-center justify-center rounded-full">
           <CheckIcon size={30} />
         </span>
         <h1 className="text-2xl font-extrabold md:text-3xl">
@@ -70,13 +70,13 @@ export default async function OrderSuccessPage({
         </h1>
         <p className="text-muted">
           شماره‌ی پیگیری سفارش:{" "}
-          <span dir="ltr" className="text-gold font-mono text-lg font-bold">
+          <span dir="ltr" className="text-accent font-mono text-lg font-bold">
             {order.orderNumber}
           </span>
         </p>
-        <p className="text-ink-2 max-w-md text-sm leading-7">
+        <p className="text-ink-soft max-w-md text-sm leading-7">
           وضعیت سفارش: <strong>{order.statusLabel}</strong>. مبلغ{" "}
-          <strong className="text-action">
+          <strong className="text-brand-strong">
             {formatToman(order.grandTotal)} تومان
           </strong>{" "}
           را به‌صورت کارت به کارت پرداخت و رسید را بارگذاری کنید؛ پس از تأیید
@@ -99,7 +99,7 @@ export default async function OrderSuccessPage({
           <ul className="flex flex-col gap-2.5 text-sm">
             {order.items.map((item) => (
               <li key={item.id} className="flex justify-between gap-3">
-                <span className="text-ink-2">
+                <span className="text-ink-soft">
                   {item.productName}{" "}
                   <span className="text-muted">
                     ({item.variantTitle}) × {toPersianDigits(item.quantity)}
@@ -109,7 +109,7 @@ export default async function OrderSuccessPage({
               </li>
             ))}
           </ul>
-          <dl className="flex flex-col gap-2.5 border-t border-[rgb(201_168_118/0.14)] pt-4 text-sm">
+          <dl className="flex flex-col gap-2.5 border-t border-hair pt-4 text-sm">
             <SummaryRow
               label="جمع کالاها"
               value={`${formatToman(order.subtotal)} تومان`}
@@ -125,13 +125,13 @@ export default async function OrderSuccessPage({
               <SummaryRow
                 label={`تخفیف${order.couponCode ? ` (${order.couponCode})` : ""}`}
                 value={`−${formatToman(order.discountTotal)} تومان`}
-                className="text-gold"
+                className="text-accent"
               />
             ) : null}
             <SummaryRow
               label="مبلغ قابل پرداخت"
               value={`${formatToman(order.grandTotal)} تومان`}
-              className="text-action text-base"
+              className="text-brand-strong text-base"
             />
           </dl>
         </section>
@@ -144,11 +144,11 @@ export default async function OrderSuccessPage({
             <>
               <p className="font-bold">
                 {order.address.receiverName}{" "}
-                <span dir="ltr" className="text-ink-2 font-medium">
+                <span dir="ltr" className="text-ink-soft font-medium">
                   {toPersianDigits(order.address.receiverPhone)}
                 </span>
               </p>
-              <p className="text-ink-2 leading-7">
+              <p className="text-ink-soft leading-7">
                 {order.address.province}، {order.address.city}،{" "}
                 {order.address.line}
                 {order.address.postalCode

@@ -36,7 +36,7 @@ export function ServiceConsent({
           type="checkbox"
           checked={accepted}
           onChange={(event) => onChange(event.target.checked)}
-          className="accent-action mt-1.5 size-4 shrink-0"
+          className="accent-brand-strong mt-1.5 size-4 shrink-0"
         />
         <span>
           {label}{" "}
@@ -45,7 +45,7 @@ export function ServiceConsent({
             onClick={() => setOpen((value) => !value)}
             aria-expanded={open}
             aria-controls="service-terms-text"
-            className="text-gold underline underline-offset-4"
+            className="text-accent underline underline-offset-4"
           >
             {open ? "بستن شرایط" : "مشاهده‌ی شرایط"}
           </button>
@@ -54,7 +54,7 @@ export function ServiceConsent({
       {open ? (
         <div
           id="service-terms-text"
-          className="border-action/40 rounded-[14px] border bg-[rgb(47_168_79/0.06)] p-4 text-sm"
+          className="border-brand-strong/40 rounded-[14px] border bg-brand-soft p-4 text-sm"
         >
           <RichText text={terms} headingLevel={3} />
         </div>

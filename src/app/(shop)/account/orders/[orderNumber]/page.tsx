@@ -44,7 +44,7 @@ export default async function MyOrderPage({
     <div className="flex flex-col gap-5">
       <Link
         href="/account/orders"
-        className="text-gold hover:text-gold-hover flex w-fit items-center gap-2 text-sm"
+        className="text-accent hover:text-accent-hover flex w-fit items-center gap-2 text-sm"
       >
         همه‌ی سفارش‌ها
         <ArrowIcon />
@@ -57,7 +57,7 @@ export default async function MyOrderPage({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 id="order-heading" className="text-lg font-extrabold">
             سفارش{" "}
-            <span dir="ltr" className="text-gold font-mono">
+            <span dir="ltr" className="text-accent font-mono">
               {order.orderNumber}
             </span>
           </h2>
@@ -75,7 +75,7 @@ export default async function MyOrderPage({
         {order.trackingCode ? (
           <p className="text-sm">
             کد رهگیری ارسال:{" "}
-            <span dir="ltr" className="text-gold font-mono font-bold">
+            <span dir="ltr" className="text-accent font-mono font-bold">
               {toPersianDigits(order.trackingCode)}
             </span>
           </p>
@@ -95,12 +95,12 @@ export default async function MyOrderPage({
             ) : null}
           </div>
         ) : order.status === "PAYMENT_REVIEW" ? (
-          <Link href={payHref} className="text-gold text-sm underline">
+          <Link href={payHref} className="text-accent text-sm underline">
             مشاهده‌ی وضعیت پرداخت
           </Link>
         ) : null}
 
-        <ol className="border-gold/20 flex flex-col gap-2 border-s-2 ps-4 text-sm">
+        <ol className="border-accent/20 flex flex-col gap-2 border-s-2 ps-4 text-sm">
           {order.timeline.map((entry) => (
             <li key={entry.id}>
               <span className="font-bold">{entry.label}</span>{" "}
@@ -118,7 +118,7 @@ export default async function MyOrderPage({
           <ul className="flex flex-col gap-2.5 text-sm">
             {order.items.map((item) => (
               <li key={item.id} className="flex justify-between gap-3">
-                <span className="text-ink-2">
+                <span className="text-ink-soft">
                   {item.productName}{" "}
                   <span className="text-muted">
                     ({item.variantTitle}) × {toPersianDigits(item.quantity)}
@@ -128,7 +128,7 @@ export default async function MyOrderPage({
               </li>
             ))}
           </ul>
-          <dl className="flex flex-col gap-2.5 border-t border-[rgb(201_168_118/0.14)] pt-4 text-sm">
+          <dl className="flex flex-col gap-2.5 border-t border-hair pt-4 text-sm">
             <Row label="جمع کالاها">{formatToman(order.subtotal)} تومان</Row>
             <Row label={`ارسال (${order.shippingMethodName})`}>
               {shippingCostLabel(
@@ -140,13 +140,13 @@ export default async function MyOrderPage({
               <Row
                 label={`تخفیف${order.couponCode ? ` (${order.couponCode})` : ""}`}
               >
-                <span className="text-gold">
+                <span className="text-accent">
                   −{formatToman(order.discountTotal)} تومان
                 </span>
               </Row>
             ) : null}
             <Row label="مبلغ کل">
-              <span className="text-action">
+              <span className="text-brand-strong">
                 {formatToman(order.grandTotal)} تومان
               </span>
             </Row>
@@ -168,11 +168,11 @@ export default async function MyOrderPage({
             <>
               <p className="font-bold">
                 {order.address.receiverName}{" "}
-                <span dir="ltr" className="text-ink-2 font-medium">
+                <span dir="ltr" className="text-ink-soft font-medium">
                   {toPersianDigits(order.address.receiverPhone)}
                 </span>
               </p>
-              <p className="text-ink-2 leading-7">
+              <p className="text-ink-soft leading-7">
                 {order.address.province}، {order.address.city}،{" "}
                 {order.address.line}
                 {order.address.postalCode

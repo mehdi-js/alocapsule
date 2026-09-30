@@ -25,7 +25,7 @@ export function Breadcrumb({ items }: { items: Crumb[] }) {
               ) : (
                 <span
                   aria-current={last ? "page" : undefined}
-                  className={last ? "text-gold" : undefined}
+                  className={last ? "text-accent" : undefined}
                 >
                   {item.label}
                 </span>

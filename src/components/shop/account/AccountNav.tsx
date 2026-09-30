@@ -32,8 +32,8 @@ export function AccountNav() {
                 className={cn(
                   "block rounded-full border px-5 py-2.5 text-sm transition",
                   active
-                    ? "border-action bg-action text-action-ink font-bold"
-                    : "text-ink-2 border-[rgb(201_168_118/0.25)] hover:border-[rgb(201_168_118/0.55)]",
+                    ? "border-brand-strong bg-brand-strong text-on-brand font-bold"
+                    : "text-ink-soft border-control hover:border-strong",
                 )}
               >
                 {link.label}

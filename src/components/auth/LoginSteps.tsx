@@ -125,7 +125,7 @@ export function PasswordStep({
           type="button"
           onClick={() => onUseOtp(false)}
           disabled={pending}
-          className="text-gold font-medium underline underline-offset-4 disabled:opacity-60"
+          className="text-accent font-medium underline underline-offset-4 disabled:opacity-60"
         >
           ورود با کد پیامکی
         </button>
@@ -203,7 +203,7 @@ export function OtpStep({
             type="button"
             onClick={onResend}
             disabled={pending}
-            className="text-gold font-medium underline underline-offset-4 disabled:opacity-60"
+            className="text-accent font-medium underline underline-offset-4 disabled:opacity-60"
           >
             ارسال مجدد کد
           </button>

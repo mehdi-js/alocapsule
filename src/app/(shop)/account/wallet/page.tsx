@@ -24,9 +24,9 @@ export default async function MyWalletPage() {
         )}
       >
         <h2 className="font-extrabold">موجودی کیف پول</h2>
-        <p className="text-action text-3xl font-extrabold">
+        <p className="text-brand-strong text-3xl font-extrabold">
           {formatToman(wallet.balance)}{" "}
-          <span className="text-ink-2 text-sm font-semibold">تومان</span>
+          <span className="text-ink-soft text-sm font-semibold">تومان</span>
         </p>
         <p className="text-muted w-full text-sm leading-7">
           موجودی کیف پول را می‌توانید در صفحه‌ی پرداخت هر سفارش استفاده کنید
@@ -44,7 +44,7 @@ export default async function MyWalletPage() {
         {wallet.transactions.length === 0 ? (
           <p className="text-muted text-sm">هنوز تراکنشی ندارید.</p>
         ) : (
-          <ul className="divide-y divide-[rgb(201_168_118/0.12)]">
+          <ul className="divide-y divide-accent/12">
             {wallet.transactions.map((tx) => (
               <li
                 key={tx.id}
@@ -59,7 +59,7 @@ export default async function MyWalletPage() {
                         <Link
                           href={`/account/orders/${encodeURIComponent(tx.orderNumber)}`}
                           dir="ltr"
-                          className="text-gold font-mono text-xs"
+                          className="text-accent font-mono text-xs"
                         >
                           {tx.orderNumber}
                         </Link>
@@ -75,7 +75,7 @@ export default async function MyWalletPage() {
                   dir="ltr"
                   className={cn(
                     "font-extrabold",
-                    tx.type === "CREDIT" ? "text-action" : "text-danger",
+                    tx.type === "CREDIT" ? "text-brand-strong" : "text-danger",
                   )}
                 >
                   {tx.type === "CREDIT" ? "+" : "−"}

@@ -43,11 +43,11 @@ export default async function MyOrdersPage() {
               href={`/account/orders/${encodeURIComponent(order.orderNumber)}`}
               className={cn(
                 panel,
-                "flex flex-col gap-3 p-4 transition hover:border-[rgb(201_168_118/0.4)] md:p-5",
+                "flex flex-col gap-3 p-4 transition hover:border-outline md:p-5",
               )}
             >
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span dir="ltr" className="text-gold font-mono font-bold">
+                <span dir="ltr" className="text-accent font-mono font-bold">
                   {order.orderNumber}
                 </span>
                 <OrderStatusPill
@@ -55,7 +55,7 @@ export default async function MyOrdersPage() {
                   label={order.statusLabel}
                 />
               </div>
-              <p className="text-ink-2 line-clamp-1 text-sm">
+              <p className="text-ink-soft line-clamp-1 text-sm">
                 {order.itemsSummary}
               </p>
               <div className="text-muted flex flex-wrap justify-between gap-2 text-sm">

@@ -10,7 +10,7 @@ import { CloseIcon } from "../icons";
 import { useCart } from "./CartProvider";
 
 const boxClass =
-  "flex flex-col gap-3 rounded-[20px] border border-dashed border-[rgb(201_168_118/0.45)] p-4.5";
+  "flex flex-col gap-3 rounded-[20px] border border-dashed border-outline p-4.5";
 
 /** کارت کد تخفیف صفحه‌ی سبد (طبق طراحی: کادر خط‌چین طلایی). */
 export function CouponBox({ cart }: { cart: CartViewDto }) {
@@ -27,7 +27,7 @@ export function CouponBox({ cart }: { cart: CartViewDto }) {
           برای استفاده از کد تخفیف{" "}
           <Link
             href="/login?next=/cart"
-            className="text-gold underline underline-offset-4"
+            className="text-accent underline underline-offset-4"
           >
             وارد حساب خود شوید
           </Link>
@@ -69,7 +69,7 @@ export function CouponBox({ cart }: { cart: CartViewDto }) {
           <div className="flex flex-col gap-1">
             <p className="text-sm">
               کد{" "}
-              <span dir="ltr" className="text-gold font-mono font-bold">
+              <span dir="ltr" className="text-accent font-mono font-bold">
                 {applied.code}
               </span>
               {applied.title ? (
@@ -81,9 +81,11 @@ export function CouponBox({ cart }: { cart: CartViewDto }) {
                 {applied.error}
               </p>
             ) : applied.freeShipping ? (
-              <p className="text-action text-sm">ارسال سفارش شما رایگان است.</p>
+              <p className="text-brand-strong text-sm">
+                ارسال سفارش شما رایگان است.
+              </p>
             ) : (
-              <p className="text-action text-sm">
+              <p className="text-brand-strong text-sm">
                 {applied.description} · {formatToman(applied.discount)} تومان
                 تخفیف
               </p>
@@ -108,7 +110,7 @@ export function CouponBox({ cart }: { cart: CartViewDto }) {
       <label htmlFor="coupon-code" className="text-sm font-bold">
         کد تخفیف دارید؟
       </label>
-      <div className="bg-card flex items-center gap-2 rounded-full border border-[rgb(201_168_118/0.22)] py-1.5 ps-4 pe-1.5 focus-within:border-[rgb(201_168_118/0.55)]">
+      <div className="bg-card flex items-center gap-2 rounded-full border border-control py-1.5 ps-4 pe-1.5 focus-within:border-strong">
         <input
           id="coupon-code"
           value={code}
@@ -123,7 +125,7 @@ export function CouponBox({ cart }: { cart: CartViewDto }) {
         <button
           type="submit"
           disabled={pending || code.trim() === ""}
-          className="bg-gold hover:bg-gold-hover text-canvas rounded-full px-5 py-2 text-sm font-bold transition disabled:opacity-50"
+          className="bg-accent hover:bg-accent-hover text-surface-alt rounded-full px-5 py-2 text-sm font-bold transition disabled:opacity-50"
         >
           {pending ? "…" : "اعمال"}
         </button>

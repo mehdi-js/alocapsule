@@ -2,13 +2,13 @@ import type { OrderStatus } from "@/lib/order-status";
 import { cn } from "@/lib/utils";
 
 const TONES: Record<OrderStatus, string> = {
-  PENDING_PAYMENT: "border-gold/40 text-gold",
-  PAYMENT_REVIEW: "border-gold/40 text-gold",
+  PENDING_PAYMENT: "border-accent/40 text-accent",
+  PAYMENT_REVIEW: "border-accent/40 text-accent",
   PAYMENT_REJECTED: "border-danger/40 text-danger",
-  PROCESSING: "border-action/40 text-action",
-  SHIPPED: "border-action/40 text-action",
-  DELIVERED: "border-action/40 text-action",
-  CANCELED: "border-[rgb(201_168_118/0.25)] text-muted",
+  PROCESSING: "border-brand-strong/40 text-brand-strong",
+  SHIPPED: "border-brand-strong/40 text-brand-strong",
+  DELIVERED: "border-brand-strong/40 text-brand-strong",
+  CANCELED: "border-control text-muted",
 };
 
 export function OrderStatusPill({
