@@ -9,11 +9,11 @@ import {
 
 describe("slugify (نامک لاتین)", () => {
   it.each([
-    ["Baklava Gerdouyi", "baklava-gerdouyi"],
-    ["  Havij -- Pesteei!! ", "havij-pesteei"],
+    ["Charge Butane", "charge-butane"],
+    ["  Oxygen -- Nitrogen!! ", "oxygen-nitrogen"],
     ["box 12", "box-12"],
     ["پک ۱۲ عددی", "12"],
-    ["باقلوا گردویی", ""],
+    ["شارژ بوتان", ""],
     ["---", ""],
     ["", ""],
   ])("%j ⇒ %j", (input, expected) => {
@@ -28,9 +28,9 @@ describe("slugify (نامک لاتین)", () => {
   });
 
   it("الگو: فارسی، فاصله، حروف بزرگ و خط تیره‌ی اضافه مجاز نیست", () => {
-    expect(SLUG_PATTERN.test("baklava-gerdouyi")).toBe(true);
-    expect(SLUG_PATTERN.test("باقلوا")).toBe(false);
-    expect(SLUG_PATTERN.test("Baklava")).toBe(false);
+    expect(SLUG_PATTERN.test("charge-butane")).toBe(true);
+    expect(SLUG_PATTERN.test("کپسول")).toBe(false);
+    expect(SLUG_PATTERN.test("Capsule")).toBe(false);
     expect(SLUG_PATTERN.test("bad slug")).toBe(false);
     expect(SLUG_PATTERN.test("-bad")).toBe(false);
     expect(SLUG_PATTERN.test("a--b")).toBe(false);

@@ -8,18 +8,8 @@ import {
 import { normalizePhone } from "@/lib/phone";
 import { SEO_SETTING_DEFAULTS } from "@/lib/seo/settings";
 
-import {
-  catalogCategories,
-  catalogProducts,
-  retiredSampleCategorySlugs,
-  retiredSampleProductSlugs,
-} from "./seed-catalog";
-import {
-  bankCard,
-  sampleMenu,
-  shippingMethods,
-  smsTemplates,
-} from "./seed-data";
+import { catalogCategories, catalogProducts } from "./seed-catalog";
+import { bankCard, shippingMethods, smsTemplates } from "./seed-data";
 import { seedPages } from "./seed-pages";
 
 const prisma = new PrismaClient();
@@ -63,41 +53,8 @@ function missingFields<T extends Record<string, unknown>>(
 }
 
 /**
- * ۸ محصول و ۳ دسته‌ی نمونه‌ی فاز ۱ حذف می‌شوند (SEO.md فاز S0). اقلام
- * سفارش‌ها snapshot نام و قیمت دارند و با حذف محصول از بین نمی‌روند. دسته
- * فقط اگر خالی باشد حذف می‌شود.
- */
-async function removeSampleCatalog() {
-  const removed = await prisma.product.deleteMany({
-    where: { slug: { in: retiredSampleProductSlugs } },
-  });
-  let categoriesRemoved = 0;
-  for (const slug of retiredSampleCategorySlugs) {
-    const category = await prisma.category.findUnique({
-      where: { slug },
-      select: {
-        id: true,
-        _count: { select: { products: true, children: true } },
-      },
-    });
-    if (!category) continue;
-    if (category._count.products > 0 || category._count.children > 0) {
-      console.log(`دسته‌ی «${slug}» خالی نیست و حذف نشد.`);
-      continue;
-    }
-    await prisma.category.delete({ where: { id: category.id } });
-    categoriesRemoved++;
-  }
-  if (removed.count > 0 || categoriesRemoved > 0) {
-    console.log(
-      `نمونه‌ها حذف شد: ${removed.count} محصول · ${categoriesRemoved} دسته`,
-    );
-  }
-}
-
-/**
- * کاتالوگ SEO.md §۲. محصولات غیرفعال و بدون متغیر ساخته می‌شوند؛ ادمین قیمت،
- * وزن و تصویر را اضافه و بعد فعال می‌کند.
+ * کاتالوگ نمونه (`seed-catalog.ts`). محصولات فقط اگر نبودند ساخته می‌شوند
+ * (همراه متغیرها)؛ ادمین تصویر را اضافه می‌کند.
  */
 async function seedCatalog() {
   const categoryIds = new Map<string, string>();
@@ -117,7 +74,7 @@ async function seedCatalog() {
   }
 
   for (const [index, product] of catalogProducts.entries()) {
-    const { categorySlug, ...fields } = product;
+    const { categorySlug, variants, ...fields } = product;
     const categoryId = categoryIds.get(categorySlug);
     if (!categoryId) throw new Error(`دسته‌ی ${categorySlug} در seed نیست`);
     const existing = await prisma.product.findUnique({
@@ -134,8 +91,13 @@ async function seedCatalog() {
       data: {
         ...fields,
         categoryId,
-        isActive: false,
         sortOrder: index + 1,
+        variants: {
+          create: variants.map((variant, variantIndex) => ({
+            ...variant,
+            sortOrder: variantIndex + 1,
+          })),
+        },
       },
     });
   }
@@ -157,24 +119,11 @@ async function seedCoupons() {
     firstOrderOnly: true,
     expiresAt,
   };
-  const freeShipping = {
-    code: "FREESHIP",
-    title: "ارسال رایگان برای خرید بالای ۱ میلیون تومان",
-    type: "FREE_SHIPPING" as const,
-    value: 0,
-    minOrderAmount: 1_000_000,
-    scope: "ALL" as const,
-    usageLimitPerUser: 3,
-    expiresAt,
-  };
-
-  for (const coupon of [percent, freeShipping]) {
-    await prisma.coupon.upsert({
-      where: { code: coupon.code },
-      create: coupon,
-      update: coupon,
-    });
-  }
+  await prisma.coupon.upsert({
+    where: { code: percent.code },
+    create: percent,
+    update: percent,
+  });
 }
 
 async function seedStoreSettings() {
@@ -209,34 +158,6 @@ async function seedStoreSettings() {
   }
 }
 
-async function seedSampleMenu() {
-  const exists = await prisma.menu.findUnique({
-    where: { slug: sampleMenu.slug },
-  });
-  if (exists) return;
-  await prisma.menu.create({
-    data: {
-      name: sampleMenu.name,
-      slug: sampleMenu.slug,
-      description: sampleMenu.description,
-      categories: {
-        create: sampleMenu.categories.map((category, index) => ({
-          name: category.name,
-          sortOrder: index,
-          items: {
-            create: category.items.map(([name, description, price], i) => ({
-              name,
-              description,
-              price,
-              sortOrder: i,
-            })),
-          },
-        })),
-      },
-    },
-  });
-}
-
 /** صفحات اعتماد: فقط اگر نبودند، به‌صورت پیش‌نویس منتشرنشده */
 async function seedStaticPages() {
   for (const page of seedPages) {
@@ -251,11 +172,9 @@ async function seedStaticPages() {
 
 async function main() {
   const adminPhone = await seedAdmin();
-  await removeSampleCatalog();
   await seedCatalog();
   await seedCoupons();
   await seedStoreSettings();
-  await seedSampleMenu();
   await seedStaticPages();
 
   const [productCount, variantCount] = await Promise.all([

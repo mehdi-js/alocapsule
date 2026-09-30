@@ -34,7 +34,7 @@ function rule(overrides: Partial<CouponRule> = {}): CouponRule {
 }
 
 const lines = [
-  { productId: "p-baklava", categoryId: "c-baklava", lineTotal: 520_000 },
+  { productId: "p-capsule", categoryId: "c-capsule", lineTotal: 520_000 },
   { productId: "p-qotab", categoryId: "c-sweets", lineTotal: 220_000 },
 ];
 
@@ -224,7 +224,7 @@ describe("validateCoupon — پیام‌های متفاوت", () => {
   });
 
   it("دامنه‌ی محصول", () => {
-    const product = rule({ scope: "PRODUCT", productIds: ["p-baklava"] });
+    const product = rule({ scope: "PRODUCT", productIds: ["p-capsule"] });
     expect(validateCoupon(product, ctx())).toEqual({
       ok: true,
       eligibleSubtotal: 520_000,

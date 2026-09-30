@@ -1,4 +1,4 @@
-# راهنمای استقرار علی‌حان (production)
+# راهنمای استقرار الو کپسول (production)
 
 استقرار با Docker Compose روی یک سرور لینوکسی (VPS ایران). همه‌چیز — دیتابیس، اپلیکیشن، jobهای دوره‌ای، بکاپ روزانه و HTTPS خودکار — در `docker-compose.prod.yml` است.
 
@@ -31,12 +31,12 @@ Volumeها: `pgdata` (دیتابیس)، `uploads` (تصاویر محصول)، `p
   سپس `sudo systemctl restart docker`.
 - **npm**: اگر `registry.npmjs.org` در دسترس نیست، `NPM_REGISTRY` را در `.env.production` روی میرور بگذارید.
 - **Prisma**: اگر دانلود موتورها (`binaries.prisma.sh`) خطا داد، `PRISMA_ENGINES_MIRROR` را تنظیم کنید.
-- اگر ساخت ایمیج روی سرور ممکن نیست، ایمیج‌ها (`alihan-app`، `alihan-tools`) را جای دیگری بسازید و با `docker save | ssh … docker load` منتقل کنید.
+- اگر ساخت ایمیج روی سرور ممکن نیست، ایمیج‌ها (`alocapsule-app`، `alocapsule-tools`) را جای دیگری بسازید و با `docker save | ssh … docker load` منتقل کنید.
 
 ## ۲) نصب اولیه
 
 ```bash
-git clone <مخزن> alihan && cd alihan
+git clone <مخزن> alocapsule && cd alocapsule
 cp .env.production.example .env.production
 nano .env.production          # همه‌ی مقادیر را پر کنید (بخش ۳)
 
@@ -113,9 +113,9 @@ dc image prune -f
 اگر ترجیح می‌دهید با cron میزبان اجرا کنید، سرویس `jobs` را حذف و این‌ها را در `crontab -e` بگذارید:
 
 ```cron
-*/10 * * * * cd /path/alihan && docker compose -f docker-compose.prod.yml --env-file .env.production run --rm migrate npm run -s job:retry-notifications
-7 * * * *    cd /path/alihan && docker compose -f docker-compose.prod.yml --env-file .env.production run --rm migrate npm run -s job:expire-orders
-30 4 * * *   cd /path/alihan && docker compose -f docker-compose.prod.yml --env-file .env.production run --rm migrate npm run -s check:finance
+*/10 * * * * cd /path/alocapsule && docker compose -f docker-compose.prod.yml --env-file .env.production run --rm migrate npm run -s job:retry-notifications
+7 * * * *    cd /path/alocapsule && docker compose -f docker-compose.prod.yml --env-file .env.production run --rm migrate npm run -s job:expire-orders
+30 4 * * *   cd /path/alocapsule && docker compose -f docker-compose.prod.yml --env-file .env.production run --rm migrate npm run -s check:finance
 ```
 
 ## ۷) بکاپ و بازگردانی
@@ -143,7 +143,7 @@ dc exec jobs npm run -s check:finance
 **نسخه‌ی خارج از سرور:** بکاپ روی همان سرور در برابر خرابی دیسک یا از دست رفتن سرور محافظت نمی‌کند. روزانه یک نسخه به جای دیگری منتقل کنید، مثلاً از یک سرور دیگر:
 
 ```bash
-rsync -az --delete user@server:/path/alihan/backups/ /mnt/alihan-backups/
+rsync -az --delete user@server:/path/alocapsule/backups/ /mnt/alocapsule-backups/
 ```
 
 **آزمون بازگردانی:** دست‌کم ماهی یک‌بار آخرین بکاپ را روی یک سرور/پروژه‌ی جدا بازگردانی و سایت را بررسی کنید. (این روند در فاز ۱۳ روی یک پشته‌ی آزمایشی کامل انجام و تأیید شد.)
@@ -229,7 +229,7 @@ curl -sS -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.
 
 ### بررسی سئوی کل سایت (`seo:audit`)
 
-همه‌ی آدرس‌های sitemap را با User-Agent گوگل‌بات می‌خزد و گزارش می‌دهد: وضعیت HTTP، دقیقاً یک H1، عنوان/متای خالی یا تکراری، canonical، noindex، JSON-LD، تصاویر بدون alt و متن‌های `{{تکمیل توسط علی حان…}}` باقی‌مانده. با هر خطای 🔴 کد خروج ۱ است.
+همه‌ی آدرس‌های sitemap را با User-Agent گوگل‌بات می‌خزد و گزارش می‌دهد: وضعیت HTTP، دقیقاً یک H1، عنوان/متای خالی یا تکراری، canonical، noindex، JSON-LD، تصاویر بدون alt و متن‌های `{{تکمیل توسط الو کپسول…}}` باقی‌مانده. با هر خطای 🔴 کد خروج ۱ است.
 
 از روی کامپیوتر خودتان (در پوشه‌ی پروژه):
 
@@ -257,8 +257,8 @@ dc run --rm jobs npm run -s seo:audit -- http://app:3000
 - [ ] «تنظیمات ← شعب»: نامک انگلیسی، شهر، ساعات روزانه و لینک نشان/بلد هر شعبه
 - [ ] «تنظیمات ← سئو»: متن و سوالات متداول صفحه‌ی اصلی و نام حقوقی کامل (بدون `{{تکمیل…}}`)
 - [ ] «صفحات»: درباره ما، تماس، سوالات متداول، ارسال، مرجوعی و حریم خصوصی تکمیل و منتشر
-- [ ] متن دسته‌ها و محصولات بازبینی شده (از جمله ۴ متن هاویج)
-- [ ] `seo:audit` بدون خطای 🔴 (یعنی هیچ `{{تکمیل توسط علی حان}}` باقی نمانده)
+- [ ] متن دسته‌ها و محصولات بازبینی شده (محصولات و دسته‌ها)
+- [ ] `seo:audit` بدون خطای 🔴 (یعنی هیچ `{{تکمیل توسط الو کپسول}}` باقی نمانده)
 - [ ] حالت بروزرسانی (maintenance) خاموش
 - [ ] `ALLOW_INDEXING=true` روی سرور اصلی (و `false` روی هر سرور تست) + `dc up -d --build`
 - [ ] `robots.txt` و `sitemap.xml` روی دامنه‌ی اصلی درست (`https://<دامنه>/robots.txt`)

@@ -22,7 +22,7 @@ describe("کارت و شبا", () => {
       bankName: "ملت",
       cardNumber: "۶۰۳۷ ۹۹۷۵ ۹۹۹۹ ۹۹۹۳",
       shebaNumber: "820540102680020817909002",
-      accountHolderName: "علی حان",
+      accountHolderName: "الو کپسول",
       isActive: true,
       sortOrder: 1,
     });
@@ -60,7 +60,8 @@ describe("محتوای سایت", () => {
     expect(settings.contact.phone).toBe("۰۲۱-۱۱۱");
     expect(settings.contact.email).not.toBe("");
     expect(settings.trustItems).toHaveLength(3);
-    expect(parseSiteSettings(null).aboutStats).toHaveLength(4);
+    // آمار «درباره ما» پیش‌فرض خالی است (عدد ساختگی نمی‌گذاریم)
+    expect(parseSiteSettings(null).aboutStats).toEqual([]);
   });
 
   it("لینک تلفن و شبکه‌های خالی", () => {

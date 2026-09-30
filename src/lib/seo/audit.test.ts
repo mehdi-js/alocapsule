@@ -9,12 +9,12 @@ import {
 } from "./audit";
 import { COMPLETION_MARKER, todo } from "./settings";
 
-const URL_ = "https://alihan.ir/products/baklava-gerdouyi";
+const URL_ = "https://alocapsule.ir/products/charge-butane";
 
 function page(body: string, head = "") {
   return `<!doctype html><html lang="fa-IR" dir="rtl"><head>
-<title>خرید باقلوا گردویی | علی حان</title>
-<meta name="description" content="باقلوا گردویی تازه"/>
+<title>خرید شارژ بوتان | الو کپسول</title>
+<meta name="description" content="شارژ بوتان تازه"/>
 <link rel="canonical" href="${URL_}"/>
 <meta name="robots" content="index, follow"/>
 ${head}</head><body>${body}</body></html>`;
@@ -30,7 +30,7 @@ describe("auditPage", () => {
     expect(
       messages(
         page(
-          '<h1>باقلوا گردویی</h1><img src="/a.webp" alt="باقلوا"/><img src="/b" alt=""/>',
+          '<h1>شارژ بوتان</h1><img src="/a.webp" alt="کپسول"/><img src="/b" alt=""/>',
           '<script type="application/ld+json">{"@type":"Product","name":"x"}</script>',
         ),
       ),
@@ -55,12 +55,12 @@ describe("auditPage", () => {
     expect(messages(noCanonical)).toContain("error: canonical ندارد");
     const wrong = page("<h1>a</h1>").replace(
       URL_,
-      "https://alihan.ir/products",
+      "https://alocapsule.ir/products",
     );
     expect(messages(wrong).some((m) => m.includes("یکی نیست"))).toBe(true);
     const relative = page("<h1>a</h1>").replace(
       URL_,
-      "/products/baklava-gerdouyi",
+      "/products/charge-butane",
     );
     expect(messages(relative).some((m) => m.includes("مطلق نیست"))).toBe(true);
   });
@@ -148,8 +148,8 @@ describe("sitemap، robots و مقایسه‌ی آدرس", () => {
   it("sameUrl: درصد-کد و اسلش", () => {
     expect(
       sameUrl(
-        "https://a.ir/products/%D8%B3%D9%88%D8%AA%D9%84%D8%A7%D9%88%D8%A7",
-        "https://a.ir/products/سوتلاوا/",
+        "https://a.ir/products/%D8%A8%D9%88%D8%AA%D8%A7%D9%86",
+        "https://a.ir/products/بوتان/",
       ),
     ).toBe(true);
     expect(sameUrl("https://a.ir/x", "https://b.ir/x")).toBe(false);

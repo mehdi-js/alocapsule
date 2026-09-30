@@ -21,19 +21,19 @@ const params = { to: "09123456789", patternId: "1234", args: ["123456"] };
 describe("sanitizeSmsArg", () => {
   it("; لاتین و فارسی و کاراکترهای کنترلی را حذف می‌کند", () => {
     expect(sanitizeSmsArg("a;b")).toBe("a b");
-    expect(sanitizeSmsArg("علی؛حان")).toBe("علی حان");
+    expect(sanitizeSmsArg("الو؛کپسول")).toBe("الو کپسول");
     expect(sanitizeSmsArg("x\ny\tz")).toBe("x y z");
     expect(sanitizeSmsArg("  ;;  ")).toBe("");
   });
 
   it("عدد و رشته‌ی معمولی را دست‌نخورده می‌گذارد", () => {
     expect(sanitizeSmsArg(250000)).toBe("250000");
-    expect(sanitizeSmsArg("AL-14040625-0031")).toBe("AL-14040625-0031");
+    expect(sanitizeSmsArg("AC-14040625-0031")).toBe("AC-14040625-0031");
   });
 
   it("ترتیب متغیرهای الگو با وجود ; داخل مقدار حفظ می‌شود", () => {
-    const text = ["AL-1", "بامزه;تقلبی", "99"].map(sanitizeSmsArg).join(";");
-    expect(text.split(";")).toEqual(["AL-1", "بامزه تقلبی", "99"]);
+    const text = ["AC-1", "بامزه;تقلبی", "99"].map(sanitizeSmsArg).join(";");
+    expect(text.split(";")).toEqual(["AC-1", "بامزه تقلبی", "99"]);
   });
 });
 
@@ -46,7 +46,7 @@ describe("MelipayamakProvider", () => {
 
     const result = await provider.sendPattern({
       ...params,
-      args: ["AL-1", "a;b"],
+      args: ["AC-1", "a;b"],
     });
 
     expect(result).toEqual({
@@ -63,7 +63,7 @@ describe("MelipayamakProvider", () => {
     expect(init.method).toBe("POST");
     const body = init.body as URLSearchParams;
     expect(body.get("username")).toBe("user");
-    expect(body.get("text")).toBe("AL-1;a b");
+    expect(body.get("text")).toBe("AC-1;a b");
     expect(body.get("to")).toBe("09123456789");
     expect(body.get("bodyId")).toBe("1234");
   });

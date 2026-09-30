@@ -18,10 +18,10 @@ const rules = (entries: [string, string, 301 | 410][]) =>
 
 describe("normalizeRedirectPath", () => {
   it("decode درصدی فارسی، اسلش انتهایی، حروف کوچک، query", () => {
-    const encoded = `/product/${encodeURIComponent("باقلوا-گردویی")}/?utm_source=x`;
-    expect(normalizeRedirectPath(encoded)).toBe("/product/باقلوا-گردویی");
-    expect(normalizeRedirectPath("/Shop//Baklava/")).toBe("/shop/baklava");
-    expect(normalizeRedirectPath("https://old.alihan.ir/About-Us/")).toBe(
+    const encoded = `/product/${encodeURIComponent("کپسول-گردویی")}/?utm_source=x`;
+    expect(normalizeRedirectPath(encoded)).toBe("/product/کپسول-گردویی");
+    expect(normalizeRedirectPath("/Shop//Capsule/")).toBe("/shop/capsule");
+    expect(normalizeRedirectPath("https://old.alocapsule.ir/About-Us/")).toBe(
       "/about-us",
     );
     expect(normalizeRedirectPath("product/كيك")).toBe("/product/کیک");
@@ -31,8 +31,8 @@ describe("normalizeRedirectPath", () => {
 
   it("مقصد: مسیر داخلی نرمال یا https؛ بقیه نامعتبر", () => {
     expect(normalizeRedirectTarget("/products/x/")).toBe("/products/x");
-    expect(normalizeRedirectTarget("https://t.me/alihan")).toBe(
-      "https://t.me/alihan",
+    expect(normalizeRedirectTarget("https://t.me/alocapsule")).toBe(
+      "https://t.me/alocapsule",
     );
     expect(normalizeRedirectTarget("javascript:alert(1)")).toBeNull();
     expect(normalizeRedirectTarget("//evil.com")).toBeNull();
@@ -44,7 +44,7 @@ describe("قواعد الگویی ووکامرس (SEO.md §۱۱.۲)", () => {
   it.each([
     ["/shop", "", { kind: "redirect", to: "/products", log: false }],
     ["/shop/page/2", "", { kind: "redirect", to: "/products", log: false }],
-    ["/product/baklava", "", { kind: "redirect", to: "/products", log: true }],
+    ["/product/capsule", "", { kind: "redirect", to: "/products", log: true }],
     [
       "/product-category/x",
       "",
@@ -96,7 +96,7 @@ describe("isJunkPath", () => {
     ]) {
       expect(isJunkPath(path)).toBe(true);
     }
-    for (const path of ["/product/باقلوا", "/about-us", "/blog/post-1"]) {
+    for (const path of ["/product/کپسول", "/about-us", "/blog/post-1"]) {
       expect(isJunkPath(path)).toBe(false);
     }
   });

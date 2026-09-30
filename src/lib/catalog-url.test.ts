@@ -23,14 +23,12 @@ const empty: CatalogUrlState = {
 describe("buildCatalogHref", () => {
   it("بدون فیلتر آدرس پایه را می‌دهد", () => {
     expect(buildCatalogHref(empty)).toBe("/products");
-    expect(buildCatalogHref(empty, "/category/باقلوا")).toBe(
-      "/category/باقلوا",
-    );
+    expect(buildCatalogHref(empty, "/category/کپسول")).toBe("/category/کپسول");
   });
 
   it("همه‌ی فیلترها را در query می‌گذارد و کلید بسته‌ها را مرتب می‌کند", () => {
     const href = buildCatalogHref({
-      categorySlugs: ["باقلوا", "قطاب"],
+      categorySlugs: ["کپسول", "قطاب"],
       packKeys: ["g1000", "p12", "g500"],
       minPrice: 100000,
       maxPrice: 900000,
@@ -41,7 +39,7 @@ describe("buildCatalogHref", () => {
     const url = new URL(href, "http://x");
     expect(url.pathname).toBe("/products");
     expect(url.searchParams.get("q")).toBe("پسته");
-    expect(url.searchParams.get("category")).toBe("باقلوا,قطاب");
+    expect(url.searchParams.get("category")).toBe("کپسول,قطاب");
     expect(url.searchParams.get("weight")).toBe("g1000,g500,p12");
     expect(url.searchParams.get("min")).toBe("100000");
     expect(url.searchParams.get("max")).toBe("900000");

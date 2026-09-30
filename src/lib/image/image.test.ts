@@ -122,17 +122,17 @@ describe("processProductImage", () => {
 
 describe("نام‌گذاری فایل‌ها (SEO.md §۹)", () => {
   it("{نامک}-{ردیف}-{۴ نویسه} با thumbnail و OG", () => {
-    const base = productImageBaseName("baklava-gerdouyi", 1, "a3f9");
-    expect(base).toBe("baklava-gerdouyi-1-a3f9");
+    const base = productImageBaseName("charge-butane", 1, "a3f9");
+    expect(base).toBe("charge-butane-1-a3f9");
     expect(productImageKeys(base)).toEqual({
-      main: "products/baklava-gerdouyi-1-a3f9.webp",
-      thumb: "products/baklava-gerdouyi-1-a3f9-thumb.webp",
-      og: "products/baklava-gerdouyi-1-a3f9-og.jpg",
+      main: "products/charge-butane-1-a3f9.webp",
+      thumb: "products/charge-butane-1-a3f9-thumb.webp",
+      og: "products/charge-butane-1-a3f9-og.jpg",
     });
   });
 
   it("نامک غیرلاتین (قدیمی) ⇒ product", () => {
-    expect(productImageBaseName("سوتلاوا", 2, "00ff")).toBe("product-2-00ff");
+    expect(productImageBaseName("بوتان", 2, "00ff")).toBe("product-2-00ff");
   });
 
   it("thumbnail و OG از روی آدرس/کلید اصلی", () => {
@@ -152,9 +152,9 @@ describe("نام‌گذاری فایل‌ها (SEO.md §۹)", () => {
 
 describe("publicMediaContentType (فقط فایل‌های عمومی)", () => {
   it.each([
-    ["products/baklava-gerdouyi-1-a3f9.webp", "image/webp"],
-    ["products/baklava-gerdouyi-1-a3f9-thumb.webp", "image/webp"],
-    ["products/baklava-gerdouyi-1-a3f9-og.jpg", "image/jpeg"],
+    ["products/charge-butane-1-a3f9.webp", "image/webp"],
+    ["products/charge-butane-1-a3f9-thumb.webp", "image/webp"],
+    ["products/charge-butane-1-a3f9-og.jpg", "image/jpeg"],
     ["products/0f8fad5b-d9cb-469f-a165-70867728950e.webp", "image/webp"],
     ["banners/0f8fad5b-d9cb-469f-a165-70867728950e.webp", "image/webp"],
   ])("%s ⇒ %s", (key, type) => {
@@ -164,7 +164,7 @@ describe("publicMediaContentType (فقط فایل‌های عمومی)", () => {
   it.each([
     "receipts/0f8fad5b-d9cb-469f-a165-70867728950e.webp",
     "products/../receipts/x.webp",
-    "products/Baklava-1-a3f9.webp",
+    "products/Capsule-1-a3f9.webp",
     "products/x-1-a3f9.png",
     "private/x.webp",
   ])("%s ⇒ ۴۰۴", (key) => {

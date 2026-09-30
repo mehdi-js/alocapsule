@@ -81,7 +81,7 @@ export default async function MenuPage({ params }: { params: Params }) {
           href="/"
           className="border-gold/50 text-ink hover:bg-card rounded-full border px-5 py-2.5 text-sm font-bold transition"
         >
-          خرید آنلاین باقلوای {SITE.name}
+          سفارش آنلاین از {SITE.name}
         </Link>
       </footer>
     </main>

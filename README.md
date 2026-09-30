@@ -1,6 +1,6 @@
-# فروشگاه آنلاین علی‌حان (ALIHAN)
+# فروشگاه آنلاین الو کپسول
 
-وب‌اپ فروشگاهی باقلوا و شیرینی — Next.js 15 (App Router) + React 19 + TypeScript + Tailwind v4 + PostgreSQL 16 + Prisma.
+وب‌اپ فروشگاهی کپسول گاز و خدمات شارژ — Next.js 15 (App Router) + React 19 + TypeScript + Tailwind v4 + PostgreSQL 16 + Prisma.
 
 قرارداد فنی و فازبندی پروژه در [ARCHITECTURE.md](./ARCHITECTURE.md) است.
 
@@ -97,7 +97,7 @@ npm install --registry <آدرس-میرور-npm>
 
 ## طراحی و محتوای ثابت
 
-- مرجع ظاهر: پوشه‌ی `design_handoff_alihan_store/` (فایل HTML و اسکرین‌شات‌ها). توکن‌های رنگ و شعاع در `src/app/globals.css` هستند.
+- توکن‌های رنگ و شعاع در `src/app/globals.css` هستند (پوشه‌ی طراحی قدیمی در `docs/archive/` بایگانی شده و ملاک نیست).
 - متن‌های ثابت سایت (اسلایدها، تماس، شعب، «درباره ما») در `src/lib/site-content.ts` است؛ تا فاز ۱۳ از همان‌جا ویرایش کنید. **شماره تلفن، آدرس‌ها و آمار نمونه‌اند.**
 - لوگو موقت است و فقط در `src/components/shop/Logo.tsx` قرار دارد.
 

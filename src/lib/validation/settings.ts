@@ -148,7 +148,9 @@ export const generalSettingsSchema = z.object({
         label: trimmed("برچسب", 2, 30),
       }),
     )
-    .length(4),
+    .refine((items) => items.length === 0 || items.length === 4, {
+      message: "آمار «درباره ما» یا باید خالی باشد یا چهار مورد",
+    }),
   shippingNote: trimmed("متن ارسال و نگهداری", 10, 600),
   /** کد دریافتی از اینماد (یا آدرسش)؛ خالی ⇒ بدون نماد */
   enamad: z

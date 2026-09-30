@@ -91,7 +91,7 @@ describe("منوی شعبه", () => {
 
   it("آیتم‌ها به ترتیب اضافه، چیده و بین دسته‌ها جابه‌جا می‌شوند", async () => {
     const menuId = await newMenu("order");
-    const a = (await addMenuCategory(menuId, "باقلوا")).id;
+    const a = (await addMenuCategory(menuId, "کپسول")).id;
     const b = (await addMenuCategory(menuId, "دمنوش")).id;
     const [x, y, z] = [
       await addItem(menuId, a, "x"),
@@ -102,7 +102,7 @@ describe("منوی شعبه", () => {
     await reorderMenuItems(a, [z, x, y]);
     await reorderMenuCategories(menuId, [b, a]);
     let menu = await getMenuForEditor(menuId);
-    expect(menu?.categories.map((c) => c.name)).toEqual(["دمنوش", "باقلوا"]);
+    expect(menu?.categories.map((c) => c.name)).toEqual(["دمنوش", "کپسول"]);
     expect(menu?.categories[1]?.items.map((i) => i.name)).toEqual([
       "z",
       "x",
@@ -155,7 +155,7 @@ describe("منوی شعبه", () => {
   it("کپی منو + تصویر مشترک: فایل فقط وقتی آخرین استفاده حذف شد پاک می‌شود", async () => {
     const { driver, files } = memoryStorage();
     const source = await newMenu("src");
-    const category = (await addMenuCategory(source, "باقلوا")).id;
+    const category = (await addMenuCategory(source, "کپسول")).id;
     const item = await addItem(source, category, "پسته‌ای");
     const { imageUrl } = await setMenuItemImage(
       item,

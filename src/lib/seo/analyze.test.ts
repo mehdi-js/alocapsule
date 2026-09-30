@@ -14,15 +14,18 @@ const words = (count: number, word = "کلمه") =>
 /** ورودی «سالم»: همه‌ی چک‌ها سبز */
 function base(overrides: Partial<SeoAnalysisInput> = {}): SeoAnalysisInput {
   return {
-    name: "باقلوا گردویی",
-    seoTitle: "خرید باقلوا گردویی اصل و تازه",
+    name: "شارژ بوتان",
+    seoTitle: "خرید شارژ بوتان اصل و تازه",
     metaDescription:
-      "باقلوا گردویی علی حان با مغز گردوی تازه و شربت متعادل؛ طعمی اصیل و خوش‌عطر برای پذیرایی و هدیه. همین حالا آنلاین سفارش دهید.",
-    focusKeyword: "باقلوا گردویی",
-    text: `باقلوا گردویی ${words(260)} [باقلوا](/category/baklava)`,
-    images: [{ alt: "باقلوا گردویی علی حان", isPrimary: true }],
+      "شارژ بوتان الو کپسول با مغز گردوی تازه و شربت متعادل؛ طعمی اصیل و خوش‌عطر برای پذیرایی و هدیه. همین حالا آنلاین سفارش دهید.",
+    focusKeyword: "شارژ بوتان",
+    text: `شارژ بوتان ${words(260)} [کپسول](/category/capsule)`,
+    images: [{ alt: "شارژ بوتان الو کپسول", isPrimary: true }],
     noindex: false,
-    titleSettings: { brandName: "علی حان", titleTemplate: "%s | {brandName}" },
+    titleSettings: {
+      brandName: "الو کپسول",
+      titleTemplate: "%s | {brandName}",
+    },
     conflicts: { focusKeyword: [], seoTitle: [], metaDescription: [] },
     ...overrides,
   };
@@ -43,16 +46,16 @@ describe("analyzeSeo", () => {
   });
 
   it("طول عنوان کامل با برند: ۳۰ تا ۶۵", () => {
-    // «سوتلاوا | علی حان» = ۱۷ کاراکتر
-    expect(status(base({ seoTitle: "سوتلاوا" }), "titleLength")).toBe("warn");
+    // «بوتان | الو کپسول» = ۱۷ کاراکتر
+    expect(status(base({ seoTitle: "بوتان" }), "titleLength")).toBe("warn");
     expect(status(base({ seoTitle: "خ".repeat(60) }), "titleLength")).toBe(
       "warn",
     );
     const message = analyzeSeo(base()).find(
       (c) => c.id === "titleLength",
     )?.message;
-    // «خرید باقلوا گردویی اصل و تازه | علی حان» = ۳۹ کاراکتر
-    expect(message).toContain("۳۹");
+    // «خرید شارژ بوتان اصل و تازه | الو کپسول» = ۳۸ کاراکتر
+    expect(message).toContain("۳۸");
   });
 
   it("طول متا: ۱۱۰ تا ۱۶۰؛ خالی قرمز", () => {
@@ -65,12 +68,9 @@ describe("analyzeSeo", () => {
 
   it("کلمه‌ی کانونی در عنوان (قرمز)، H1، متا و ۱۰۰ کلمه‌ی اول", () => {
     expect(
-      status(
-        base({ seoTitle: "خرید شیرینی ترکی اصل و تازه" }),
-        "keywordInTitle",
-      ),
+      status(base({ seoTitle: "خرید گاز ترکی اصل و تازه" }), "keywordInTitle"),
     ).toBe("bad");
-    expect(status(base({ name: "باقلوا" }), "keywordInH1")).toBe("warn");
+    expect(status(base({ name: "کپسول" }), "keywordInH1")).toBe("warn");
     expect(
       status(
         base({ metaDescription: `${"متن ".repeat(30)}بدون کلمه` }),
@@ -79,7 +79,7 @@ describe("analyzeSeo", () => {
     ).toBe("warn");
     expect(
       status(
-        base({ text: `${words(150)} باقلوا گردویی ${words(150)}` }),
+        base({ text: `${words(150)} شارژ بوتان ${words(150)}` }),
         "keywordInIntro",
       ),
     ).toBe("warn");
@@ -87,11 +87,11 @@ describe("analyzeSeo", () => {
 
   it("نیم‌فاصله و ي عربی مانع تطبیق نمی‌شود", () => {
     const input = base({
-      name: "باقلوا پسته‌ای",
-      seoTitle: "خرید باقلوا پسته‌ای اصل",
-      focusKeyword: "باقلوا پسته اي",
-      metaDescription: `باقلوا پسته‌ای ${"متن ".repeat(28)}`,
-      text: `باقلوا پسته‌ای ${words(260)} [x](/a)`,
+      name: "شارژ اکسیژن",
+      seoTitle: "خرید شارژ اکسیژن اصل",
+      focusKeyword: "شارژ اکسيژن",
+      metaDescription: `شارژ اکسیژن ${"متن ".repeat(28)}`,
+      text: `شارژ اکسیژن ${words(260)} [x](/a)`,
     });
     for (const id of [
       "keywordInTitle",
@@ -116,10 +116,7 @@ describe("analyzeSeo", () => {
 
   it("تعداد کلمات ≥ ۲۵۰", () => {
     expect(
-      status(
-        base({ text: `باقلوا گردویی ${words(100)} [x](/a)` }),
-        "wordCount",
-      ),
+      status(base({ text: `شارژ بوتان ${words(100)} [x](/a)` }), "wordCount"),
     ).toBe("warn");
   });
 
@@ -145,8 +142,8 @@ describe("analyzeSeo", () => {
       status(
         base({
           images: [
-            { alt: "باقلوا گردویی علی حان", isPrimary: true },
-            { alt: "باقلوا گردویی علی حان ۲", isPrimary: false },
+            { alt: "شارژ بوتان الو کپسول", isPrimary: true },
+            { alt: "شارژ بوتان الو کپسول ۲", isPrimary: false },
           ],
         }),
         "imageAltRepeated",
@@ -156,8 +153,8 @@ describe("analyzeSeo", () => {
       status(
         base({
           images: [
-            { alt: "باقلوا گردویی روی سینی", isPrimary: true },
-            { alt: "برش نزدیک باقلوا با مغز گردو", isPrimary: false },
+            { alt: "شارژ بوتان روی سینی", isPrimary: true },
+            { alt: "برش نزدیک کپسول با مغز گردو", isPrimary: false },
           ],
         }),
         "imageAltRepeated",
@@ -168,7 +165,7 @@ describe("analyzeSeo", () => {
   it("لینک داخلی ≥ ۱ (لینک خارجی حساب نمی‌شود)", () => {
     expect(
       status(
-        base({ text: `باقلوا گردویی ${words(260)} [x](https://a.com)` }),
+        base({ text: `شارژ بوتان ${words(260)} [x](https://a.com)` }),
         "internalLinks",
       ),
     ).toBe("warn");
@@ -178,15 +175,15 @@ describe("analyzeSeo", () => {
     const checks = analyzeSeo(
       base({
         conflicts: {
-          focusKeyword: ["محصول «باقلوا گردویی ویژه»"],
-          seoTitle: ["دسته «باقلوا»"],
+          focusKeyword: ["محصول «شارژ بوتان ویژه»"],
+          seoTitle: ["دسته «کپسول»"],
           metaDescription: ["محصول «x»"],
         },
       }),
     );
     const keyword = checks.find((c) => c.id === "duplicateKeyword");
     expect(keyword?.status).toBe("bad");
-    expect(keyword?.message).toContain("باقلوا گردویی ویژه");
+    expect(keyword?.message).toContain("شارژ بوتان ویژه");
     expect(checks.find((c) => c.id === "duplicateTitle")?.status).toBe("bad");
     expect(checks.find((c) => c.id === "duplicateMeta")?.status).toBe("bad");
     // قرمزها اول
@@ -199,9 +196,9 @@ describe("analyzeSeo", () => {
   });
 
   it("پر کردن کلمه: بیش از ۶ بار در ۳۰۰ کلمه", () => {
-    const stuffed = `${"باقلوا گردویی ".repeat(10)}${words(280)} [x](/a)`;
+    const stuffed = `${"شارژ بوتان ".repeat(10)}${words(280)} [x](/a)`;
     expect(status(base({ text: stuffed }), "keywordDensity")).toBe("warn");
-    const natural = `${"باقلوا گردویی ".repeat(6)}${words(280)} [x](/a)`;
+    const natural = `${"شارژ بوتان ".repeat(6)}${words(280)} [x](/a)`;
     expect(status(base({ text: natural }), "keywordDensity")).toBe("good");
   });
 
@@ -214,7 +211,7 @@ describe("analyzeSeo", () => {
 describe("summarizeSeo", () => {
   it("قرمز > نارنجی > سبز", () => {
     expect(summarizeSeo(analyzeSeo(base({ noindex: true }))).level).toBe("bad");
-    const warn = summarizeSeo(analyzeSeo(base({ name: "باقلوا" })));
+    const warn = summarizeSeo(analyzeSeo(base({ name: "کپسول" })));
     expect(warn).toMatchObject({ bad: 0, warn: 1, level: "warn" });
   });
 });

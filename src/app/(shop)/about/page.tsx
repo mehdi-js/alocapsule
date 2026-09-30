@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: page?.seoTitle || page?.title || "درباره ما",
     description:
       effectiveMeta(page?.metaDescription, page?.content) ||
-      `داستان ${SITE.name}؛ هنر باقلواسازی ترکی، مواد اولیه‌ی درجه یک و بسته‌بندی شایسته‌ی هدیه.`,
+      `درباره‌ی ${SITE.name}؛ تأمین، شارژ و ارسال کپسول گاز مایع (LPG) در تهران.`,
     path: "/about",
     noindex: page?.noindex,
   });
@@ -85,19 +85,21 @@ export default async function AboutPage() {
         />
       </section>
 
-      <ContentPanel className="grid grid-cols-2 gap-6 md:grid-cols-4">
-        {aboutStats.map((stat) => (
-          <div
-            key={stat.label}
-            className="flex flex-col items-center gap-1 text-center"
-          >
-            <span className="text-gold text-[30px] font-extrabold md:text-4xl">
-              {stat.value}
-            </span>
-            <span className="text-muted text-sm">{stat.label}</span>
-          </div>
-        ))}
-      </ContentPanel>
+      {aboutStats.length > 0 ? (
+        <ContentPanel className="grid grid-cols-2 gap-6 md:grid-cols-4">
+          {aboutStats.map((stat) => (
+            <div
+              key={stat.label}
+              className="flex flex-col items-center gap-1 text-center"
+            >
+              <span className="text-gold text-[30px] font-extrabold md:text-4xl">
+                {stat.value}
+              </span>
+              <span className="text-muted text-sm">{stat.label}</span>
+            </div>
+          ))}
+        </ContentPanel>
+      ) : null}
 
       <section aria-labelledby="values-title" className="flex flex-col gap-6">
         <SectionTitle id="values-title">ارزش‌های ما</SectionTitle>

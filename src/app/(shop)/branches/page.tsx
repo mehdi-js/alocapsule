@@ -25,7 +25,7 @@ export default async function BranchesPage() {
         images={banners.images.branchesHero}
       >
         <p className="text-ink-2 text-[15px] leading-[2]">
-          باقلوای تازه را حضوری هم می‌توانید از شعب ما تهیه کنید.
+          برای تحویل حضوری سفارش، به یکی از این نشانی‌ها مراجعه کنید.
         </p>
       </PageHero>
       <BranchCards />

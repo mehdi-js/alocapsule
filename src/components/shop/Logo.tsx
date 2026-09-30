@@ -5,8 +5,8 @@ import { SITE } from "@/lib/site-content";
 import { cn } from "@/lib/utils";
 
 /**
- * نشان برند: کمان‌های دوگانه‌ی سبز (برای جاهای کوچک مثل تصویر پیش‌فرض
- * آیتم منو). لوگوی کامل (`Logo`) فایل رسمی کارفرماست.
+ * نشان برند (کپسول گاز، جای‌نگهدار): برای جاهای کوچک مثل تصویر پیش‌فرض
+ * آیتم منو. لوگوی کامل (`Logo`) فایل رسمی کارفرماست.
  */
 export function LogoMark({ size = 32 }: { size?: number }) {
   return (
@@ -19,32 +19,23 @@ export function LogoMark({ size = 32 }: { size?: number }) {
       focusable="false"
       className="text-action shrink-0"
     >
-      <circle
-        cx="17"
-        cy="17"
-        r="13"
+      <rect x="13" y="3" width="8" height="4" rx="1.5" fill="currentColor" />
+      <rect x="15" y="7" width="4" height="3" fill="currentColor" />
+      <rect
+        x="8"
+        y="10"
+        width="18"
+        height="21"
+        rx="6"
         stroke="currentColor"
-        strokeWidth="3"
-        strokeDasharray="34 70"
-        strokeLinecap="round"
-        transform="rotate(-40 17 17)"
-      />
-      <circle
-        cx="17"
-        cy="17"
-        r="8"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeDasharray="18 50"
-        strokeLinecap="round"
-        transform="rotate(-40 17 17)"
+        strokeWidth="2.6"
       />
     </svg>
   );
 }
 
-/** لوگوی سفید (برای پس‌زمینه‌ی تیره)، بریده‌شده؛ نسبت عرض به ارتفاع */
-const LOGO_SRC = "/brand/logo-white.webp";
+/** لوگو (جای‌نگهدار تا فایل نهایی کارفرما)؛ نسبت عرض به ارتفاع */
+const LOGO_SRC = "/brand/logo.svg";
 const LOGO_RATIO = 507 / 200;
 
 /**

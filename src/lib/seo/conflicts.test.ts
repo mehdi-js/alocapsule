@@ -6,16 +6,16 @@ const index: SeoIndexEntry[] = [
   {
     kind: "product",
     id: "p1",
-    name: "باقلوا پسته‌ای",
-    focusKeyword: "باقلوا پسته‌ای",
-    seoTitle: "خرید باقلوا پسته‌ای اصل",
+    name: "شارژ اکسیژن",
+    focusKeyword: "شارژ اکسیژن",
+    seoTitle: "خرید شارژ اکسیژن اصل",
     metaDescription: "متای یک",
   },
   {
     kind: "category",
     id: "c1",
-    name: "باقلوا",
-    focusKeyword: "انواع باقلوا",
+    name: "کپسول",
+    focusKeyword: "انواع کپسول",
     seoTitle: null,
     metaDescription: null,
   },
@@ -27,15 +27,15 @@ describe("findSeoConflicts", () => {
       findSeoConflicts(index, {
         kind: "product",
         id: "p2",
-        name: "باقلوا پسته ای ویژه",
-        focusKeyword: "باقلوا پسته اي",
-        seoTitle: "خرید باقلوا پسته ای اصل",
+        name: "شارژ اکسیژن ویژه",
+        focusKeyword: "شارژ اکسيژن",
+        seoTitle: "خرید شارژ اکسیژن اصل",
         metaDescription: "متای  یک",
       }),
     ).toEqual({
-      focusKeyword: ["محصول «باقلوا پسته‌ای»"],
-      seoTitle: ["محصول «باقلوا پسته‌ای»"],
-      metaDescription: ["محصول «باقلوا پسته‌ای»"],
+      focusKeyword: ["محصول «شارژ اکسیژن»"],
+      seoTitle: ["محصول «شارژ اکسیژن»"],
+      metaDescription: ["محصول «شارژ اکسیژن»"],
     });
   });
 
@@ -52,14 +52,14 @@ describe("findSeoConflicts", () => {
     const result = findSeoConflicts(index, {
       kind: "product",
       id: null,
-      name: "باقلوا",
+      name: "کپسول",
       focusKeyword: "",
       seoTitle: "",
       metaDescription: null,
     });
     expect(result).toEqual({
       focusKeyword: [],
-      seoTitle: ["دسته «باقلوا»"],
+      seoTitle: ["دسته «کپسول»"],
       metaDescription: [],
     });
   });

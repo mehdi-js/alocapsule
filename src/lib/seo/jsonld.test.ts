@@ -13,17 +13,17 @@ import {
 } from "./jsonld";
 import { todo } from "./settings";
 
-const SITE = "https://alihan.ir";
+const SITE = "https://alocapsule.ir";
 
 function product(overrides: Partial<ProductJsonLdInput> = {}) {
   return productJsonLd({
     siteUrl: SITE,
-    brandName: "علی حان",
-    name: "باقلوا گردویی",
-    slug: "baklava-gerdouyi",
+    brandName: "الو کپسول",
+    name: "شارژ بوتان",
+    slug: "charge-butane",
     description: "## عنوان\nمتن [لینک](/a) توضیحات",
-    categoryName: "باقلوا",
-    images: ["/api/media/products/baklava-gerdouyi-1-a3f9.webp"],
+    categoryName: "کپسول",
+    images: ["/api/media/products/charge-butane-1-a3f9.webp"],
     variants: [
       { price: 1_200_000, sku: null },
       { price: 4_400_000, sku: null },
@@ -51,12 +51,12 @@ describe("productJsonLd", () => {
       highPrice: "44000000",
       offerCount: 2,
       availability: "https://schema.org/InStock",
-      url: "https://alihan.ir/products/baklava-gerdouyi",
+      url: "https://alocapsule.ir/products/charge-butane",
     });
     expect(data.image).toEqual([
-      "https://alihan.ir/api/media/products/baklava-gerdouyi-1-a3f9.webp",
+      "https://alocapsule.ir/api/media/products/charge-butane-1-a3f9.webp",
     ]);
-    expect(data.brand).toEqual({ "@type": "Brand", name: "علی حان" });
+    expect(data.brand).toEqual({ "@type": "Brand", name: "الو کپسول" });
     // توضیحات بدون نشانه‌گذاری
     expect(data.description).toBe("عنوان متن لینک توضیحات");
   });
@@ -88,18 +88,18 @@ describe("organizationJsonLd", () => {
   it("جای‌نگهدار وارد schema نمی‌شود؛ تلفن E.164", () => {
     const data = organizationJsonLd({
       siteUrl: SITE,
-      brandName: "علی حان",
-      alternateNames: ["علیحان", "Alihan"],
+      brandName: "الو کپسول",
+      alternateNames: ["الو کپسول", "AloCapsule"],
       legalName: todo("نام حقوقی"),
       logoUrl: "/brand/logo-white.webp",
       phone: "۰۲۱-۲۲۳۴۵۶۷۸",
-      email: "info@alihan.ir",
-      sameAs: ["https://instagram.com/alihan"],
+      email: "info@alocapsule.ir",
+      sameAs: ["https://instagram.com/alocapsule"],
     });
     expect(data.legalName).toBeUndefined();
-    expect(data.logo).toBe("https://alihan.ir/brand/logo-white.webp");
+    expect(data.logo).toBe("https://alocapsule.ir/brand/logo-white.webp");
     expect(data.contactPoint).toMatchObject({ telephone: "+982122345678" });
-    expect(data.alternateName).toEqual(["علیحان", "Alihan"]);
+    expect(data.alternateName).toEqual(["الو کپسول", "AloCapsule"]);
   });
 
   it("toE164", () => {
@@ -114,7 +114,7 @@ describe("breadcrumb، ItemList و FAQPage", () => {
     const data = breadcrumbJsonLd(
       [
         { name: "خانه", path: "/" },
-        { name: "باقلوا", path: "/category/baklava" },
+        { name: "کپسول", path: "/category/capsule" },
       ],
       SITE,
     );
@@ -123,13 +123,13 @@ describe("breadcrumb، ItemList و FAQPage", () => {
         "@type": "ListItem",
         position: 1,
         name: "خانه",
-        item: "https://alihan.ir/",
+        item: "https://alocapsule.ir/",
       },
       {
         "@type": "ListItem",
         position: 2,
-        name: "باقلوا",
-        item: "https://alihan.ir/category/baklava",
+        name: "کپسول",
+        item: "https://alocapsule.ir/category/capsule",
       },
     ]);
     expect(
@@ -140,7 +140,7 @@ describe("breadcrumb، ItemList و FAQPage", () => {
         "@type": "ListItem",
         position: 1,
         name: "x",
-        url: "https://alihan.ir/products/x",
+        url: "https://alocapsule.ir/products/x",
       },
     ]);
   });
@@ -170,7 +170,7 @@ describe("localBusinessJsonLd", () => {
   it("آدرس، تلفن E.164، مختصات و ساعات؛ بدون مختصات ⇒ بدون geo", () => {
     const base = {
       siteUrl: SITE,
-      brandName: "علی حان",
+      brandName: "الو کپسول",
       name: "شعبه ولیعصر",
       slug: "valiasr",
       city: "تهران",
@@ -186,8 +186,8 @@ describe("localBusinessJsonLd", () => {
     const data = localBusinessJsonLd(base);
     expect(data).toMatchObject({
       "@type": "LocalBusiness",
-      name: "علی حان — شعبه ولیعصر",
-      url: "https://alihan.ir/branches/valiasr",
+      name: "الو کپسول — شعبه ولیعصر",
+      url: "https://alocapsule.ir/branches/valiasr",
       telephone: "+982122345678",
       address: {
         addressLocality: "ونک",

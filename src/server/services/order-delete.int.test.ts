@@ -73,7 +73,7 @@ describe("حذف سفارش", () => {
     ).toBe(1);
     const filesBefore = await receiptCount();
 
-    await expect(deleteOrder(adminId, orderId, "AL-WRONG")).rejects.toThrow(
+    await expect(deleteOrder(adminId, orderId, "AC-WRONG")).rejects.toThrow(
       "یکی نیست",
     );
     await deleteOrder(adminId, orderId, orderNumber);

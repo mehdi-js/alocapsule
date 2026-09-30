@@ -296,7 +296,7 @@ describe("ترتیب متغیرها از پنل مدیریت", () => {
       await saveSmsSettings({
         templates: {
           ...current("template"),
-          ORDER_PLACED: "سفارش {0} به مبلغ {1} برای {2} ثبت شد. alihan.ir",
+          ORDER_PLACED: "سفارش {0} به مبلغ {1} برای {2} ثبت شد. alocapsule.ir",
         } as never,
         variables: {
           ...current("variables"),
@@ -310,7 +310,7 @@ describe("ترتیب متغیرها از پنل مدیریت", () => {
       expect(request.get("text")).toBe(`${orderNumber};490,000;${RECEIVER}`);
       const [log] = await logsOf(orderId);
       expect((log!.payload as { text: string }).text).toBe(
-        `سفارش ${orderNumber} به مبلغ 490,000 برای ${RECEIVER} ثبت شد. alihan.ir`,
+        `سفارش ${orderNumber} به مبلغ 490,000 برای ${RECEIVER} ثبت شد. alocapsule.ir`,
       );
     } finally {
       await db.setting.deleteMany({

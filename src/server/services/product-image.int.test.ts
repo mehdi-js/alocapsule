@@ -111,10 +111,10 @@ describe("تصاویر محصول", () => {
       storage,
     );
     await expect(changeImageAlt(dto.id, "   ")).rejects.toThrow("alt");
-    await changeImageAlt(dto.id, "  برش نزدیک   باقلوا ");
+    await changeImageAlt(dto.id, "  برش نزدیک   کپسول ");
     const image = await db.productImage.findUniqueOrThrow({
       where: { id: dto.id },
     });
-    expect(image.alt).toBe("برش نزدیک باقلوا");
+    expect(image.alt).toBe("برش نزدیک کپسول");
   });
 });

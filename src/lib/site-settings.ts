@@ -118,9 +118,12 @@ export function parseSiteSettings(stored: Json | null): SiteSettings {
       telegram: text(social.telegram, d.social.telegram),
       whatsapp: text(social.whatsapp, d.social.whatsapp),
     },
-    // سه کاشی نوار اعتماد و چهار آمار همیشه کامل‌اند
+    // سه کاشی نوار اعتماد همیشه کامل‌اند؛ آمار «درباره ما» یا خالی است یا چهار عدد
     trustItems: trustItems.length === 3 ? trustItems : d.trustItems,
-    aboutStats: aboutStats.length === 4 ? aboutStats : d.aboutStats,
+    aboutStats:
+      aboutStats.length === 4 || aboutStats.length === 0
+        ? aboutStats
+        : d.aboutStats,
     shippingNote: text(value.shippingNote, d.shippingNote),
     enamad: readEnamad(value.enamad),
   };

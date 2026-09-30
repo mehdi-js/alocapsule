@@ -4,32 +4,40 @@ import {
   catalogCategories,
   catalogProducts,
 } from "../../../prisma/seed-catalog";
-import { parseRichText, richTextLinks, richTextToPlain } from "../rich-text";
+import { getVariantTitle } from "../unit";
 import { findDuplicateKeywords } from "./keywords";
-import { countWords } from "./text";
 
 describe("findDuplicateKeywords", () => {
   it("املای متفاوت یک عبارت تکراری حساب می‌شود", () => {
     expect(
       findDuplicateKeywords([
-        { label: "الف", focusKeyword: "باقلوا پسته ای" },
-        { label: "ب", focusKeyword: "باقلوا پسته‌ای" },
-        { label: "ج", focusKeyword: "باقلوا گردویی" },
+        { label: "الف", focusKeyword: "شارژ کپسول‌گاز" },
+        { label: "ب", focusKeyword: "شارژ کپسول گاز" },
+        { label: "ج", focusKeyword: "خرید کپسول گاز" },
         { label: "د", focusKeyword: null },
         { label: "ه", focusKeyword: "" },
       ]),
-    ).toEqual([{ keyword: "باقلوا پسته ای", labels: ["الف", "ب"] }]);
+    ).toEqual([{ keyword: "شارژ کپسول گاز", labels: ["الف", "ب"] }]);
   });
 });
 
-/** معیارهای تکمیل فاز S0 روی داده‌ی seed (SEO.md §۲ و §۱۳) */
+/** داده‌ی نمونه‌ی seed (بخش ۶.۱ `FORK.md`) */
 describe("کاتالوگ seed", () => {
-  it("۱۲ محصول و ۴ دسته با نامک لاتین", () => {
-    expect(catalogProducts).toHaveLength(12);
+  it("۴ محصول و ۴ دسته با نامک لاتین یکتا", () => {
+    expect(catalogProducts).toHaveLength(4);
     expect(catalogCategories).toHaveLength(4);
-    for (const { slug } of [...catalogProducts, ...catalogCategories]) {
+    const slugs = [...catalogProducts, ...catalogCategories].map((i) => i.slug);
+    for (const slug of slugs) {
       expect(slug).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
       expect(slug.length).toBeLessThanOrEqual(60);
+    }
+    expect(new Set(slugs).size).toBe(slugs.length);
+  });
+
+  it("هر محصول به دسته‌ی موجود اشاره می‌کند", () => {
+    const categories = new Set(catalogCategories.map((c) => c.slug));
+    for (const product of catalogProducts) {
+      expect(categories.has(product.categorySlug)).toBe(true);
     }
   });
 
@@ -47,56 +55,44 @@ describe("کاتالوگ seed", () => {
     expect(findDuplicateKeywords(owners)).toEqual([]);
   });
 
-  it("عنوان سئو بدون نام برند و عنوان/متا یکتا", () => {
+  it("عنوان سئو بدون نام برند (قالب خودش اضافه می‌کند) و یکتا", () => {
     const titles = [...catalogProducts, ...catalogCategories].map(
       (item) => item.seoTitle,
     );
     expect(new Set(titles).size).toBe(titles.length);
-    for (const title of titles) expect(title).not.toMatch(/علی ?حان|\|/);
-    const metas = catalogProducts.map((p) => p.metaDescription);
-    expect(new Set(metas).size).toBe(metas.length);
-    for (const meta of metas) {
-      expect(meta.length).toBeGreaterThanOrEqual(100);
-      expect(meta.length).toBeLessThanOrEqual(160);
-    }
+    for (const title of titles) expect(title).not.toMatch(/\|/);
   });
 
-  it("۴ متن هاویج یکتا و هرکدام حداقل ۲ پاراگراف", () => {
-    const havij = catalogProducts.filter((p) => p.categorySlug === "havij");
-    expect(havij).toHaveLength(4);
-    expect(new Set(havij.map((p) => p.description)).size).toBe(4);
-    for (const product of havij) {
-      expect(product.description.split("\n\n").length).toBeGreaterThanOrEqual(
-        2,
-      );
-    }
+  it("شارژ بوتان: ۴ متغیر ۱۱ / ۲۵ / ۳۳ / ۵۰ کیلوگرم با قیمت‌های سند", () => {
+    const charge = catalogProducts.find((p) => p.slug === "charge-butane")!;
+    expect(charge.isActive).toBe(true);
+    expect(charge.variants.map((v) => v.price)).toEqual([
+      800_000, 2_200_000, 2_450_000, 3_850_000,
+    ]);
+    expect(
+      charge.variants.map((v) => getVariantTitle(charge.unit, v.unitValue)),
+    ).toEqual(["۱۱ کیلوگرم", "۲۵ کیلوگرم", "۳۳ کیلوگرم", "۵۰ کیلوگرم"]);
   });
 
-  it("متن دسته‌ها: intro ۴۰ تا ۶۰ و bottomContent ۲۰۰ تا ۳۰۰ کلمه با ۲ H2", () => {
-    for (const category of catalogCategories) {
-      expect(countWords(category.introText)).toBeGreaterThanOrEqual(40);
-      expect(countWords(category.introText)).toBeLessThanOrEqual(60);
-      const bottom = richTextToPlain(category.bottomContent);
-      expect(countWords(bottom)).toBeGreaterThanOrEqual(200);
-      expect(countWords(bottom)).toBeLessThanOrEqual(300);
-      const headings = parseRichText(category.bottomContent).filter(
-        (block) => block.type === "heading" && block.level === 2,
-      );
-      expect(headings).toHaveLength(2);
-      // لینک‌ها به صفحات همین کاتالوگ اشاره می‌کنند
-      const slugs = new Set([
-        ...catalogProducts.map((p) => `/products/${p.slug}`),
-        ...catalogCategories.map((c) => `/category/${c.slug}`),
-      ]);
-      for (const link of richTextLinks(category.bottomContent)) {
-        expect(slugs.has(link.href)).toBe(true);
+  it("محصول فیزیکی ۱۱ کیلویی ۶٬۰۰۰٬۰۰۰ و استعلامی بدون متغیر و غیرفعال", () => {
+    const buy = catalogProducts.find((p) => p.slug === "buy-cylinder-11kg")!;
+    expect(buy.variants).toHaveLength(1);
+    expect(buy.variants[0]!.price).toBe(6_000_000);
+    const oxygen = catalogProducts.find(
+      (p) => p.slug === "charge-oxygen-40kg",
+    )!;
+    expect(oxygen.variants).toHaveLength(0);
+    expect(oxygen.isActive).toBe(false);
+  });
+
+  it("متغیرها یکتا در هر محصول و وزن ارسال معتبر", () => {
+    for (const product of catalogProducts) {
+      const values = product.variants.map((v) => v.unitValue);
+      expect(new Set(values).size).toBe(values.length);
+      for (const variant of product.variants) {
+        expect(variant.shippingWeightGrams).toBeGreaterThan(0);
+        expect(variant.price).toBeGreaterThan(0);
       }
     }
-  });
-
-  it("دسته‌ی هاویج زیرمجموعه‌ی باقلوا و دسته‌ی شکلات noindex", () => {
-    const bySlug = new Map(catalogCategories.map((c) => [c.slug, c]));
-    expect(bySlug.get("havij")?.parentSlug).toBe("baklava");
-    expect(bySlug.get("chocolate")?.noindex).toBe(true);
   });
 });

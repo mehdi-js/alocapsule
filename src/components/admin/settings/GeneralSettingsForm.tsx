@@ -200,7 +200,7 @@ export function GeneralSettingsForm({
 
       <Section
         title="آمار «درباره ما»"
-        hint="چهار عدد صفحه‌ی درباره ما (مثل «۱۸» + «سال تجربه»)."
+        hint="چهار عدد صفحه‌ی درباره ما (مثل «۱۸» + «سال تجربه»). خالی بگذارید تا این بخش نمایش داده نشود."
       >
         <PairList
           name="aboutStats"
@@ -214,6 +214,31 @@ export function GeneralSettingsForm({
           onChange={(aboutStats) => setValues((v) => ({ ...v, aboutStats }))}
           columns="sm:grid-cols-2 xl:grid-cols-4"
         />
+        {values.aboutStats.length === 0 ? (
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() =>
+              setValues((v) => ({
+                ...v,
+                aboutStats: Array.from({ length: 4 }, () => ({
+                  value: "",
+                  label: "",
+                })),
+              }))
+            }
+          >
+            افزودن آمار
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => setValues((v) => ({ ...v, aboutStats: [] }))}
+          >
+            حذف همه‌ی آمار
+          </Button>
+        )}
       </Section>
 
       <Section

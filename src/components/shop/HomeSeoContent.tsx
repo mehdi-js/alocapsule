@@ -19,7 +19,7 @@ export function HomeSeoContent({
     <div className="flex flex-col gap-10">
       {content.trim() ? (
         <section
-          aria-label="درباره‌ی خرید باقلوا از ما"
+          aria-label="درباره‌ی خرید از ما"
           className={`${panel} text-ink-2 p-6 text-[15px] md:p-10`}
         >
           <RichText

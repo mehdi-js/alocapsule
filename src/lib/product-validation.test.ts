@@ -11,8 +11,8 @@ const validVariant = {
 };
 
 const validProduct = {
-  name: "باقلوا یزدی",
-  slug: "baklava-yazdi",
+  name: "کپسول یزدی",
+  slug: "charge-propane",
   categoryId: "cat-1",
   unit: "GRAM" as const,
   variants: [validVariant],
@@ -30,12 +30,12 @@ describe("productInputSchema", () => {
   it("ورودی معتبر را می‌پذیرد و رشته‌های خالی را null می‌کند", () => {
     const parsed = productInputSchema.parse({
       ...validProduct,
-      slug: " Baklava-Yazdi ",
+      slug: " Capsule-Yazdi ",
       shortDescription: "  ",
       description: "",
       variants: [{ ...validVariant, title: "", sku: "", comparePrice: null }],
     });
-    expect(parsed.slug).toBe("baklava-yazdi");
+    expect(parsed.slug).toBe("capsule-yazdi");
     expect(parsed.shortDescription).toBeNull();
     expect(parsed.description).toBeNull();
     expect(parsed.sortOrder).toBe(0);
@@ -116,7 +116,7 @@ describe("productInputSchema", () => {
 
   it("نامک خالی یا فارسی ⇒ خطا (نامک لاتین الزامی)", () => {
     expect(issues({ ...validProduct, slug: "" }).slug).toContain("انگلیسی");
-    expect(issues({ ...validProduct, slug: "باقلوا" }).slug).toBeDefined();
+    expect(issues({ ...validProduct, slug: "کپسول" }).slug).toBeDefined();
     expect(
       issues({ ...validProduct, slug: "a".repeat(61) }).slug,
     ).toBeDefined();
@@ -125,13 +125,13 @@ describe("productInputSchema", () => {
   it("فیلدهای سئو: پیش‌فرض‌ها، کلمات ثانویه‌ی یکتا، FAQ و canonical", () => {
     const parsed = productInputSchema.parse({
       ...validProduct,
-      secondaryKeywords: ["باقلوا", "باقلوا", " "],
+      secondaryKeywords: ["کپسول", "کپسول", " "],
       faq: [{ question: "چقدر می‌ماند؟", answer: "تا دو هفته." }],
       canonicalUrl: "/products/x",
     });
     expect(parsed).toMatchObject({
       noindex: false,
-      secondaryKeywords: ["باقلوا"],
+      secondaryKeywords: ["کپسول"],
       faq: [{ question: "چقدر می‌ماند؟", answer: "تا دو هفته." }],
       canonicalUrl: "/products/x",
       focusKeyword: null,
@@ -159,15 +159,15 @@ describe("productInputSchema", () => {
 describe("categoryInputSchema", () => {
   it("ورودی معتبر", () => {
     const parsed = categoryInputSchema.parse({
-      name: "باقلوا",
-      slug: "baklava",
+      name: "کپسول",
+      slug: "capsule",
       parentId: "",
       bottomContent: "## عنوان\nمتن",
     });
     expect(parsed).toMatchObject({
-      name: "باقلوا",
+      name: "کپسول",
       parentId: null,
-      slug: "baklava",
+      slug: "capsule",
       sortOrder: 0,
       introText: null,
       bottomContent: "## عنوان\nمتن",

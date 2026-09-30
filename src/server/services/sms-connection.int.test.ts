@@ -38,7 +38,7 @@ describe("اتصال پیامک از پنل", () => {
   it("پنل بر .env مقدم است و رمز رمزنگاری‌شده ذخیره می‌شود", async () => {
     await saveSmsConnection(adminId, {
       provider: "melipayamak",
-      username: "alihan-panel",
+      username: "alocapsule-panel",
       newPassword: "super-secret-api-key",
       clearPassword: false,
     });
@@ -50,7 +50,7 @@ describe("اتصال پیامک از پنل", () => {
     expect(JSON.stringify(row.value)).not.toContain("super-secret-api-key");
     expect(await getSmsConnection()).toMatchObject({
       provider: "melipayamak",
-      username: "alihan-panel",
+      username: "alocapsule-panel",
       hasPassword: true,
       passwordUnreadable: false,
     });
@@ -67,7 +67,7 @@ describe("اتصال پیامک از پنل", () => {
   it("رمز خالی ⇒ رمز قبلی می‌ماند؛ حذف رمز ⇒ .env", async () => {
     await saveSmsConnection(adminId, {
       provider: "melipayamak",
-      username: "alihan-panel",
+      username: "alocapsule-panel",
       newPassword: "",
       clearPassword: false,
     });
@@ -75,7 +75,7 @@ describe("اتصال پیامک از پنل", () => {
 
     await saveSmsConnection(adminId, {
       provider: "melipayamak",
-      username: "alihan-panel",
+      username: "alocapsule-panel",
       newPassword: "",
       clearPassword: true,
     });

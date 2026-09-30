@@ -24,7 +24,7 @@ import {
 
 const phones = new Set<string>();
 const IP = `10.99.${randomInt(0, 255)}.${randomInt(1, 255)}`;
-const PASSWORD = "Alihan1405";
+const PASSWORD = "AloCapsule1405";
 
 function newPhone(): string {
   const phone = `0998${String(randomInt(0, 10_000_000)).padStart(7, "0")}`;

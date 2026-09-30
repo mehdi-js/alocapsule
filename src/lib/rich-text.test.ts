@@ -52,14 +52,14 @@ describe("parseInline", () => {
   it("لینک داخلی/خارجی و پررنگ", () => {
     expect(
       parseInline(
-        "ببینید [باقلوا](/category/baklava) و **تازه** [سایت](https://example.com)",
+        "ببینید [کپسول](/category/capsule) و **تازه** [سایت](https://example.com)",
       ),
     ).toEqual([
       { type: "text", text: "ببینید " },
       {
         type: "link",
-        text: "باقلوا",
-        href: "/category/baklava",
+        text: "کپسول",
+        href: "/category/capsule",
         internal: true,
       },
       { type: "text", text: " و " },

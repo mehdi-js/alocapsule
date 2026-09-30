@@ -7,12 +7,12 @@ import {
   effectiveTitle,
 } from "./title";
 
-const settings = { brandName: "علی حان", titleTemplate: "%s | {brandName}" };
+const settings = { brandName: "الو کپسول", titleTemplate: "%s | {brandName}" };
 
 describe("عنوان صفحه", () => {
   it("قالب برند اعمال می‌شود", () => {
-    expect(buildDocumentTitle("خرید باقلوا گردویی", settings)).toBe(
-      "خرید باقلوا گردویی | علی حان",
+    expect(buildDocumentTitle("خرید شارژ بوتان", settings)).toBe(
+      "خرید شارژ بوتان | الو کپسول",
     );
   });
 
@@ -23,9 +23,9 @@ describe("عنوان صفحه", () => {
   });
 
   it("seoTitle خالی ⇒ نام", () => {
-    expect(effectiveTitle("", "سوتلاوا")).toBe("سوتلاوا");
-    expect(effectiveTitle(null, "سوتلاوا")).toBe("سوتلاوا");
-    expect(effectiveTitle(" خرید سوتلاوا ", "سوتلاوا")).toBe("خرید سوتلاوا");
+    expect(effectiveTitle("", "بوتان")).toBe("بوتان");
+    expect(effectiveTitle(null, "بوتان")).toBe("بوتان");
+    expect(effectiveTitle(" خرید بوتان ", "بوتان")).toBe("خرید بوتان");
   });
 });
 

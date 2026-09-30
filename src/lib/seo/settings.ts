@@ -9,7 +9,9 @@
  * - مقدار خالی (`""`) یعنی «تنظیم نشده» و در HTML نمی‌آید.
  */
 
-import { SITE } from "@/lib/site-content";
+import { BRAND_NAME, todo } from "@/lib/brand";
+
+export { COMPLETION_MARKER, hasCompletionMarker, todo } from "@/lib/brand";
 
 export interface SeoFaqItem {
   question: string;
@@ -33,68 +35,22 @@ export const SEO_KEYS = {
   verificationBing: "verification.bing",
 } as const;
 
-export const DEFAULT_BRAND_NAME = SITE.name;
-
-/** جای‌نگهدار داده‌ی کسب‌وکار؛ `seo:audit` (فاز S5) وجودش را در HTML گزارش می‌کند */
-export const COMPLETION_MARKER = `{{تکمیل توسط ${SITE.name}`;
-
-export function todo(what?: string): string {
-  return what ? `${COMPLETION_MARKER}: ${what}}}` : `${COMPLETION_MARKER}}}`;
-}
-
-export function hasCompletionMarker(text: string): boolean {
-  return text.includes(COMPLETION_MARKER);
-}
+export const DEFAULT_BRAND_NAME = BRAND_NAME;
 
 /** `"%s | {brandName}"` ⇒ `"%s | {نام برند}"` (قالب title در Next.js) */
 export function resolveTitleTemplate(template: string, brandName: string) {
   return template.replaceAll("{brandName}", brandName);
 }
 
-const HOME_DESCRIPTION = `خرید آنلاین باقلوای ترکی ${DEFAULT_BRAND_NAME}؛ باقلوا گردویی، پسته‌ای، هاویج، کادایف و شکلات دبی با مواد اولیه‌ی درجه‌یک و بسته‌بندی لوکس.`;
+const HOME_DESCRIPTION = `${BRAND_NAME}؛ شارژ، خرید و ارسال کپسول گاز مایع (LPG) در تهران. سفارش آنلاین، ارسال با پیک یا تحویل حضوری.`;
 
-/** بلوک محتوای سئوی صفحه‌ی اصلی (SEO.md §۱۴.۱)؛ قالب `lib/rich-text.ts` */
-const HOME_CONTENT = [
-  `## باقلوای ترکی ${DEFAULT_BRAND_NAME}؛ طعم اصیل، تازه و دست‌ساز`,
-  `باقلوای ترکی با لایه‌های نازک و ترد خمیر یوفکا، مغز پرملات و شربتی که نه زیاد شیرین است و نه کم، یکی از محبوب‌ترین شیرینی‌های شرقی است. در ${DEFAULT_BRAND_NAME} هر سینی باقلوا با مواد اولیه‌ی درجه‌یک تهیه می‌شود تا طعمی که روی میز شما می‌رسد، همان طعم اصیل باقلوای ترکی باشد. ${todo("یک یا دو جمله درباره‌ی سابقه و روش تولید")}`,
-  `## خرید آنلاین باقلوا از ${DEFAULT_BRAND_NAME}`,
-  "برای خرید باقلوا کافی است محصول و وزن دلخواهتان را انتخاب کنید، سفارش را ثبت و مبلغ را کارت‌به‌کارت واریز کنید. پس از بارگذاری رسید و تأیید پرداخت، پیامک تأیید برایتان ارسال می‌شود و سفارش آماده‌ی ارسال می‌شود. امکان پرداخت از کیف پول حساب کاربری هم وجود دارد.",
-  "## انواع باقلوا و شیرینی ترکی",
-  [
-    "- [باقلوا گردویی](/products/baklava-gerdouyi)؛ کلاسیک و اصیل با مغز گردوی تازه",
-    "- [باقلوا پسته‌ای](/products/baklava-pesteei)؛ لوکس و مجلسی با پسته‌ی سبز",
-    "- [باقلوا مخلوط](/products/baklava-makhlut)؛ گردویی و پسته‌ای در یک جعبه",
-    "- [شیرینی هاویج](/category/havij)؛ برش‌های لوزی، با یا بدون سرشیر",
-    "- [کادایف پسته‌ای](/products/kadayif-pesteei)؛ رشته‌های طلایی و ترد دور مغز پسته",
-    "- [سوتلاوا](/products/sutlava)؛ باقلوای سرد با شربت شیری",
-    "- [کنافه پنیری](/products/kanafeh-panir)، [بامیه ترکی](/products/bamiyeh-torki) و [شکلات دبی](/products/chocolate-dubai)",
-  ].join("\n"),
-  "## بسته‌بندی و ارسال",
-  `باقلواهای ${DEFAULT_BRAND_NAME} در بسته‌بندی‌های شیک و مناسب هدیه آماده می‌شوند. ${todo("مناطق تحت پوشش ارسال، روش‌ها و زمان تقریبی")}`,
-].join("\n\n");
-
-/** سوالات متداول صفحه‌ی اصلی (SEO.md §۱۴.۲) */
-const HOME_FAQ: SeoFaqItem[] = [
-  {
-    question: "پرداخت سفارش چگونه انجام می‌شود؟",
-    answer:
-      "پس از ثبت سفارش، مبلغ را به کارت شرکت واریز و تصویر رسید را در سایت بارگذاری کنید. پس از تأیید، پیامک دریافت می‌کنید. پرداخت از کیف پول حساب کاربری هم ممکن است.",
-  },
-  { question: "به شهرستان ارسال دارید؟", answer: todo() },
-  { question: "هزینه و زمان ارسال چقدر است؟", answer: todo() },
-  {
-    question: "باقلوا را چطور نگهداری کنیم و تا چه مدت تازه می‌ماند؟",
-    answer: todo(),
-  },
-  {
-    question: "آیا امکان سفارش برای هدیه و مراسم وجود دارد؟",
-    answer: todo(),
-  },
-  {
-    question: "تفاوت باقلوای ترکی با باقلوای ایرانی چیست؟",
-    answer: todo(),
-  },
-];
+/**
+ * بلوک محتوای سئوی صفحه‌ی اصلی و سوالات متداول عمداً خالی‌اند؛ محتوای نهایی
+ * را `SEO.md` الو کپسول تعیین می‌کند و ادمین از «تنظیمات سئو» وارد می‌کند.
+ * موتور رندر (`HomeSeoContent`) با مقدار خالی چیزی نمایش نمی‌دهد.
+ */
+const HOME_CONTENT = "";
+const HOME_FAQ: SeoFaqItem[] = [];
 
 /**
  * مقادیر seed؛ فقط وقتی کلید وجود ندارد نوشته می‌شوند (ویرایش ادمین حفظ
@@ -110,13 +66,13 @@ export const SEO_SETTING_DEFAULTS: Record<
   [SEO_KEYS.defaultDescription]: HOME_DESCRIPTION,
   // تا فاز S2/S3 تصویر OG پیش‌فرض نداریم
   [SEO_KEYS.defaultOgImage]: "",
-  [SEO_KEYS.homeTitle]: `خرید باقلوای ترکی اصل و تازه | ${DEFAULT_BRAND_NAME}`,
+  [SEO_KEYS.homeTitle]: `شارژ و ارسال کپسول گاز در تهران | ${DEFAULT_BRAND_NAME}`,
   [SEO_KEYS.homeDescription]: HOME_DESCRIPTION,
-  [SEO_KEYS.homeH1]: `خرید باقلوای ترکی ${DEFAULT_BRAND_NAME}`,
+  [SEO_KEYS.homeH1]: `شارژ و ارسال کپسول گاز در تهران با ${DEFAULT_BRAND_NAME}`,
   [SEO_KEYS.homeContent]: HOME_CONTENT,
   [SEO_KEYS.homeFaq]: HOME_FAQ,
   [SEO_KEYS.orgLegalName]: todo("نام حقوقی ثبت‌شده‌ی کسب‌وکار"),
-  [SEO_KEYS.orgLogoUrl]: "/brand/logo-white.webp",
+  [SEO_KEYS.orgLogoUrl]: "/brand/logo.svg",
   [SEO_KEYS.verificationGoogle]: "",
   [SEO_KEYS.verificationBing]: "",
 };

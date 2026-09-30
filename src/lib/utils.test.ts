@@ -10,7 +10,7 @@ import {
 describe("toPersianDigits", () => {
   it("ارقام لاتین را فارسی می‌کند و بقیه‌ی کاراکترها را حفظ می‌کند", () => {
     expect(toPersianDigits(1234567890)).toBe("۱۲۳۴۵۶۷۸۹۰");
-    expect(toPersianDigits("AL-14040625-0031")).toBe("AL-۱۴۰۴۰۶۲۵-۰۰۳۱");
+    expect(toPersianDigits("AC-14040625-0031")).toBe("AC-۱۴۰۴۰۶۲۵-۰۰۳۱");
     expect(toPersianDigits("۱۲۳")).toBe("۱۲۳");
   });
 });

@@ -58,18 +58,15 @@ afterAll(async () => {
 
 describe("ریدایرکت‌ها", () => {
   it("آدرس فارسی درصد-کدشده ⇒ مستقیم به مقصد نهایی (زنجیره حل می‌شود)", async () => {
-    const old = `/product/باقلوا-گردویی-${RUN}`;
+    const old = `/product/کپسول-گردویی-${RUN}`;
     await redirect(old, `/middle-${RUN}`);
-    const second = await redirect(
-      `/middle-${RUN}`,
-      "/products/baklava-gerdouyi",
-    );
+    const second = await redirect(`/middle-${RUN}`, "/products/charge-butane");
     expect(second.finalTarget).toBeNull();
 
-    const requested = `/product/${encodeURIComponent(`باقلوا-گردویی-${RUN}`)}/`;
+    const requested = `/product/${encodeURIComponent(`کپسول-گردویی-${RUN}`)}/`;
     expect(await matchRedirect(requested, "", null)).toEqual({
       kind: "redirect",
-      to: "/products/baklava-gerdouyi",
+      to: "/products/charge-butane",
     });
     const row = await db.redirect.findUniqueOrThrow({
       where: { fromPath: old },

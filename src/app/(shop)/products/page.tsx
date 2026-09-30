@@ -23,7 +23,7 @@ export async function generateMetadata({
   // مرتب‌سازی/فیلتر ⇒ canonical تمیز؛ ?page=2 ⇒ خودش؛ جستجو ⇒ noindex, follow
   return buildPageMetadata(await getSeoContext(), {
     title: query.search ? `جستجوی «${query.search}»` : "همه محصولات",
-    description: `خرید آنلاین انواع باقلوای ترکی، شیرینی هاویج، دسرهای ترکی و شکلات ${SITE.name}.`,
+    description: `شارژ و خرید آنلاین کپسول گاز از ${SITE.name}؛ ارسال با پیک در تهران یا تحویل حضوری.`,
     path: "/products",
     listing: listingSeoState(query),
   });
@@ -47,7 +47,7 @@ export default async function ProductsPage({
   return (
     <CatalogView
       title="همه محصولات"
-      subtitle="باقلوا، شیرینی هاویج، دسرهای ترکی و شکلات"
+      subtitle="شارژ کپسول، خرید کپسول و لوازم پیک‌نیک"
       crumbs={[{ label: "خانه", href: "/" }, { label: "همه محصولات" }]}
       query={query}
       result={result}

@@ -12,8 +12,8 @@ import {
 } from "./metadata";
 
 const context: SeoContext = {
-  siteUrl: "https://alihan.ir",
-  brandName: "علی حان",
+  siteUrl: "https://alocapsule.ir",
+  brandName: "الو کپسول",
   titleTemplate: "%s | {brandName}",
   defaultDescription: "پیش‌فرض",
   defaultOgImage: null,
@@ -21,18 +21,18 @@ const context: SeoContext = {
 };
 
 const product = {
-  name: "باقلوا گردویی",
-  slug: "baklava-gerdouyi",
-  seoTitle: "خرید باقلوا گردویی اصل و تازه",
+  name: "شارژ بوتان",
+  slug: "charge-butane",
+  seoTitle: "خرید شارژ بوتان اصل و تازه",
   metaDescription: null,
-  description: "باقلوا گردویی با مغز گردوی تازه.",
+  description: "شارژ بوتان با مغز گردوی تازه.",
   noindex: false,
   canonicalUrl: null,
   image: {
-    url: "/api/media/products/baklava-gerdouyi-1-a3f9-og.jpg",
+    url: "/api/media/products/charge-butane-1-a3f9-og.jpg",
     width: 1200,
     height: 630,
-    alt: "باقلوا",
+    alt: "کپسول",
   },
 };
 
@@ -65,18 +65,18 @@ describe("robots و ALLOW_INDEXING", () => {
 describe("buildProductMetadata", () => {
   it("عنوان بدون برند (قالب layout)، OG با عنوان کامل، canonical مطلق، متای خودکار", () => {
     const meta = buildProductMetadata(context, product);
-    expect(meta.title).toBe("خرید باقلوا گردویی اصل و تازه");
+    expect(meta.title).toBe("خرید شارژ بوتان اصل و تازه");
     expect(meta.alternates?.canonical).toBe(
-      "https://alihan.ir/products/baklava-gerdouyi",
+      "https://alocapsule.ir/products/charge-butane",
     );
-    expect(meta.description).toBe("باقلوا گردویی با مغز گردوی تازه.");
+    expect(meta.description).toBe("شارژ بوتان با مغز گردوی تازه.");
     expect(meta.openGraph).toMatchObject({
-      title: "خرید باقلوا گردویی اصل و تازه | علی حان",
+      title: "خرید شارژ بوتان اصل و تازه | الو کپسول",
       locale: "fa_IR",
-      url: "https://alihan.ir/products/baklava-gerdouyi",
+      url: "https://alocapsule.ir/products/charge-butane",
       images: [
         {
-          url: "https://alihan.ir/api/media/products/baklava-gerdouyi-1-a3f9-og.jpg",
+          url: "https://alocapsule.ir/api/media/products/charge-butane-1-a3f9-og.jpg",
           width: 1200,
           height: 630,
         },
@@ -92,7 +92,9 @@ describe("buildProductMetadata", () => {
       canonicalUrl: "/products/other",
       noindex: true,
     });
-    expect(meta.alternates?.canonical).toBe("https://alihan.ir/products/other");
+    expect(meta.alternates?.canonical).toBe(
+      "https://alocapsule.ir/products/other",
+    );
     expect(meta.robots).toEqual({ index: false, follow: true });
   });
 });
@@ -100,13 +102,13 @@ describe("buildProductMetadata", () => {
 describe("صفحه‌ی اصلی و layout", () => {
   it("عنوان absolute", () => {
     const meta = buildHomeMetadata(context, {
-      title: "خرید باقلوای ترکی اصل و تازه | علی حان",
+      title: "خرید کپسولی ترکی اصل و تازه | الو کپسول",
       description: "متا",
     });
     expect(meta.title).toEqual({
-      absolute: "خرید باقلوای ترکی اصل و تازه | علی حان",
+      absolute: "خرید کپسولی ترکی اصل و تازه | الو کپسول",
     });
-    expect(meta.alternates?.canonical).toBe("https://alihan.ir/");
+    expect(meta.alternates?.canonical).toBe("https://alocapsule.ir/");
   });
 
   it("قالب عنوان از brandName و متای تأیید گوگل/بینگ", () => {
@@ -114,7 +116,7 @@ describe("صفحه‌ی اصلی و layout", () => {
       homeTitle: "خانه",
       verification: { google: "g-code", bing: "b-code" },
     });
-    expect(meta.title).toEqual({ default: "خانه", template: "%s | علی حان" });
+    expect(meta.title).toEqual({ default: "خانه", template: "%s | الو کپسول" });
     expect(meta.verification).toEqual({
       google: "g-code",
       other: { "msvalidate.01": "b-code" },
@@ -165,7 +167,7 @@ describe("canonical فهرست‌ها (SEO.md §۴.۲)", () => {
     );
     expect(category.robots).toEqual({ index: false, follow: true });
     expect(category.alternates?.canonical).toBe(
-      "https://alihan.ir/category/chocolate?page=2",
+      "https://alocapsule.ir/category/chocolate?page=2",
     );
   });
 });
