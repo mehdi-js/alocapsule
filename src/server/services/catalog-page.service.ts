@@ -3,12 +3,22 @@ import { cache } from "react";
 
 import { isBuildWithoutDb } from "@/lib/build-phase";
 import { thumbnailUrl } from "@/lib/image/urls";
+import {
+  buildPriceTable,
+  type PageOption,
+  type PriceTable,
+  type SelectableVariant,
+  type TableProduct,
+} from "@/lib/option-selection";
+import { parseOptionKey, type Selection } from "@/lib/product-options";
 import { parseFaq } from "@/lib/seo/faq";
+import { buildShippingInfo, type ShippingInfoItem } from "@/lib/shipping-info";
 import { calculatePricePerKg, resolveVariantTitle } from "@/lib/unit";
 import type { FaqItem } from "@/lib/validation/seo";
 import {
   findActiveCategoryPageRow,
   findCategoryRedirectInfo,
+  findCategoryTableProducts,
   findFeaturedCategories,
   findProductPageRow,
   findProductRedirectInfo,
@@ -35,7 +45,7 @@ export type PageLookup<T> =
   | { kind: "redirect"; to: string }
   | { kind: "missing" };
 
-export interface CatalogVariantDto {
+export interface CatalogVariantDto extends SelectableVariant {
   id: string;
   unitValue: number | null;
   title: string;
@@ -43,6 +53,8 @@ export interface CatalogVariantDto {
   comparePrice: number | null;
   pricePerKg: number | null;
   sku: string | null;
+  /** کد گروه ⇒ کد مقدار؛ محصول بدون گزینه `{}` */
+  selection: Selection;
 }
 
 export interface Crumb {
@@ -80,7 +92,11 @@ export interface ProductPageDto {
     width: number | null;
     height: number | null;
   }[];
-  /** متغیرهای فعال (قابل انتخاب) */
+  /** گروه‌های گزینه با مقدارهای فعال، به ترتیب نمایش؛ بدون گزینه ⇒ `[]` */
+  options: PageOption[];
+  /** آخرین تغییر قیمت هر ترکیب (`Product.priceUpdatedAt`) */
+  priceUpdatedAt: Date | null;
+  /** متغیرهای فعال (قابل انتخاب) به ترتیب ادمین */
   variants: CatalogVariantDto[];
   /** نمایش‌پذیر: قیمت‌دار با حداقل یک متغیر فعال، یا استعلامی (فعال) */
   available: boolean;
@@ -116,6 +132,19 @@ function toCrumbs(trail: CategoryNode[]): Crumb[] {
     }));
 }
 
+/** همه‌ی مقدارهای کلید ترکیب در مقدارهای فعال گروه‌ها هستند (گروه‌های قدیمی/بدون گزینه ⇒ درست) */
+function hasOnlyActiveValues(
+  options: readonly PageOption[],
+  optionKey: string,
+): boolean {
+  const selection = parseOptionKey(optionKey);
+  return Object.entries(selection).every(([code, value]) =>
+    options
+      .find((option) => option.code === code)
+      ?.values.some((item) => item.code === value),
+  );
+}
+
 async function productRedirectFor(id: string): Promise<string | null> {
   const product = await findProductRedirectInfo(id);
   if (!product) return null;
@@ -141,7 +170,19 @@ export async function getProductPage(
     };
   }
 
-  const active = row.variants.filter((variant) => variant.isActive);
+  const options: PageOption[] = row.options.map((option) => ({
+    code: option.code,
+    name: option.name,
+    values: option.values.map((value) => ({
+      code: value.code,
+      label: value.label,
+    })),
+  }));
+  // ترکیبی که مقدار غیرفعال دارد قابل فروش نیست (حتی اگر خودش فعال مانده باشد)
+  const active = row.variants.filter(
+    (variant) =>
+      variant.isActive && hasOnlyActiveValues(options, variant.optionKey),
+  );
   const inquiry = row.pricingMode === "INQUIRY";
   const available = row.isActive && (inquiry || active.length > 0);
   const trail = categoryTrail(await listCategoryTree(), row.categoryId);
@@ -176,9 +217,12 @@ export async function getProductPage(
         height: image.height,
       })),
       // استعلامی متغیر قابل‌فروش ندارد (حتی اگر متغیر غیرفعال قدیمی مانده باشد)
+      options: inquiry ? [] : options,
+      priceUpdatedAt: row.priceUpdatedAt,
       variants: (inquiry ? [] : active).map((variant) => ({
         id: variant.id,
         unitValue: variant.unitValue,
+        selection: parseOptionKey(variant.optionKey),
         title: resolveVariantTitle(row.unit, variant.unitValue, variant.title),
         price: variant.price,
         comparePrice: variant.comparePrice,
@@ -234,6 +278,8 @@ export interface CategoryPageDto {
   metaDescription: string | null;
   noindex: boolean;
   faq: FaqItem[];
+  /** H1 اختیاری (`Category.h1`)؛ خالی ⇒ نام دسته */
+  h1: string | null;
   /** دسته‌های والد (بدون خود دسته) */
   parents: Crumb[];
 }
@@ -256,6 +302,7 @@ export async function getCategoryPage(
       id: row.id,
       name: row.name,
       slug: row.slug,
+      h1: row.h1,
       description: row.description,
       introText: row.introText,
       bottomContent: row.bottomContent,
@@ -285,24 +332,82 @@ export const getFooterCategories = cache(
  * نه متن ثابت: آستانه‌ی ارسال رایگان تعدادی (کمترین بین روش‌های هزینه‌دار با
  * آدرس) و وجود تحویل حضوری.
  */
-export interface ProductShippingInfo {
-  freeAboveQuantity: number | null;
-  pickupAvailable: boolean;
+/**
+ * اطلاعات ارسال برای ردیف اطلاعات صفحه‌ی محصول — از داده‌ی `ShippingMethod`
+ * (روش‌های فعال)، نه متن ثابت؛ غیرفعال‌کردن یک روش آن را از ردیف حذف می‌کند.
+ */
+export async function getProductShippingInfo(
+  pickupHours: string,
+): Promise<ShippingInfoItem[]> {
+  if (isBuildWithoutDb()) return [];
+  const methods = await listActiveShippingMethods();
+  return buildShippingInfo(methods, pickupHours);
 }
 
-export async function getProductShippingInfo(): Promise<ProductShippingInfo> {
-  if (isBuildWithoutDb()) {
-    return { freeAboveQuantity: null, pickupAvailable: false };
-  }
-  const methods = await listActiveShippingMethods();
-  const thresholds = methods
-    .filter((method) => method.requiresAddress && method.cost > 0)
-    .flatMap((method) =>
-      method.freeAboveQuantity === null ? [] : [method.freeAboveQuantity],
-    );
+export interface CategoryTableProduct extends TableProduct {
+  id: string;
+  kind: ProductKind;
+  priceUpdatedAt: Date | null;
+}
+
+/**
+ * محصولات قیمت‌دار فعال یک دسته برای جدول قیمت و سوییچ اندازه. ترکیبی که
+ * مقدار غیرفعال دارد در جدول نمی‌آید.
+ */
+export async function listCategoryTableProducts(
+  categoryId: string,
+): Promise<CategoryTableProduct[]> {
+  if (isBuildWithoutDb()) return [];
+  const rows = await findCategoryTableProducts(categoryId);
+  return rows.map((row) => {
+    const options: PageOption[] = row.options;
+    return {
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      kind: row.kind,
+      priceUpdatedAt: row.priceUpdatedAt,
+      options,
+      variants: row.variants
+        .filter((variant) => hasOnlyActiveValues(options, variant.optionKey))
+        .map((variant) => ({
+          selection: parseOptionKey(variant.optionKey),
+          price: variant.price,
+        })),
+    };
+  });
+}
+
+export interface CategoryPriceTableDto {
+  table: PriceTable;
+  /** خدمت (شارژ) یا کالا ⇒ جمله‌ی بالای جدول */
+  kind: ProductKind;
+  /** جدیدترین `priceUpdatedAt` محصولات جدول */
+  priceUpdatedAt: Date | null;
+}
+
+/**
+ * جدول قیمت صفحه‌ی دسته (hub). کمتر از دو ردیف ⇒ `null` (جدول بی‌معنی است؛
+ * صفحه‌ی همان محصول قیمت‌ها را نشان می‌دهد).
+ */
+export async function getCategoryPriceTable(
+  categoryId: string,
+): Promise<CategoryPriceTableDto | null> {
+  const products = await listCategoryTableProducts(categoryId);
+  const table = buildPriceTable(products);
+  if (table.rows.length < 2) return null;
+  const tabled = products.filter((product) =>
+    table.rows.some((row) => row.key.split("|")[0] === product.slug),
+  );
+  const dates = tabled.flatMap((product) =>
+    product.priceUpdatedAt ? [product.priceUpdatedAt.getTime()] : [],
+  );
   return {
-    freeAboveQuantity: thresholds.length > 0 ? Math.min(...thresholds) : null,
-    pickupAvailable: methods.some((method) => !method.requiresAddress),
+    table,
+    kind: tabled.every((product) => product.kind === "SERVICE")
+      ? "SERVICE"
+      : "PHYSICAL",
+    priceUpdatedAt: dates.length > 0 ? new Date(Math.max(...dates)) : null,
   };
 }
 

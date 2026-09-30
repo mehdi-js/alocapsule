@@ -28,6 +28,24 @@ function homeIssues(input: unknown): Record<string, string> {
   );
 }
 
+describe("businessSettingsSchema: ساعات کاری", () => {
+  it("بازه‌ی معتبر ۹ تا ۱۸؛ وارونه یا خارج از محدوده رد می‌شود", () => {
+    expect(businessSettingsSchema.safeParse(business).success).toBe(true);
+    expect(
+      businessIssues({ ...business, openHour: 18, closeHour: 9 }).closeHour,
+    ).toBe("ساعت پایان باید بعد از ساعت شروع باشد");
+    expect(
+      businessIssues({ ...business, openHour: 24 }).openHour,
+    ).toBeDefined();
+    expect(
+      businessIssues({ ...business, closeHour: 0 }).closeHour,
+    ).toBeDefined();
+    expect(
+      businessIssues({ ...business, openHour: Number.NaN }).openHour,
+    ).toBeDefined();
+  });
+});
+
 describe("businessSettingsSchema", () => {
   it("مقدارهای پیش‌فرض معتبرند", () => {
     expect(businessSettingsSchema.safeParse(business).success).toBe(true);

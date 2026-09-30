@@ -190,7 +190,7 @@ export async function topProducts(
   }));
 }
 
-/** پرفروش‌ترین متغیرها (محصول + وزن/تعداد) */
+/** پرفروش‌ترین ترکیب‌ها: هر `variantId` جدا (شارژ ۱۱ پرسی ≠ شارژ ۱۱ بوتان) */
 export async function topVariants(
   period: Period,
   limit = 10,

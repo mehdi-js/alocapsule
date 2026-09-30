@@ -8,6 +8,7 @@ import { OrderStatusPill } from "@/components/shop/account/OrderStatusPill";
 import { ArrowIcon } from "@/components/shop/icons";
 import { btnPrimary, panel } from "@/components/shop/styles";
 import { formatJalaliDateTime } from "@/lib/date";
+import { variantSuffix } from "@/lib/item-label";
 import { formatToman } from "@/lib/money";
 import { shippingCostLabel } from "@/lib/order-pricing";
 import { PAYMENT_METHOD_LABELS } from "@/lib/payment";
@@ -121,7 +122,8 @@ export default async function MyOrderPage({
                 <span className="text-ink-soft">
                   {item.productName}{" "}
                   <span className="text-muted">
-                    ({item.variantTitle}) × {toPersianDigits(item.quantity)}
+                    {variantSuffix(item.variantTitle)} ×{" "}
+                    {toPersianDigits(item.quantity)}
                   </span>
                 </span>
                 <span className="shrink-0">{formatToman(item.lineTotal)}</span>

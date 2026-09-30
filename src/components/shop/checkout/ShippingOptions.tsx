@@ -42,16 +42,24 @@ export function ShippingOptions({
             const inputId = `shipping-${method.id}`;
             const free =
               !method.payOnDelivery && (cost === 0 || freeShippingCoupon);
+            const unavailable = method.unavailableReason !== null;
             return (
               <li
                 key={method.id}
-                className={choiceCard(method.id === selectedId)}
+                className={cn(
+                  choiceCard(method.id === selectedId),
+                  unavailable && "opacity-60",
+                )}
               >
                 <input
                   id={inputId}
                   type="radio"
                   name="shipping"
                   checked={method.id === selectedId}
+                  disabled={unavailable}
+                  aria-describedby={
+                    unavailable ? `${inputId}-reason` : undefined
+                  }
                   onChange={() => onSelect(method.id)}
                   className="accent-brand-strong mt-1 size-4 shrink-0"
                 />
@@ -61,6 +69,19 @@ export function ShippingOptions({
                 >
                   <span className="flex flex-col gap-1">
                     <span className="font-bold">{method.name}</span>
+                    {method.deliveryEstimate ? (
+                      <span className="text-muted text-sm">
+                        زمان تحویل: {method.deliveryEstimate}
+                      </span>
+                    ) : null}
+                    {unavailable ? (
+                      <span
+                        id={`${inputId}-reason`}
+                        className="text-danger text-xs"
+                      >
+                        {method.unavailableReason}
+                      </span>
+                    ) : null}
                     {method.description ? (
                       <span className="text-muted text-sm">
                         {method.description}

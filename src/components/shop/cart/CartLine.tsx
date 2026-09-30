@@ -97,7 +97,7 @@ export function CartLine({
           {line.variantTitle}
           {line.sku ? (
             <>
-              {" · کد "}
+              {line.variantTitle ? " · کد " : "کد "}
               <span dir="ltr">{line.sku}</span>
             </>
           ) : null}

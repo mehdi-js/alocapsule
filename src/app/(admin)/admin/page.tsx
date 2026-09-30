@@ -183,7 +183,7 @@ export default async function DashboardPage({
             </Table>
           )}
         </Panel>
-        <Panel title="پرفروش‌ترین متغیرها">
+        <Panel title="پرفروش‌ترین ترکیب‌ها (به تفکیک گزینه)">
           {data.topVariants.length === 0 ? (
             <Empty />
           ) : (
@@ -191,7 +191,7 @@ export default async function DashboardPage({
               <THead>
                 <tr>
                   <TH>محصول</TH>
-                  <TH>متغیر</TH>
+                  <TH>ترکیب</TH>
                   <TH>تعداد</TH>
                   <TH>مبلغ اقلام</TH>
                 </tr>
@@ -200,7 +200,7 @@ export default async function DashboardPage({
                 {data.topVariants.map((row, index) => (
                   <TR key={`${row.productName}-${row.variantTitle}-${index}`}>
                     <TD>{row.productName}</TD>
-                    <TD>{row.variantTitle}</TD>
+                    <TD>{row.variantTitle || "—"}</TD>
                     <TD>{toPersianDigits(row.quantity)}</TD>
                     <TD className="whitespace-nowrap">{toman(row.total)}</TD>
                   </TR>

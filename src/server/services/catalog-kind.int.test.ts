@@ -176,22 +176,33 @@ describe("داده‌ی صفحه‌ی اصلی و ردیف اطلاعات", () =
     expect(after.map((c) => c.path)).not.toContain(`/category/show-cat-${RUN}`);
   });
 
-  it("اطلاعات ارسال از ShippingMethod: کمترین آستانه‌ی تعداد و وجود تحویل حضوری", async () => {
+  it("اطلاعات ارسال از روش‌های فعال؛ غیرفعال‌کردن یک روش آن را حذف می‌کند", async () => {
     const courier = await db.shippingMethod.create({
       data: {
         name: `پیک نمایش ${RUN}`,
         cost: 50_000,
         freeAboveQuantity: 3,
+        deliveryEstimate: "۱ تا ۴ ساعت",
       },
     });
     const pickup = await db.shippingMethod.create({
       data: { name: `حضوری نمایش ${RUN}`, cost: 0, requiresAddress: false },
     });
     shippingIds.push(courier.id, pickup.id);
-    const info = await getProductShippingInfo();
-    expect(info.pickupAvailable).toBe(true);
-    // کمترین بین همه‌ی روش‌های فعالِ هزینه‌دار (روش‌های seed هم هستند)
-    expect(info.freeAboveQuantity).not.toBeNull();
-    expect(info.freeAboveQuantity!).toBeLessThanOrEqual(3);
+
+    const texts = (await getProductShippingInfo("۹ تا ۱۸")).map((i) => i.text);
+    expect(texts).toContain(
+      `${courier.name}: ۱ تا ۴ ساعت · هزینه ۵۰,۰۰۰ تومان`,
+    );
+    expect(texts).toContain(`${pickup.name}: ۹ تا ۱۸`);
+    expect(texts).toContain(`${courier.name} رایگان از ۳ عدد به بالا`);
+
+    await db.shippingMethod.update({
+      where: { id: courier.id },
+      data: { isActive: false },
+    });
+    const after = (await getProductShippingInfo("۹ تا ۱۸")).map((i) => i.text);
+    expect(after.some((text) => text.includes(courier.name))).toBe(false);
+    expect(after).toContain(`${pickup.name}: ۹ تا ۱۸`);
   });
 });

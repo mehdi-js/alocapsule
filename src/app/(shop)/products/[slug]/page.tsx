@@ -7,6 +7,7 @@ import { Accordion } from "@/components/shop/Accordion";
 import { Breadcrumb } from "@/components/shop/Breadcrumb";
 import { FaqSection } from "@/components/shop/FaqSection";
 import { InquiryBox } from "@/components/shop/InquiryBox";
+import { PriceTable } from "@/components/shop/PriceTable";
 import { ProductGallery } from "@/components/shop/ProductGallery";
 import { ProductInfoRow } from "@/components/shop/ProductInfoRow";
 import { ProductPurchase } from "@/components/shop/ProductPurchase";
@@ -14,8 +15,16 @@ import { ProductUnavailable } from "@/components/shop/ProductUnavailable";
 import { RelatedProducts } from "@/components/shop/RelatedProducts";
 import { ServiceBadge } from "@/components/shop/ServiceBadge";
 import { ServiceTermsBox } from "@/components/shop/ServiceTermsBox";
+import { SizeSwitch } from "@/components/shop/SizeSwitch";
 import { TrustTiles } from "@/components/shop/TrustBar";
 import { RichText } from "@/components/ui/RichText";
+import { formatJalali } from "@/lib/date";
+import {
+  buildPriceTable,
+  buildSizeSwitch,
+  parseSelectionParams,
+  resolveSelected,
+} from "@/lib/option-selection";
 import {
   breadcrumbJsonLd,
   faqPageJsonLd,
@@ -27,6 +36,7 @@ import { resolveServiceTerms } from "@/lib/validation/product";
 import {
   getProductPage,
   getProductShippingInfo,
+  listCategoryTableProducts,
   listRelatedProducts,
   type ProductPageDto,
 } from "@/server/services/catalog-page.service";
@@ -39,12 +49,13 @@ import { getSiteSettings } from "@/server/services/site-settings.service";
 import { getBusinessSettings } from "@/server/services/store-content.service";
 
 type Params = Promise<{ slug: string }>;
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-/** صفحه‌ها در اولین درخواست ساخته و کش می‌شوند (ISR)؛ تغییر در ادمین فوراً revalidate می‌کند. */
-export const revalidate = 300;
-export function generateStaticParams() {
-  return [];
-}
+/**
+ * 🔴 پارامتر گزینه (`?valve=persi`) سمت سرور خوانده می‌شود تا HTML اولیه همان
+ * ترکیب را نشان دهد (SEO.md §۴.۵)؛ بنابراین صفحه به‌ازای هر درخواست رندر
+ * می‌شود. canonical همیشه بدون پارامتر است (`buildProductMetadata`).
+ */
 
 const loadProduct = cache(async (params: Params) => {
   const { slug } = await params;
@@ -87,8 +98,15 @@ export async function generateMetadata({
   });
 }
 
-export default async function ProductPage({ params }: { params: Params }) {
+export default async function ProductPage({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
   const product = await requireProduct(params);
+  const query = await searchParams;
   const [
     related,
     maxQuantity,
@@ -96,7 +114,7 @@ export default async function ProductPage({ params }: { params: Params }) {
     context,
     seo,
     business,
-    shipping,
+    tableProducts,
   ] = await Promise.all([
     listRelatedProducts(product),
     getMaxQuantityPerItem(),
@@ -104,8 +122,9 @@ export default async function ProductPage({ params }: { params: Params }) {
     getSeoContext(),
     getSeoSettings(),
     getBusinessSettings(),
-    getProductShippingInfo(),
+    listCategoryTableProducts(product.categoryId),
   ]);
+  const shipping = await getProductShippingInfo(business.pickupHours);
   const inquiry = product.pricingMode === "INQUIRY";
   const serviceTerms = resolveServiceTerms(
     product,
@@ -116,6 +135,38 @@ export default async function ProductPage({ params }: { params: Params }) {
     ...variant,
     pricePerKg: business.showPricePerKg ? variant.pricePerKg : null,
   }));
+
+  const selected = resolveSelected(
+    variants,
+    parseSelectionParams(query, product.options),
+    product.options,
+  );
+  const sizeSwitch = buildSizeSwitch(
+    tableProducts,
+    product.slug,
+    selected?.selection ?? {},
+  );
+  const priceTable =
+    product.options.length > 0 && variants.length > 1
+      ? buildPriceTable([
+          {
+            slug: product.slug,
+            name: product.name,
+            options: product.options,
+            variants: variants.map((variant) => ({
+              selection: variant.selection,
+              price: variant.price,
+            })),
+          },
+        ])
+      : null;
+  const priceNote =
+    product.kind === "SERVICE"
+      ? business.priceIncludesNote
+      : business.priceIncludesNoteProducts;
+  const priceUpdatedLabel = product.priceUpdatedAt
+    ? formatJalali(product.priceUpdatedAt, "YYYY/MM/DD")
+    : null;
 
   const crumbs = [
     { name: "خانه", path: "/" },
@@ -187,6 +238,8 @@ export default async function ProductPage({ params }: { params: Params }) {
               ) : null}
             </div>
 
+            <SizeSwitch items={sizeSwitch.items} suffix={sizeSwitch.suffix} />
+
             <div aria-hidden className="h-px bg-accent/14" />
 
             {product.available && serviceTerms ? (
@@ -197,9 +250,14 @@ export default async function ProductPage({ params }: { params: Params }) {
               <InquiryBox phone={business.phone} whatsapp={business.whatsapp} />
             ) : product.available ? (
               <ProductPurchase
+                key={product.id}
                 variants={variants}
+                options={product.options}
+                initialVariantId={selected?.id}
                 isGram={product.unit === "GRAM"}
                 maxQuantity={maxQuantity}
+                priceUpdatedLabel={priceUpdatedLabel}
+                priceNote={priceTable ? null : priceNote}
               />
             ) : (
               <ProductUnavailable
@@ -209,10 +267,16 @@ export default async function ProductPage({ params }: { params: Params }) {
             )}
 
             {product.available && !inquiry ? (
-              <ProductInfoRow
-                pickupHours={business.pickupHours}
-                pickupAvailable={shipping.pickupAvailable}
-                freeAboveQuantity={shipping.freeAboveQuantity}
+              <ProductInfoRow items={shipping} />
+            ) : null}
+
+            {product.available && priceTable ? (
+              <PriceTable
+                table={priceTable}
+                mode="product"
+                caption={`جدول قیمت ${product.name}`}
+                note={priceNote}
+                updatedLabel={priceUpdatedLabel}
               />
             ) : null}
 

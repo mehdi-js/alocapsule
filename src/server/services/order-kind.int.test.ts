@@ -267,7 +267,7 @@ describe("خدمت و پذیرش شرایط (§۴.۲)", () => {
     const [order] = await ordersOf(customer.userId);
     const detail = await getOrderDetail(order!.id);
     expect(detail!.order.emptyCylinders).toEqual([
-      { label: `محصول svc-admin ${RUN} — ۱۱ کیلوگرم`, quantity: 3 },
+      { label: `محصول svc-admin ${RUN} · ۱۱ کیلوگرم`, quantity: 3 },
     ]);
     expect(detail!.order.serviceTerms?.text).toContain("از قبل پرشده");
     expect(detail!.order.pickup).toBe(false);

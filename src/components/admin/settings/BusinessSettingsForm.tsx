@@ -10,9 +10,16 @@ import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
 import { useToast } from "@/components/ui/Toast";
 import type { BusinessSettings } from "@/lib/business-settings";
+import { toLatinDigits } from "@/lib/utils";
 import { saveBusinessSettingsAction } from "@/server/actions/settings";
 
 import { Section } from "./SettingsSections";
+
+/** ورودی ساعت: رقم فارسی هم پذیرفته می‌شود؛ نامعتبر ⇒ NaN (اعتبارسنج پیام می‌دهد) */
+function parseHourInput(raw: string): number {
+  const digits = toLatinDigits(raw).trim();
+  return /^\d{1,2}$/.test(digits) ? Number(digits) : Number.NaN;
+}
 
 type State = BusinessSettings & { orderNumberPrefix: string };
 
@@ -47,6 +54,25 @@ export function BusinessSettingsForm({ initial }: { initial: State }) {
           invalid={!!errors[key]}
           onChange={(event) =>
             patch({ [key]: event.target.value } as Partial<State>)
+          }
+        />
+      </Field>
+    );
+  }
+
+  function hourField(key: "openHour" | "closeHour", label: string) {
+    return (
+      <Field label={label} htmlFor={`biz-${key}`} error={errors[key]}>
+        <Input
+          id={`biz-${key}`}
+          dir="ltr"
+          inputMode="numeric"
+          value={String(state[key])}
+          invalid={!!errors[key]}
+          onChange={(event) =>
+            patch({
+              [key]: parseHourInput(event.target.value),
+            } as Partial<State>)
           }
         />
       </Field>
@@ -94,6 +120,20 @@ export function BusinessSettingsForm({ initial }: { initial: State }) {
       </Section>
 
       <Section
+        title="ساعات کاری و محدوده‌ی ارسال"
+        hint="روش‌های ارسال با گزینه‌ی «فقط ساعات کاری» (مثل ارسال فوری) خارج از این بازه (به وقت تهران) در تسویه غیرفعال‌اند؛ سرور هم همین را بررسی می‌کند."
+      >
+        <div className="grid gap-4 sm:grid-cols-2">
+          {hourField("openHour", "ساعت شروع کار (۰ تا ۲۳)")}
+          {hourField("closeHour", "ساعت پایان کار (۱ تا ۲۴)")}
+        </div>
+        {text(
+          "shippingAreaNote",
+          "توضیح محدوده‌ی ارسال (زیر انتخاب آدرس در تسویه)",
+        )}
+      </Section>
+
+      <Section
         title="شرایط شارژ و تعویض کپسول"
         hint="متن پیش‌فرض شرایط خدمت؛ محصولی که متن اختصاصی ندارد همین را نشان می‌دهد و مشتری هنگام ثبت سفارش می‌پذیرد."
       >
@@ -107,6 +147,14 @@ export function BusinessSettingsForm({ initial }: { initial: State }) {
           onChange={(serviceDefaultTerms) => patch({ serviceDefaultTerms })}
         />
         {text("serviceConsentLabel", "برچسب چک‌باکس در تسویه")}
+      </Section>
+
+      <Section
+        title="جمله‌ی بالای جدول قیمت"
+        hint="بالای جدول قیمت در صفحه‌ی دسته و محصول نمایش داده می‌شود؛ برای خدمت (شارژ) و کالا (خرید کپسول، پیک‌نیک) جدا."
+      >
+        {text("priceIncludesNote", "برای محصولات خدمت (شارژ)")}
+        {text("priceIncludesNoteProducts", "برای کالا (خرید کپسول، پیک‌نیک)")}
       </Section>
 
       <Section title="کاتالوگ و سفارش">

@@ -1,5 +1,6 @@
 import { toCsv } from "@/lib/csv";
 import { formatJalali, formatJalaliDateTime } from "@/lib/date";
+import { itemLabel } from "@/lib/item-label";
 import type { OrderFilters } from "@/lib/order-filters";
 import { ORDER_STATUS_LABELS } from "@/lib/order-status";
 import { findOrdersForExport } from "@/server/repositories/order-admin.repository";
@@ -23,6 +24,7 @@ const HEADERS = [
   "نشانی",
   "روش ارسال",
   "تعداد اقلام",
+  "اقلام",
   "جمع کالاها",
   "هزینه ارسال",
   "تخفیف",
@@ -53,6 +55,13 @@ export async function exportOrdersCsv(filters: OrderFilters): Promise<string> {
       address ? address.line : PICKUP_LABEL,
       order.shippingMethodName,
       order._count.items,
+      // «نام محصول · ترکیب × تعداد»؛ ترکیب‌ها (پرسی/بوتان، خالی/پرشده) جدا دیده می‌شوند
+      order.items
+        .map(
+          (item) =>
+            `${itemLabel(item.productName, item.variantTitle)} × ${item.quantity}`,
+        )
+        .join(" | "),
       order.subtotal,
       order.shippingTotal,
       order.discountTotal,

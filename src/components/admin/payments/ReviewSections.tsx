@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { RichText } from "@/components/ui/RichText";
 import { formatJalali, formatJalaliDateTime } from "@/lib/date";
+import { variantSuffix } from "@/lib/item-label";
 import { formatToman } from "@/lib/money";
 import { shippingCostLabel } from "@/lib/order-pricing";
 import { ORDER_STATUS_LABELS } from "@/lib/order-status";
@@ -146,7 +147,8 @@ export function OrderPanel({ detail }: { detail: OrderDetailDto }) {
             <span>
               {item.productName}{" "}
               <span className="text-neutral-500">
-                ({item.variantTitle}) × {toPersianDigits(item.quantity)}
+                {variantSuffix(item.variantTitle)} ×{" "}
+                {toPersianDigits(item.quantity)}
               </span>
             </span>
             <span className="shrink-0">{formatToman(item.lineTotal)}</span>

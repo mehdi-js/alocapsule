@@ -14,7 +14,12 @@ import { db } from "@/lib/db";
 
 export const activeVariants = {
   where: { isActive: true },
-  orderBy: { unitValue: "asc" as const },
+  // ترتیب ادمین (sortOrder)؛ متغیرهای قدیمی (همه ۰) با مقدار واحد مرتب می‌شوند
+  orderBy: [
+    { sortOrder: "asc" as const },
+    { unitValue: "asc" as const },
+    { optionKey: "asc" as const },
+  ],
 };
 
 /** تصویر اصلی اول، بعد بقیه به ترتیب چیدمان ادمین */

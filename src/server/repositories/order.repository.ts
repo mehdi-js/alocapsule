@@ -76,6 +76,21 @@ export async function readServiceDefaultTerms(tx: DbClient): Promise<string> {
   ).serviceDefaultTerms;
 }
 
+/** ساعت شروع/پایان کار (`business.openHour/closeHour`)؛ نبود/نامعتبر ⇒ ۹ تا ۱۸ */
+export async function readBusinessHours(
+  tx: DbClient,
+): Promise<{ openHour: number; closeHour: number }> {
+  const rows = await tx.setting.findMany({
+    where: {
+      key: { in: [BUSINESS_KEYS.openHour, BUSINESS_KEYS.closeHour] },
+    },
+  });
+  const parsed = parseBusinessSettings(
+    new Map(rows.map((row) => [row.key, row.value])),
+  );
+  return { openHour: parsed.openHour, closeHour: parsed.closeHour };
+}
+
 /** پیشوند شماره‌ی سفارش از `Setting` (`order.numberPrefix`)؛ نبود/نامعتبر ⇒ پیش‌فرض */
 export async function readOrderNumberPrefix(tx: DbClient): Promise<string> {
   const row = await tx.setting.findUnique({

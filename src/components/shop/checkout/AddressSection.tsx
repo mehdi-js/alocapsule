@@ -153,6 +153,7 @@ export function AddressSection({
   onSelect,
   onAddressesChange,
   title = "آدرس ارسال",
+  areaNote,
 }: {
   addresses: AddressDto[];
   selectedId: string | null;
@@ -161,6 +162,8 @@ export function AddressSection({
   onSelect?: (id: string) => void;
   onAddressesChange: (addresses: AddressDto[], selectId?: string) => void;
   title?: string;
+  /** توضیح محدوده‌ی ارسال (`shipping.areaNote`) زیر عنوان */
+  areaNote?: string;
 }) {
   // «new» = فرم آدرس جدید؛ شناسه = فرم ویرایش همان آدرس
   const [editing, setEditing] = useState<string | null>(null);
@@ -187,6 +190,12 @@ export function AddressSection({
           </button>
         ) : null}
       </div>
+
+      {areaNote ? (
+        <p className="text-muted -mt-2 text-sm" id="shipping-area-note">
+          {areaNote}
+        </p>
+      ) : null}
 
       {addresses.length > 0 ? (
         <ul className="flex flex-col gap-3" aria-label="آدرس‌های من">

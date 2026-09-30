@@ -5,8 +5,10 @@ import { cache } from "react";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { CatalogView } from "@/components/shop/CatalogView";
 import { FaqSection } from "@/components/shop/FaqSection";
+import { PriceTable } from "@/components/shop/PriceTable";
 import { RichText } from "@/components/ui/RichText";
 import { buildCatalogHref, listingSeoState } from "@/lib/catalog-url";
+import { formatJalali } from "@/lib/date";
 import {
   breadcrumbJsonLd,
   faqPageJsonLd,
@@ -22,8 +24,10 @@ import {
 import {
   type CategoryPageDto,
   getCategoryPage,
+  getCategoryPriceTable,
 } from "@/server/services/catalog-page.service";
 import { getSeoContext } from "@/server/services/seo-settings.service";
+import { getBusinessSettings } from "@/server/services/store-content.service";
 
 type Params = Promise<{ slug: string }>;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -77,10 +81,12 @@ export default async function CategoryPage({
   const basePath = `/category/${category.slug}`;
   // دسته از مسیر آدرس تعیین می‌شود، نه از query
   const query = { ...parseCatalogQuery(await searchParams), categorySlugs: [] };
-  const [result, options, context] = await Promise.all([
+  const [result, options, context, priceTable, business] = await Promise.all([
     listCatalogProducts({ ...query, categorySlugs: [category.slug] }),
     getFilterOptions(),
     getSeoContext(),
+    getCategoryPriceTable(category.id),
+    getBusinessSettings(),
   ]);
 
   if (result.items.length === 0 && query.page > result.pageCount) {
@@ -94,6 +100,11 @@ export default async function CategoryPage({
   ];
   // متن معرفی و متن پایین فقط در صفحه‌ی اصلی دسته (نه صفحه‌ی ۲ یا فیلترشده)
   const firstPage = query.page === 1 && !listingSeoState(query).filtered;
+  // «قیمت شارژ کپسول گاز» → «جدول قیمت شارژ کپسول گاز»
+  const heading = category.h1 ?? category.name;
+  const tableTitle = heading.startsWith("قیمت")
+    ? `جدول ${heading}`
+    : `جدول قیمت ${heading}`;
 
   return (
     <>
@@ -130,6 +141,24 @@ export default async function CategoryPage({
           ) : null
         }
       >
+        {firstPage && priceTable ? (
+          <PriceTable
+            table={priceTable.table}
+            mode="category"
+            id="price-table"
+            caption={tableTitle}
+            note={
+              priceTable.kind === "SERVICE"
+                ? business.priceIncludesNote
+                : business.priceIncludesNoteProducts
+            }
+            updatedLabel={
+              priceTable.priceUpdatedAt
+                ? formatJalali(priceTable.priceUpdatedAt, "YYYY/MM/DD")
+                : null
+            }
+          />
+        ) : null}
         {firstPage && category.bottomContent ? (
           <section className="text-ink-soft max-w-[860px] text-[15px]">
             <RichText text={category.bottomContent} headingLevel={2} />

@@ -14,6 +14,15 @@ export const BUSINESS_KEYS = {
   serviceDefaultTerms: "service.defaultTerms",
   serviceConsentLabel: "service.checkoutConsentLabel",
   showPricePerKg: "catalog.showPricePerKg",
+  /** ساعت شروع/پایان کاری (۰ تا ۲۴، وقت تهران) برای روش‌های «فقط ساعات کاری» */
+  openHour: "business.openHour",
+  closeHour: "business.closeHour",
+  /** جمله‌ی بالای جدول قیمت خدمت (SEO.md §۳.۴) */
+  priceIncludesNote: "catalog.priceIncludesNote",
+  /** همان برای کالا (خرید کپسول، پیک‌نیک) */
+  priceIncludesNoteProducts: "catalog.priceIncludesNoteProducts",
+  /** توضیح زیر انتخاب آدرس در تسویه */
+  shippingAreaNote: "shipping.areaNote",
 } as const;
 
 export interface BusinessSettings {
@@ -30,6 +39,11 @@ export interface BusinessSettings {
   serviceConsentLabel: string;
   /** نمایش «قیمت هر کیلو»؛ برای الو کپسول خاموش */
   showPricePerKg: boolean;
+  openHour: number;
+  closeHour: number;
+  priceIncludesNote: string;
+  priceIncludesNoteProducts: string;
+  shippingAreaNote: string;
 }
 
 /**
@@ -42,7 +56,7 @@ export const DEFAULT_SERVICE_TERMS = [
 
 export const BUSINESS_SETTING_DEFAULTS: Record<
   (typeof BUSINESS_KEYS)[keyof typeof BUSINESS_KEYS],
-  string | boolean
+  string | boolean | number
 > = {
   [BUSINESS_KEYS.pickupHours]: "۹ صبح تا ۶ عصر",
   [BUSINESS_KEYS.pickupAddress]: todo("آدرس محل تحویل حضوری"),
@@ -52,7 +66,25 @@ export const BUSINESS_SETTING_DEFAULTS: Record<
   [BUSINESS_KEYS.serviceConsentLabel]:
     "شرایط تعویض کپسول را خوانده‌ام و می‌پذیرم",
   [BUSINESS_KEYS.showPricePerKg]: false,
+  [BUSINESS_KEYS.openHour]: 9,
+  [BUSINESS_KEYS.closeHour]: 18,
+  [BUSINESS_KEYS.priceIncludesNote]:
+    "قیمت‌ها فقط شامل هزینه‌ی شارژ است. هزینه‌ی ارسال جداگانه و بر اساس روش ارسال (عادی یا فوری) در مرحله‌ی تسویه محاسبه می‌شود.",
+  [BUSINESS_KEYS.priceIncludesNoteProducts]:
+    "هزینه‌ی ارسال جداگانه و بر اساس روش ارسال (عادی یا فوری) در مرحله‌ی تسویه محاسبه می‌شود.",
+  [BUSINESS_KEYS.shippingAreaNote]:
+    "ارسال فقط در محدوده‌ی شهر تهران انجام می‌شود.",
 };
+
+/** ساعت صحیح ۰ تا ۲۴؛ غیر از آن ⇒ پیش‌فرض */
+function hour(value: unknown, fallback: number): number {
+  return typeof value === "number" &&
+    Number.isInteger(value) &&
+    value >= 0 &&
+    value <= 24
+    ? value
+    : fallback;
+}
 
 function text(value: unknown, fallback: string): string {
   return typeof value === "string" ? value : fallback;
@@ -69,6 +101,19 @@ export function parseBusinessSettings(
   const d = BUSINESS_SETTING_DEFAULTS;
   const get = (key: keyof typeof d) => raw.get(key);
   const flag = get(BUSINESS_KEYS.showPricePerKg);
+  let openHour = hour(
+    get(BUSINESS_KEYS.openHour),
+    d[BUSINESS_KEYS.openHour] as number,
+  );
+  let closeHour = hour(
+    get(BUSINESS_KEYS.closeHour),
+    d[BUSINESS_KEYS.closeHour] as number,
+  );
+  // بازه‌ی وارونه/خالی ⇒ پیش‌فرض (روش «فقط ساعات کاری» هرگز برای همیشه بسته نشود)
+  if (openHour >= closeHour) {
+    openHour = d[BUSINESS_KEYS.openHour] as number;
+    closeHour = d[BUSINESS_KEYS.closeHour] as number;
+  }
   return {
     pickupHours: requiredText(
       get(BUSINESS_KEYS.pickupHours),
@@ -95,6 +140,20 @@ export function parseBusinessSettings(
       typeof flag === "boolean"
         ? flag
         : (d[BUSINESS_KEYS.showPricePerKg] as boolean),
+    openHour,
+    closeHour,
+    priceIncludesNote: requiredText(
+      get(BUSINESS_KEYS.priceIncludesNote),
+      d[BUSINESS_KEYS.priceIncludesNote] as string,
+    ),
+    priceIncludesNoteProducts: requiredText(
+      get(BUSINESS_KEYS.priceIncludesNoteProducts),
+      d[BUSINESS_KEYS.priceIncludesNoteProducts] as string,
+    ),
+    shippingAreaNote: requiredText(
+      get(BUSINESS_KEYS.shippingAreaNote),
+      d[BUSINESS_KEYS.shippingAreaNote] as string,
+    ),
   };
 }
 

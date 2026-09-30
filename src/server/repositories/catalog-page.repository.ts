@@ -16,8 +16,68 @@ export function findProductPageRow(slug: string) {
       category: {
         select: { id: true, name: true, slug: true, parentId: true },
       },
-      variants: { orderBy: { unitValue: "asc" } },
+      variants: {
+        orderBy: [
+          { sortOrder: "asc" },
+          { unitValue: "asc" },
+          { optionKey: "asc" },
+        ],
+      },
+      options: {
+        orderBy: { sortOrder: "asc" },
+        include: {
+          values: {
+            where: { isActive: true },
+            orderBy: { sortOrder: "asc" },
+          },
+        },
+      },
       images: primaryFirstImages,
+    },
+  });
+}
+
+/**
+ * محصولات قیمت‌دار و فعالِ یک دسته با گزینه‌ها و ترکیب‌های فعال (جدول قیمت hub
+ * و سوییچ اندازه؛ SEO.md §۴.۵ و §۴.۶). به ترتیب ادمین.
+ */
+export function findCategoryTableProducts(categoryId: string) {
+  return db.product.findMany({
+    where: {
+      categoryId,
+      isActive: true,
+      archivedAt: null,
+      pricingMode: "FIXED",
+      variants: { some: { isActive: true } },
+    },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      kind: true,
+      priceUpdatedAt: true,
+      options: {
+        orderBy: { sortOrder: "asc" },
+        select: {
+          code: true,
+          name: true,
+          values: {
+            where: { isActive: true },
+            orderBy: { sortOrder: "asc" },
+            select: { code: true, label: true },
+          },
+        },
+      },
+      variants: {
+        where: { isActive: true },
+        orderBy: [
+          { sortOrder: "asc" },
+          { unitValue: "asc" },
+          { optionKey: "asc" },
+        ],
+        select: { optionKey: true, price: true },
+      },
     },
   });
 }

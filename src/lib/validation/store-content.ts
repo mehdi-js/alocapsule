@@ -39,29 +39,47 @@ const whatsapp = z
     "واتساپ: شماره یا آدرس https وارد کنید (خالی = دکمه نمایش داده نمی‌شود)",
   );
 
-export const businessSettingsSchema = z.object({
-  pickupHours: text("ساعت تحویل حضوری", 2, 80),
-  pickupAddress: text("نشانی تحویل حضوری", 5, 400),
-  phone,
-  whatsapp,
-  /** قالب متنی `lib/rich-text.ts` (HTML خام ذخیره نمی‌شود) */
-  serviceDefaultTerms: text(
-    "متن پیش‌فرض شرایط خدمت",
-    20,
-    MAX_SERVICE_TERMS_LENGTH,
-  ),
-  serviceConsentLabel: text("برچسب چک‌باکس شرایط", 5, 150),
-  showPricePerKg: z.boolean(),
-  /** ۱ تا ۸ حرف بزرگ لاتین/عدد، شروع با حرف (سفارش‌های قبلی با پیشوند قبلی می‌مانند) */
-  orderNumberPrefix: z
-    .string()
-    .trim()
-    .transform((value) => value.toUpperCase())
-    .refine(
-      (value) => /^[A-Z][A-Z0-9]{0,7}$/.test(value),
-      "پیشوند باید ۱ تا ۸ حرف/عدد لاتین باشد و با حرف شروع شود (مثل AC)",
+export const businessSettingsSchema = z
+  .object({
+    pickupHours: text("ساعت تحویل حضوری", 2, 80),
+    pickupAddress: text("نشانی تحویل حضوری", 5, 400),
+    phone,
+    whatsapp,
+    /** قالب متنی `lib/rich-text.ts` (HTML خام ذخیره نمی‌شود) */
+    serviceDefaultTerms: text(
+      "متن پیش‌فرض شرایط خدمت",
+      20,
+      MAX_SERVICE_TERMS_LENGTH,
     ),
-});
+    serviceConsentLabel: text("برچسب چک‌باکس شرایط", 5, 150),
+    showPricePerKg: z.boolean(),
+    openHour: z
+      .number({ error: "ساعت شروع باید عدد صحیح باشد" })
+      .int("ساعت شروع باید عدد صحیح باشد")
+      .min(0, "ساعت شروع بین ۰ تا ۲۳ باشد")
+      .max(23, "ساعت شروع بین ۰ تا ۲۳ باشد"),
+    closeHour: z
+      .number({ error: "ساعت پایان باید عدد صحیح باشد" })
+      .int("ساعت پایان باید عدد صحیح باشد")
+      .min(1, "ساعت پایان بین ۱ تا ۲۴ باشد")
+      .max(24, "ساعت پایان بین ۱ تا ۲۴ باشد"),
+    priceIncludesNote: text("جمله‌ی قیمت خدمت", 5, 300),
+    priceIncludesNoteProducts: text("جمله‌ی قیمت کالا", 5, 300),
+    shippingAreaNote: text("توضیح محدوده‌ی ارسال", 5, 200),
+    /** ۱ تا ۸ حرف بزرگ لاتین/عدد، شروع با حرف (سفارش‌های قبلی با پیشوند قبلی می‌مانند) */
+    orderNumberPrefix: z
+      .string()
+      .trim()
+      .transform((value) => value.toUpperCase())
+      .refine(
+        (value) => /^[A-Z][A-Z0-9]{0,7}$/.test(value),
+        "پیشوند باید ۱ تا ۸ حرف/عدد لاتین باشد و با حرف شروع شود (مثل AC)",
+      ),
+  })
+  .refine((value) => value.openHour < value.closeHour, {
+    path: ["closeHour"],
+    message: "ساعت پایان باید بعد از ساعت شروع باشد",
+  });
 
 export type BusinessSettingsInput = z.output<typeof businessSettingsSchema>;
 export type BusinessSettingsFormInput = z.input<typeof businessSettingsSchema>;

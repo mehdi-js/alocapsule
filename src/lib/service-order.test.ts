@@ -65,6 +65,29 @@ describe("collectServiceTerms", () => {
   });
 });
 
+describe("summarizeEmptyCylinders: ترکیب‌های گزینه", () => {
+  it("پرسی و بوتان یک محصول جدا شمرده می‌شوند؛ بدون عنوان ترکیب فقط نام", () => {
+    const item = (variantTitle: string, quantity: number) => ({
+      productKindSnapshot: "SERVICE" as const,
+      productName: "شارژ کپسول گاز ۱۱ کیلویی",
+      variantTitle,
+      quantity,
+    });
+    expect(
+      summarizeEmptyCylinders([
+        item("پرسی", 2),
+        item("بوتان", 1),
+        item("پرسی", 1),
+        item("", 4),
+      ]),
+    ).toEqual([
+      { label: "شارژ کپسول گاز ۱۱ کیلویی · پرسی", quantity: 3 },
+      { label: "شارژ کپسول گاز ۱۱ کیلویی · بوتان", quantity: 1 },
+      { label: "شارژ کپسول گاز ۱۱ کیلویی", quantity: 4 },
+    ]);
+  });
+});
+
 describe("summarizeEmptyCylinders", () => {
   it("فقط خدمت، جمع تعداد به تفکیک محصول و متغیر", () => {
     const rows = summarizeEmptyCylinders([
@@ -94,8 +117,8 @@ describe("summarizeEmptyCylinders", () => {
       },
     ]);
     expect(rows).toEqual([
-      { label: "شارژ بوتان — ۱۱ کیلوگرم", quantity: 3 },
-      { label: "شارژ بوتان — ۲۵ کیلوگرم", quantity: 4 },
+      { label: "شارژ بوتان · ۱۱ کیلوگرم", quantity: 3 },
+      { label: "شارژ بوتان · ۲۵ کیلوگرم", quantity: 4 },
     ]);
   });
 

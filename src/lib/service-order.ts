@@ -1,5 +1,7 @@
 import type { PricingMode, ProductKind } from "@prisma/client";
 
+import { itemLabel } from "@/lib/item-label";
+
 /**
  * منطق خالص محصول خدمت/استعلامی در سبد و سفارش (FORK.md §۴.۱ و §۴.۲).
  */
@@ -67,7 +69,7 @@ export function summarizeEmptyCylinders(
   const rows = new Map<string, EmptyCylinderRow>();
   for (const item of items) {
     if (item.productKindSnapshot !== "SERVICE") continue;
-    const label = `${item.productName} — ${item.variantTitle}`;
+    const label = itemLabel(item.productName, item.variantTitle);
     const row = rows.get(label) ?? { label, quantity: 0 };
     row.quantity += item.quantity;
     rows.set(label, row);

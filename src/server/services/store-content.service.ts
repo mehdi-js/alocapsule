@@ -66,6 +66,11 @@ export async function saveBusinessSettings(
     [BUSINESS_KEYS.serviceDefaultTerms]: input.serviceDefaultTerms,
     [BUSINESS_KEYS.serviceConsentLabel]: input.serviceConsentLabel,
     [BUSINESS_KEYS.showPricePerKg]: input.showPricePerKg,
+    [BUSINESS_KEYS.openHour]: input.openHour,
+    [BUSINESS_KEYS.closeHour]: input.closeHour,
+    [BUSINESS_KEYS.priceIncludesNote]: input.priceIncludesNote,
+    [BUSINESS_KEYS.priceIncludesNoteProducts]: input.priceIncludesNoteProducts,
+    [BUSINESS_KEYS.shippingAreaNote]: input.shippingAreaNote,
     [ORDER_NUMBER_PREFIX_KEY]: input.orderNumberPrefix,
   });
   await db.$transaction((tx) =>

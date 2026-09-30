@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { variantSuffix } from "@/lib/item-label";
 import { formatToman } from "@/lib/money";
 import { type OrderPricing, PAY_ON_DELIVERY_LABEL } from "@/lib/order-pricing";
 import { cn, toPersianDigits } from "@/lib/utils";
@@ -55,7 +56,8 @@ export function CheckoutSummary({
             <span className="text-ink-soft min-w-0">
               {line.productName}{" "}
               <span className="text-muted">
-                ({line.variantTitle}) × {toPersianDigits(line.quantity)}
+                {variantSuffix(line.variantTitle)} ×{" "}
+                {toPersianDigits(line.quantity)}
               </span>
             </span>
             <span className="shrink-0">{formatToman(line.lineTotal)}</span>

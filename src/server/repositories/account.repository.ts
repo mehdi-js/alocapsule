@@ -15,7 +15,7 @@ export function listUserOrders(userId: string, take = 100) {
       placedAt: true,
       items: {
         orderBy: { id: "asc" },
-        select: { productName: true, quantity: true },
+        select: { productName: true, variantTitle: true, quantity: true },
       },
     },
   });

@@ -72,7 +72,10 @@ export function CheckoutView({
           isShippingAvailableIn(m.provinces, address.province),
       )
     : initial.shippingMethods;
-  const method = methods.find((m) => m.id === methodId) ?? methods[0] ?? null;
+  // روش غیرقابل‌انتخاب (مثل ارسال فوری خارج از ساعات کاری) هرگز پیش‌فرض نمی‌شود
+  const selectable = methods.filter((m) => m.unavailableReason === null);
+  const method =
+    selectable.find((m) => m.id === methodId) ?? selectable[0] ?? null;
   const needsAddress = method?.requiresAddress ?? true;
   const needsConsent = cart.hasService && initial.service !== null;
 
@@ -180,6 +183,7 @@ export function CheckoutView({
               defaults={defaults}
               onSelect={setAddressId}
               onAddressesChange={handleAddresses}
+              areaNote={initial.areaNote}
             />
           ) : (
             <PickupInfo

@@ -1,3 +1,7 @@
+import {
+  businessHoursOnlyMessage,
+  isWithinBusinessHours,
+} from "@/lib/business-hours";
 import { removedItemMessage } from "@/lib/cart-math";
 import {
   type CouponLine,
@@ -35,6 +39,7 @@ import {
   findCheckoutItems,
   nextOrderSequence,
   type OrderItemSnapshot,
+  readBusinessHours,
   readOrderNumberPrefix,
   readServiceDefaultTerms,
 } from "@/server/repositories/order.repository";
@@ -145,6 +150,17 @@ async function placeOrderTx(
   const method = await findActiveShippingMethod(tx, ctx.input.shippingMethodId);
   if (!method) {
     throw new UserFacingError("روش ارسال انتخاب‌شده در دسترس نیست.");
+  }
+
+  // 🔴 سمت سرور: روش «فقط ساعات کاری» (ارسال فوری) خارج از ساعات کاری به وقت
+  // تهران رد می‌شود، حتی اگر کلاینت آن را انتخاب کرده باشد
+  if (method.businessHoursOnly) {
+    const { openHour, closeHour } = await readBusinessHours(tx);
+    if (!isWithinBusinessHours(ctx.now, openHour, closeHour)) {
+      throw new UserFacingError(
+        businessHoursOnlyMessage(method.name, openHour, closeHour),
+      );
+    }
   }
 
   // 🔴 سمت سرور: روشی که آدرس لازم دارد بدون آدرس رد می‌شود؛ روش بدون آدرس

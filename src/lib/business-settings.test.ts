@@ -54,6 +54,26 @@ describe("تنظیمات کسب‌وکار", () => {
     );
   });
 
+  it("ساعت کاری: پیش‌فرض ۹ تا ۱۸؛ بازه‌ی وارونه/نامعتبر ⇒ پیش‌فرض", () => {
+    const d = defaultBusinessSettings();
+    expect([d.openHour, d.closeHour]).toEqual([9, 18]);
+    const custom = parseBusinessSettings(
+      new Map<string, unknown>([
+        [BUSINESS_KEYS.openHour, 8],
+        [BUSINESS_KEYS.closeHour, 20],
+      ]),
+    );
+    expect([custom.openHour, custom.closeHour]).toEqual([8, 20]);
+    const bad = parseBusinessSettings(
+      new Map<string, unknown>([
+        [BUSINESS_KEYS.openHour, 20],
+        [BUSINESS_KEYS.closeHour, 8],
+      ]),
+    );
+    expect([bad.openHour, bad.closeHour]).toEqual([9, 18]);
+    expect(d.shippingAreaNote).toContain("تهران");
+  });
+
   it("showPricePerKg غیر بولی ⇒ خاموش", () => {
     const parsed = parseBusinessSettings(
       new Map<string, unknown>([[BUSINESS_KEYS.showPricePerKg, "true"]]),

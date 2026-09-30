@@ -92,6 +92,10 @@ export function findOrdersForExport(query: OrderQuery, take: number) {
       trackingCode: true,
       user: { select: { phone: true, fullName: true } },
       _count: { select: { items: true } },
+      items: {
+        orderBy: { id: "asc" },
+        select: { productName: true, variantTitle: true, quantity: true },
+      },
     },
   });
 }

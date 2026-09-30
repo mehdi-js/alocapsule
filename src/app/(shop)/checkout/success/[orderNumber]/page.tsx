@@ -6,6 +6,7 @@ import { CheckoutSteps } from "@/components/shop/checkout/CheckoutSteps";
 import { CheckIcon } from "@/components/shop/icons";
 import { btnOutline, btnPrimary, panel } from "@/components/shop/styles";
 import { formatJalaliDateTime } from "@/lib/date";
+import { variantSuffix } from "@/lib/item-label";
 import { formatToman } from "@/lib/money";
 import { shippingCostLabel } from "@/lib/order-pricing";
 import { cn, safeDecode, toPersianDigits } from "@/lib/utils";
@@ -102,7 +103,8 @@ export default async function OrderSuccessPage({
                 <span className="text-ink-soft">
                   {item.productName}{" "}
                   <span className="text-muted">
-                    ({item.variantTitle}) × {toPersianDigits(item.quantity)}
+                    {variantSuffix(item.variantTitle)} ×{" "}
+                    {toPersianDigits(item.quantity)}
                   </span>
                 </span>
                 <span className="shrink-0">{formatToman(item.lineTotal)}</span>

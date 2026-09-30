@@ -6,6 +6,7 @@ import type {
   WalletTxType,
 } from "@prisma/client";
 
+import { itemLabel } from "@/lib/item-label";
 import { ORDER_NUMBER_PATTERN } from "@/lib/order-number";
 import { ORDER_STATUS_LABELS, PAYABLE_STATUSES } from "@/lib/order-status";
 import type { ProfileInput } from "@/lib/validation/user";
@@ -51,7 +52,9 @@ export async function listMyOrders(userId: string): Promise<MyOrderRowDto[]> {
     statusLabel: ORDER_STATUS_LABELS[order.status],
     grandTotal: order.grandTotal,
     placedAt: order.placedAt,
-    itemsSummary: order.items.map((item) => item.productName).join("، "),
+    itemsSummary: order.items
+      .map((item) => itemLabel(item.productName, item.variantTitle))
+      .join("، "),
     itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
   }));
 }
