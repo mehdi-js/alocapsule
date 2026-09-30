@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 import { formatToman } from "@/lib/money";
+import { SITE } from "@/lib/site-content";
 import { cn, toPersianDigits } from "@/lib/utils";
 import type { CartViewDto } from "@/server/services/cart.service";
 
@@ -75,7 +76,8 @@ export function CartPageView({ initial }: { initial: CartViewDto }) {
           </span>
           <p className="text-xl font-extrabold">سبد خرید شما خالی است</p>
           <p className="text-muted text-sm">
-            محصولات علی حان را ببینید و بسته‌ی مورد علاقه‌تان را انتخاب کنید.
+            محصولات {SITE.name} را ببینید و بسته‌ی مورد علاقه‌تان را انتخاب
+            کنید.
           </p>
           <Link href="/products" className={btnPrimary}>
             مشاهده محصولات

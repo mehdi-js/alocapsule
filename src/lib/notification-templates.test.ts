@@ -9,11 +9,15 @@ import {
   SMS_TYPES,
   templateError,
 } from "@/lib/notification-templates";
+import { DEFAULT_ORDER_NUMBER_PREFIX } from "@/lib/order-number";
+import { SITE } from "@/lib/site-content";
 import { ConsoleSmsProvider } from "@/lib/sms/console-provider";
 import { smsSettingsSchema } from "@/lib/validation/sms-settings";
 
+const ORDER_NO = `${DEFAULT_ORDER_NUMBER_PREFIX}-14050701-0003`;
+
 const values = orderVariableValues({
-  orderNumber: "AL-14050701-0003",
+  orderNumber: ORDER_NO,
   grandTotal: 1_250_000,
   trackingCode: "RR123;456",
   customerName: "مریم احمدی",
@@ -37,18 +41,18 @@ describe("متغیرهای پیامک (قالب ملی پیامک: از {0})", (
   it("مقادیر به ترتیب تنظیم‌شده، مبلغ با ارقام لاتین و کاما، بدون `;`", () => {
     expect(buildSmsArgs(DEFAULT_VARIABLES.ORDER_PLACED, values)).toEqual([
       "مریم احمدی",
-      "AL-14050701-0003",
+      ORDER_NO,
       "1,250,000",
     ]);
     expect(buildSmsArgs(DEFAULT_VARIABLES.ORDER_SHIPPED, values)).toEqual([
       "مریم احمدی",
-      "AL-14050701-0003",
+      ORDER_NO,
       "RR123 456",
     ]);
     // ترتیب دلخواه ادمین
     expect(
       buildSmsArgs(["amount", "customerPhone", "orderNumber"], values),
-    ).toEqual(["1,250,000", "09121234567", "AL-14050701-0003"]);
+    ).toEqual(["1,250,000", "09121234567", ORDER_NO]);
     expect(buildSmsArgs(["code"], { code: "482913" })).toEqual(["482913"]);
   });
 
@@ -101,7 +105,7 @@ describe("تنظیمات پیامک از پنل", () => {
     const input = validSettings();
     input.variables.ORDER_PLACED = ["orderNumber", "amount"];
     input.templates.ORDER_PLACED =
-      "سفارش {0} به مبلغ {1} تومان ثبت شد. alihan.ir";
+      "سفارش {0} به مبلغ {1} تومان ثبت شد. example.ir";
     expect(smsSettingsSchema.safeParse(input).success).toBe(true);
   });
 
@@ -140,7 +144,7 @@ describe("ConsoleSmsProvider", () => {
     });
     const output = String(log.mock.calls[0]?.[0]);
     expect(output).toContain(
-      "مریم احمدی عزیز، سفارش AL-14050701-0003 به مبلغ 1,250,000 تومان در علی‌حان ثبت شد.",
+      `مریم احمدی عزیز، سفارش ${ORDER_NO} به مبلغ 1,250,000 تومان در ${SITE.name} ثبت شد.`,
     );
     log.mockRestore();
   });

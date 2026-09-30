@@ -13,6 +13,7 @@ import { ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/order-status";
 import { cn, toPersianDigits } from "@/lib/utils";
 import { requireAdmin } from "@/server/auth/current-user";
 import { searchAdminOrders } from "@/server/services/order-admin.service";
+import { getOrderNumberPrefix } from "@/server/services/order-number.service";
 
 export const metadata: Metadata = { title: "سفارش‌ها" };
 
@@ -36,6 +37,7 @@ export default async function OrdersPage({
   await requireAdmin();
   const { filters, error } = parseOrderFilters(await searchParams);
   const { rows, total, pageCount, counts } = await searchAdminOrders(filters);
+  const numberPrefix = await getOrderNumberPrefix();
   const allCount = Object.values(counts).reduce((sum, n) => sum + (n ?? 0), 0);
 
   return (
@@ -88,7 +90,7 @@ export default async function OrdersPage({
             id="orders-q"
             name="q"
             defaultValue={filters.raw.q}
-            placeholder="AL-1405… یا 0912…"
+            placeholder={`${numberPrefix}-1405… یا 0912…`}
             dir="ltr"
           />
         </Field>

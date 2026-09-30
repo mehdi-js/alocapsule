@@ -1,16 +1,17 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  bakeryJsonLd,
   breadcrumbJsonLd,
   faqPageJsonLd,
   itemListJsonLd,
+  localBusinessJsonLd,
   organizationJsonLd,
   productJsonLd,
   type ProductJsonLdInput,
   toE164,
   tomanToRial,
 } from "./jsonld";
+import { todo } from "./settings";
 
 const SITE = "https://alihan.ir";
 
@@ -89,7 +90,7 @@ describe("organizationJsonLd", () => {
       siteUrl: SITE,
       brandName: "علی حان",
       alternateNames: ["علیحان", "Alihan"],
-      legalName: "{{تکمیل توسط علی حان: نام حقوقی}}",
+      legalName: todo("نام حقوقی"),
       logoUrl: "/brand/logo-white.webp",
       phone: "۰۲۱-۲۲۳۴۵۶۷۸",
       email: "info@alihan.ir",
@@ -147,7 +148,7 @@ describe("breadcrumb، ItemList و FAQPage", () => {
   it("FAQ جای‌نگهدار حذف؛ همه جای‌نگهدار ⇒ null", () => {
     expect(
       faqPageJsonLd([
-        { question: "س۱", answer: "{{تکمیل توسط علی حان}}" },
+        { question: "س۱", answer: todo() },
         { question: "س۲", answer: "پاسخ واقعی" },
       ]),
     ).toEqual({
@@ -161,13 +162,11 @@ describe("breadcrumb، ItemList و FAQPage", () => {
         },
       ],
     });
-    expect(
-      faqPageJsonLd([{ question: "س", answer: "{{تکمیل توسط علی حان}}" }]),
-    ).toBeNull();
+    expect(faqPageJsonLd([{ question: "س", answer: todo() }])).toBeNull();
   });
 });
 
-describe("bakeryJsonLd", () => {
+describe("localBusinessJsonLd", () => {
   it("آدرس، تلفن E.164، مختصات و ساعات؛ بدون مختصات ⇒ بدون geo", () => {
     const base = {
       siteUrl: SITE,
@@ -184,9 +183,9 @@ describe("bakeryJsonLd", () => {
       mapUrl: "https://neshan.org/maps/x",
       openingHours: [{ "@type": "OpeningHoursSpecification" }],
     };
-    const data = bakeryJsonLd(base);
+    const data = localBusinessJsonLd(base);
     expect(data).toMatchObject({
-      "@type": "Bakery",
+      "@type": "LocalBusiness",
       name: "علی حان — شعبه ولیعصر",
       url: "https://alihan.ir/branches/valiasr",
       telephone: "+982122345678",
@@ -198,6 +197,8 @@ describe("bakeryJsonLd", () => {
       geo: { latitude: 35.75, longitude: 51.41 },
       hasMap: "https://neshan.org/maps/x",
     });
-    expect(bakeryJsonLd({ ...base, latitude: null }).geo).toBeUndefined();
+    expect(
+      localBusinessJsonLd({ ...base, latitude: null }).geo,
+    ).toBeUndefined();
   });
 });

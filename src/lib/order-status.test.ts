@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { formatOrderNumber, orderNumberPrefix } from "@/lib/order-number";
+import {
+  DEFAULT_ORDER_NUMBER_PREFIX,
+  formatOrderNumber,
+  isValidOrderNumberPrefix,
+  ORDER_NUMBER_PATTERN,
+  orderNumberPrefix,
+  parseOrderNumberPrefix,
+} from "@/lib/order-number";
 import {
   canTransition,
   notificationsForTransition,
@@ -58,16 +65,38 @@ describe("انتقال وضعیت سفارش (بند ۷.۷ + پرداخت کیف
 });
 
 describe("شماره‌ی سفارش", () => {
-  it("تاریخ شمسی تهران + ردیف ۴ رقمی", () => {
+  it("پیشوند + تاریخ شمسی تهران + ردیف ۴ رقمی", () => {
     // ۲۰:۳۰ UTC = ۰۰:۰۰ تهران، ۱ مهر ۱۴۰۴
-    expect(formatOrderNumber("2025-09-22T20:30:00Z", 31)).toBe(
-      "AL-14040701-0031",
+    expect(formatOrderNumber("2025-09-22T20:30:00Z", 31, "XY")).toBe(
+      "XY-14040701-0031",
     );
-    expect(orderNumberPrefix("2025-09-22T20:29:00Z")).toBe("AL-14040631-");
-    expect(formatOrderNumber("2025-09-22T20:30:00Z", 12345)).toBe(
-      "AL-14040701-12345",
+    expect(orderNumberPrefix("2025-09-22T20:29:00Z", "XY")).toBe(
+      "XY-14040631-",
     );
-    expect(() => formatOrderNumber(new Date(), 0)).toThrow(RangeError);
+    expect(formatOrderNumber("2025-09-22T20:30:00Z", 12345, "XY")).toBe(
+      "XY-14040701-12345",
+    );
+    expect(() => formatOrderNumber(new Date(), 0, "XY")).toThrow(RangeError);
+  });
+
+  it("الگو با هر پیشوند معتبر کار می‌کند و پیشوند نامعتبر رد می‌شود", () => {
+    expect(ORDER_NUMBER_PATTERN.test("XY-14040701-0031")).toBe(true);
+    expect(ORDER_NUMBER_PATTERN.test("ABC123-14040701-12345")).toBe(true);
+    expect(ORDER_NUMBER_PATTERN.test("xy-14040701-0031")).toBe(false);
+    expect(ORDER_NUMBER_PATTERN.test("14040701-0031")).toBe(false);
+    expect(isValidOrderNumberPrefix("XY")).toBe(true);
+    expect(isValidOrderNumberPrefix("X-Y")).toBe(false);
+    expect(isValidOrderNumberPrefix("")).toBe(false);
+    expect(isValidOrderNumberPrefix("ABCDEFGHI")).toBe(false);
+  });
+
+  it("مقدار نبود/نامعتبر تنظیمات ⇒ پیشوند پیش‌فرض", () => {
+    expect(parseOrderNumberPrefix("QZ")).toBe("QZ");
+    expect(parseOrderNumberPrefix(undefined)).toBe(DEFAULT_ORDER_NUMBER_PREFIX);
+    expect(parseOrderNumberPrefix(null)).toBe(DEFAULT_ORDER_NUMBER_PREFIX);
+    expect(parseOrderNumberPrefix("bad prefix")).toBe(
+      DEFAULT_ORDER_NUMBER_PREFIX,
+    );
   });
 });
 

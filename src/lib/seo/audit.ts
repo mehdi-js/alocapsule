@@ -142,7 +142,7 @@ export function auditPage(params: {
   const visible = html.replace(/<script\b[\s\S]*?<\/script>/gi, "");
   const placeholders = visible.split(COMPLETION_MARKER).length - 1;
   if (placeholders > 0) {
-    error(`${placeholders} متن «{{تکمیل توسط علی حان…}}» هنوز جایگزین نشده`);
+    error(`${placeholders} متن «${COMPLETION_MARKER}…}}» هنوز جایگزین نشده`);
   }
 
   return { url, status, title, description, issues };

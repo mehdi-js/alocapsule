@@ -3,12 +3,13 @@ import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { AccountNav } from "@/components/shop/account/AccountNav";
+import { SITE } from "@/lib/site-content";
 import { toPersianDigits } from "@/lib/utils";
 import { logoutAction } from "@/server/actions/auth";
 import { getCurrentUser } from "@/server/auth/current-user";
 
 export const metadata: Metadata = {
-  title: { default: "حساب کاربری", template: "%s | حساب کاربری علی حان" },
+  title: { default: "حساب کاربری", template: `%s | حساب کاربری ${SITE.name}` },
   robots: { index: false, follow: false },
 };
 

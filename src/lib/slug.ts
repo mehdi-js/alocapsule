@@ -9,7 +9,7 @@ export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const MAX_SLUG_LENGTH = 60;
 
 /**
- * پیشنهاد نامک از متن لاتین («Baklava  Pistachio!» ⇒ `baklava-pistachio`).
+ * پیشنهاد نامک از متن لاتین («Example  Product!» ⇒ `example-product`).
  * حروف غیرلاتین حذف می‌شوند؛ نام تمام‌فارسی ⇒ `""`. در ۶۰ کاراکتر، روی مرز
  * خط تیره بریده می‌شود.
  */

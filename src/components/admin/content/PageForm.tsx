@@ -153,7 +153,7 @@ export function PageForm({
           rows={18}
           value={state.content}
           error={error("content")}
-          hint="متن‌های {{تکمیل توسط علی حان…}} را قبل از انتشار با اطلاعات واقعی جایگزین کنید."
+          hint="متن‌های {{تکمیل توسط الو کپسول…}} را قبل از انتشار با اطلاعات واقعی جایگزین کنید."
           onChange={(content) => patch({ content })}
         />
         <FaqEditor

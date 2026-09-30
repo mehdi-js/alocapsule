@@ -1,6 +1,10 @@
 import type { Prisma, ProductUnit } from "@prisma/client";
 
 import { db, type DbClient } from "@/lib/db";
+import {
+  ORDER_NUMBER_PREFIX_KEY,
+  parseOrderNumberPrefix,
+} from "@/lib/order-number";
 
 /**
  * مخزن ثبت سفارش. همه‌ی نوشتن‌ها با کلاینت تراکنش `createOrder()` انجام می‌شوند.
@@ -46,6 +50,14 @@ export function findCartCoupon(tx: DbClient, cartId: string) {
 
 export function findActiveShippingMethod(tx: DbClient, id: string) {
   return tx.shippingMethod.findFirst({ where: { id, isActive: true } });
+}
+
+/** پیشوند شماره‌ی سفارش از `Setting` (`order.numberPrefix`)؛ نبود/نامعتبر ⇒ پیش‌فرض */
+export async function readOrderNumberPrefix(tx: DbClient): Promise<string> {
+  const row = await tx.setting.findUnique({
+    where: { key: ORDER_NUMBER_PREFIX_KEY },
+  });
+  return parseOrderNumberPrefix(row?.value);
 }
 
 /** کلید قفل مشورتی شماره‌گذاری سفارش (فقط همین بخش، نه ردیف محصول) */

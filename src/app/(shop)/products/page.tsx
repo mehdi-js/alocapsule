@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { CatalogView } from "@/components/shop/CatalogView";
 import { buildCatalogHref, listingSeoState } from "@/lib/catalog-url";
 import { buildPageMetadata } from "@/lib/seo/metadata";
+import { SITE } from "@/lib/site-content";
 import {
   getFilterOptions,
   listCatalogProducts,
@@ -22,8 +23,7 @@ export async function generateMetadata({
   // مرتب‌سازی/فیلتر ⇒ canonical تمیز؛ ?page=2 ⇒ خودش؛ جستجو ⇒ noindex, follow
   return buildPageMetadata(await getSeoContext(), {
     title: query.search ? `جستجوی «${query.search}»` : "همه محصولات",
-    description:
-      "خرید آنلاین انواع باقلوای ترکی، شیرینی هاویج، دسرهای ترکی و شکلات علی حان.",
+    description: `خرید آنلاین انواع باقلوای ترکی، شیرینی هاویج، دسرهای ترکی و شکلات ${SITE.name}.`,
     path: "/products",
     listing: listingSeoState(query),
   });

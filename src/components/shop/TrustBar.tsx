@@ -1,3 +1,4 @@
+import { SITE } from "@/lib/site-content";
 import { getSiteSettings } from "@/server/services/site-settings.service";
 
 import { TRUST_ICONS } from "./icons";
@@ -18,7 +19,7 @@ export async function TrustBar() {
   const items = await trustItems();
   return (
     <section
-      aria-label="مزیت‌های خرید از علی حان"
+      aria-label={`مزیت‌های خرید از ${SITE.name}`}
       className="bg-panel grid grid-cols-3 gap-3 rounded-[18px] border border-[rgb(201_168_118/0.14)] p-3 md:gap-0 md:px-9 md:py-6"
     >
       {items.map((item, index) => {

@@ -128,7 +128,7 @@ export function SeoSettingsForm({ settings }: { settings: SeoSettings }) {
         <h2 className="text-lg font-bold">برند و عنوان صفحات</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {field("brandName", "نام برند", {
-            hint: "در عنوان همه‌ی صفحات و schema می‌آید؛ یک املا (مثلاً «علی حان»).",
+            hint: "در عنوان همه‌ی صفحات و schema می‌آید؛ یک املا (همان نام برند سایت).",
           })}
           <Field
             label="املاهای دیگر برند"

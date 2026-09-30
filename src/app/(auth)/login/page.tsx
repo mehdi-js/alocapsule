@@ -6,6 +6,7 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { Logo } from "@/components/shop/Logo";
 import { btnOutline, btnPrimary } from "@/components/shop/styles";
 import { safeRedirectPath } from "@/lib/safe-redirect";
+import { SITE } from "@/lib/site-content";
 import { cn } from "@/lib/utils";
 import { logoutAction } from "@/server/actions/auth";
 import { getSessionUser } from "@/server/auth/current-user";
@@ -32,7 +33,7 @@ export default async function LoginPage({
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-8 px-5 py-12">
       <Logo />
       <header className="space-y-2">
-        <h1 className="text-3xl font-extrabold">ورود به علی حان</h1>
+        <h1 className="text-3xl font-extrabold">ورود به {SITE.name}</h1>
         <p className="text-muted leading-[2]">
           با شماره‌ی موبایل وارد شوید؛ اگر حساب ندارید، با کد پیامکی ثبت‌نام
           می‌کنید و یک رمز عبور می‌گذارید.

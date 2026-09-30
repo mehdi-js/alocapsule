@@ -7,6 +7,7 @@ import {
   robotsBlocksAll,
   sameUrl,
 } from "./audit";
+import { COMPLETION_MARKER, todo } from "./settings";
 
 const URL_ = "https://alihan.ir/products/baklava-gerdouyi";
 
@@ -78,7 +79,7 @@ describe("auditPage", () => {
   it("JSON-LD خراب، امتیاز، تصویر بدون alt و متن جای‌نگهدار", () => {
     const result = messages(
       page(
-        '<h1>a</h1><img src="/x.webp"/><p>{{تکمیل توسط علی حان: ساعات}}</p>',
+        `<h1>a</h1><img src="/x.webp"/><p>${todo("ساعات")}</p>`,
         '<script type="application/ld+json">{bad</script><script type="application/ld+json">{"aggregateRating":{}}</script>',
       ),
     );
@@ -86,7 +87,7 @@ describe("auditPage", () => {
       "error: JSON-LD قابل parse نیست",
       "error: JSON-LD امتیاز یا نظر دارد (در نسخه ۱ ممنوع)",
       "error: 1 تصویر بدون alt",
-      "error: 1 متن «{{تکمیل توسط علی حان…}}» هنوز جایگزین نشده",
+      `error: 1 متن «${COMPLETION_MARKER}…}}» هنوز جایگزین نشده`,
     ]);
   });
 

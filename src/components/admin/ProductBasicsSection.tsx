@@ -51,7 +51,7 @@ export function ProductBasicsSection({
           value={state.slug}
           originalSlug={originalSlug}
           pathPrefix="/products/"
-          example="baklava-gerdouyi"
+          example="example-product"
           error={error("slug")}
           onChange={(slug) => onChange({ slug, slugTouched: true })}
         />

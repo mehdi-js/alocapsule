@@ -7,11 +7,11 @@ export const latinSlugSchema = z
   .string({ error: "نامک (slug) را به انگلیسی وارد کنید" })
   .trim()
   .toLowerCase()
-  .min(1, "نامک (slug) را به انگلیسی وارد کنید؛ مثلاً baklava-gerdouyi")
+  .min(1, "نامک (slug) را به انگلیسی وارد کنید؛ مثلاً example-product")
   .max(MAX_SLUG_LENGTH, `نامک حداکثر ${MAX_SLUG_LENGTH} کاراکتر باشد`)
   .regex(
     SLUG_PATTERN,
-    "نامک فقط حروف کوچک انگلیسی، عدد و خط تیره (-) باشد؛ مثلاً baklava-gerdouyi",
+    "نامک فقط حروف کوچک انگلیسی، عدد و خط تیره (-) باشد؛ مثلاً example-product",
   );
 
 function optionalText(label: string, max: number) {
@@ -74,7 +74,7 @@ export const seoFieldsSchema = {
     .default([]),
 };
 
-/** «باقلوا، شیرینی ترکی, دسر» ⇒ آرایه (ویرگول فارسی/لاتین یا خط جدید) */
+/** «عبارت اول، عبارت دوم, عبارت سوم» ⇒ آرایه (ویرگول فارسی/لاتین یا خط جدید) */
 export function splitKeywords(text: string): string[] {
   return text
     .split(/[,،\n]/)

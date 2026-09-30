@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { SITE } from "@/lib/site-content";
 import { cn } from "@/lib/utils";
 
 /**
@@ -47,7 +48,7 @@ const LOGO_SRC = "/brand/logo-white.webp";
 const LOGO_RATIO = 507 / 200;
 
 /**
- * لوگوی کامل برند (نوشته‌ی «علی حان» + کمان‌ها). `size` همان مقیاس نشان قبلی
+ * لوگوی کامل برند (نام برند + نشان). `size` همان مقیاس نشان قبلی
  * است؛ ارتفاع لوگو ۱٫۳۵ برابر آن است تا جای قبلی را بگیرد.
  */
 export function Logo({
@@ -67,7 +68,7 @@ export function Logo({
   const content = (
     <Image
       src={LOGO_SRC}
-      alt="علی حان"
+      alt={SITE.name}
       width={width}
       height={height}
       priority={priority}
@@ -80,7 +81,11 @@ export function Logo({
 
   if (href === null) return <span className={classes}>{content}</span>;
   return (
-    <Link href={href} className={classes} aria-label="علی حان — صفحه اصلی">
+    <Link
+      href={href}
+      className={classes}
+      aria-label={`${SITE.name} — صفحه اصلی`}
+    >
       {content}
     </Link>
   );

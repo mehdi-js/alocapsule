@@ -11,7 +11,7 @@ import {
   formatOpeningHours,
   openingHoursSpecification,
 } from "@/lib/branch-hours";
-import { bakeryJsonLd, breadcrumbJsonLd } from "@/lib/seo/jsonld";
+import { breadcrumbJsonLd, localBusinessJsonLd } from "@/lib/seo/jsonld";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { phoneHref } from "@/lib/site-settings";
 import { safeDecode } from "@/lib/utils";
@@ -97,7 +97,7 @@ export default async function BranchPage({ params }: { params: Params }) {
     <div className="mx-auto flex w-full max-w-[1000px] flex-col gap-8 px-5 pt-6 md:pt-8">
       <JsonLd
         data={[
-          bakeryJsonLd({
+          localBusinessJsonLd({
             siteUrl: context.siteUrl,
             brandName: seo.brandName,
             name: branch.name,

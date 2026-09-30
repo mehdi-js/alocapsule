@@ -25,7 +25,7 @@ export const getSeoSettings = cache(async (): Promise<SeoSettings> => {
   return parseSeoSettings(raw as Map<string, unknown>);
 });
 
-/** نام برند از `seo.brandName`؛ خالی یا نامعتبر ⇒ «علی حان» */
+/** نام برند از `seo.brandName`؛ خالی یا نامعتبر ⇒ `SITE.name` */
 export async function getBrandName(): Promise<string> {
   return (await getSeoSettings()).brandName;
 }

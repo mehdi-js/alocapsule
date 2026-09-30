@@ -18,7 +18,7 @@ export function tomanToRial(toman: number): string {
   return String(Math.round(toman) * 10);
 }
 
-/** مقدارهای جای‌نگهدار «{{تکمیل توسط علی حان…}}» هرگز وارد schema نمی‌شوند */
+/** مقدارهای جای‌نگهدار «{{تکمیل توسط …}}» هرگز وارد schema نمی‌شوند */
 function real(value: string | null | undefined): string | undefined {
   const text = value?.trim();
   return text && !hasCompletionMarker(text) ? text : undefined;
@@ -215,7 +215,7 @@ export function faqPageJsonLd(
   };
 }
 
-export interface BakeryInput {
+export interface LocalBusinessInput {
   siteUrl: string;
   brandName: string;
   name: string;
@@ -230,14 +230,16 @@ export interface BakeryInput {
   mapUrl: string | null;
   /** خروجی `openingHoursSpecification` */
   openingHours: Record<string, unknown>[];
+  /** زیرنوع schema.org (مثلاً `Store`)؛ پیش‌فرض `LocalBusiness` */
+  schemaType?: string;
 }
 
-/** شعبه: `Bakery` (زیرنوع LocalBusiness) با آدرس، تلفن، ساعات و مختصات */
-export function bakeryJsonLd(input: BakeryInput): JsonObject {
+/** شعبه/محل کسب‌وکار: `LocalBusiness` با آدرس، تلفن، ساعات و مختصات */
+export function localBusinessJsonLd(input: LocalBusinessInput): JsonObject {
   const telephone = toE164(input.phone);
   return {
     "@context": "https://schema.org",
-    "@type": "Bakery",
+    "@type": input.schemaType ?? "LocalBusiness",
     name: `${input.brandName} — ${input.name}`,
     url: absoluteUrl(`/branches/${input.slug}`, input.siteUrl),
     parentOrganization: {

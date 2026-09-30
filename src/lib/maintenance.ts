@@ -4,6 +4,8 @@
  * می‌کنند.
  */
 
+import { SITE } from "@/lib/site-content";
+
 export const MAINTENANCE_KEY = "site.maintenance";
 export const MAINTENANCE_PATH = "/maintenance";
 
@@ -11,7 +13,7 @@ export const DEFAULT_MAINTENANCE_MESSAGE =
   "در حال بروزرسانی سایت هستیم و به‌زودی برمی‌گردیم. از شکیبایی شما سپاسگزاریم.";
 
 /** کوکی غیرمحرمانه‌ای که به مرورگر ادمین می‌گوید نوار «حالت بروزرسانی فعال است» را نشان دهد */
-export const MAINTENANCE_PREVIEW_COOKIE = "alihan_maintenance_preview";
+export const MAINTENANCE_PREVIEW_COOKIE = `${SITE.slug}_maintenance_preview`;
 
 export interface MaintenanceState {
   enabled: boolean;

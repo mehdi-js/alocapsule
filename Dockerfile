@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # ─────────────────────────────────────────────────────────────
-# ایمیج چندمرحله‌ای علی‌حان (بخش ۲ سند: Docker + output: standalone)
+# ایمیج چندمرحله‌ای فروشگاه (بخش ۲ سند: Docker + output: standalone)
 #   deps    ← نصب وابستگی‌ها (+ prisma generate برای Alpine)
 #   builder ← next build بدون دیتابیس (BUILD_WITHOUT_DB=1)
 #   tools   ← migration، seed و jobها (tsx + سورس کامل)

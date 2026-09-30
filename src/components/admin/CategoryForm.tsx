@@ -103,7 +103,7 @@ export function CategoryForm({
             value={state.slug}
             originalSlug={category?.slug ?? null}
             pathPrefix="/category/"
-            example="baklava"
+            example="example-category"
             error={error("slug")}
             onChange={(slug) => patch({ slug })}
           />

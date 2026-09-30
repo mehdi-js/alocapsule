@@ -404,7 +404,7 @@ model CouponRedemption {
 /// grandTotal = subtotal + shippingTotal − discountTotal
 model Order {
   id                      String      @id @default(cuid())
-  /// خوانا، مثل AL-14040625-0031
+  /// خوانا: {order.numberPrefix}-{تاریخ شمسی}-{ردیف روز}، مثل XX-14040625-0031
   orderNumber             String      @unique
   userId                  String
   status                  OrderStatus @default(PENDING_PAYMENT)

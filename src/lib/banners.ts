@@ -1,4 +1,4 @@
-import { HERO_SLIDES } from "@/lib/site-content";
+import { HERO_SLIDES, SITE } from "@/lib/site-content";
 
 /**
  * تصاویر اسلایدر و بنرهای سایت (قابل تنظیم از پنل). هر تصویر دو نسخه دارد:
@@ -41,7 +41,7 @@ export const BANNER_SLOTS = {
     tip: "متن روی سمت راست (دسکتاپ) و پایین (موبایل) می‌نشیند؛ سوژه را سمت چپ / بالا بگذارید.",
   },
   story: {
-    label: "تصویر «داستان علی حان»",
+    label: `تصویر «داستان ${SITE.name}»`,
     where: "صفحه‌ی اصلی، کنار متن داستان برند",
     desktop: "1360 × 680",
     mobile: "1000 × 690",

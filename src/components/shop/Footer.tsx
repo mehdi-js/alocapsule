@@ -106,7 +106,7 @@ export async function Footer() {
 
         <div className="mt-9 flex flex-wrap items-center justify-between gap-4 border-t border-[rgb(201_168_118/0.14)] pt-4.5">
           <p className="text-faint text-[13px]">
-            © ۲۰۲۵ علی حان. تمامی حقوق محفوظ است.
+            © ۲۰۲۵ {SITE.name}. تمامی حقوق محفوظ است.
           </p>
           {seal ? (
             // لینک و تصویر مستقیم از اینماد با referrer «origin» (شرط اعتبارسنجی اینماد)

@@ -6,7 +6,7 @@ const OG_SUFFIX = "-og.jpg";
 
 /**
  * نام فایل تصویر محصول (SEO.md §۹): `{نامک}-{ردیف}-{۴ نویسه}` مثل
- * `baklava-gerdouyi-1-a3f9`. نامک غیرلاتین (قدیمی) ⇒ `product`.
+ * `example-product-1-a3f9`. نامک غیرلاتین (قدیمی) ⇒ `product`.
  * رسیدها همچنان uuid و خصوصی‌اند.
  */
 export function productImageBaseName(

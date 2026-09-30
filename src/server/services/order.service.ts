@@ -28,6 +28,7 @@ import {
   findCheckoutItems,
   nextOrderSequence,
   type OrderItemSnapshot,
+  readOrderNumberPrefix,
 } from "@/server/repositories/order.repository";
 
 import { type CartOwner, getCartView, resolveCart } from "./cart.service";
@@ -152,12 +153,13 @@ async function placeOrderTx(
   const applied = coupon?.ok && pricing.discountTotal > 0 ? coupon : null;
 
   // ۴) سفارش + اقلام (اسنپ‌شات کامل)
-  const prefix = orderNumberPrefix(ctx.now);
+  const numberPrefix = await readOrderNumberPrefix(tx);
+  const prefix = orderNumberPrefix(ctx.now, numberPrefix);
   const sequence = await nextOrderSequence(tx, prefix);
   const order = await createOrderRecord(
     tx,
     {
-      orderNumber: formatOrderNumber(ctx.now, sequence),
+      orderNumber: formatOrderNumber(ctx.now, sequence, numberPrefix),
       userId: ctx.userId,
       ...pricing,
       couponId: applied?.couponId ?? null,

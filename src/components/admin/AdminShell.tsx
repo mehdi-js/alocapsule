@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 
+import { SITE } from "@/lib/site-content";
 import { cn, toPersianDigits } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -70,7 +71,7 @@ export function AdminShell({
     <div className="min-h-screen bg-neutral-100 text-neutral-900 md:flex">
       <aside className="hidden w-60 shrink-0 border-e border-neutral-200 bg-white md:block">
         <div className="border-b border-neutral-200 px-5 py-4 text-lg font-bold">
-          علی حان
+          {SITE.name}
         </div>
         {nav}
       </aside>
@@ -90,7 +91,7 @@ export function AdminShell({
           />
           <aside className="absolute inset-y-0 start-0 w-64 bg-white shadow-xl">
             <div className="border-b border-neutral-200 px-5 py-4 text-lg font-bold">
-              علی حان
+              {SITE.name}
             </div>
             {nav}
           </aside>

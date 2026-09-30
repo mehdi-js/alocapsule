@@ -28,7 +28,7 @@ export interface SeoContext {
   /** `null` ⇒ رکورد جدید */
   id: string | null;
   name: string;
-  /** مسیر صفحه، مثل `/products/baklava-gerdouyi` */
+  /** مسیر صفحه، مثل `/products/example-product` */
   path: string;
   /** متن اصلی صفحه (rich text) برای متای خودکار و تحلیل */
   text: string;
@@ -103,7 +103,7 @@ export function SeoSection({
             label="کلمات ثانویه"
             htmlFor="secondaryKeywords"
             error={error("secondaryKeywords")}
-            hint="با ویرگول جدا کنید؛ مثلاً: قیمت باقلوا، باقلوا تازه"
+            hint="با ویرگول جدا کنید؛ مثلاً: عبارت اول، عبارت دوم"
           >
             <Input
               id="secondaryKeywords"

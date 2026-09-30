@@ -1,13 +1,15 @@
 /**
  * کلیدهای `Setting` سئو (SEO.md §۶.۵) و مقادیر پیش‌فرض/seed آن‌ها.
  *
- * - `seo.brandName` تنها منبع نام برند است («علی حان» با فاصله)؛ املاهای دیگر
+ * - `seo.brandName` تنها منبع نام برند است (مقدار پیش‌فرض از `SITE.name`)؛ املاهای دیگر
  *   فقط در `seo.alternateNames` (برای `alternateName` در schema سازمان).
  * - تلفن، ایمیل، آدرس و شبکه‌های اجتماعی سازمان (`org.phone/email/address/
  *   sameAs`) کلید جدا ندارند و از `site.content` خوانده می‌شوند تا دو منبع
  *   ناهمگام نشوند؛ فقط `org.legalName` و `org.logoUrl` اینجا هستند.
  * - مقدار خالی (`""`) یعنی «تنظیم نشده» و در HTML نمی‌آید.
  */
+
+import { SITE } from "@/lib/site-content";
 
 export interface SeoFaqItem {
   question: string;
@@ -31,10 +33,10 @@ export const SEO_KEYS = {
   verificationBing: "verification.bing",
 } as const;
 
-export const DEFAULT_BRAND_NAME = "علی حان";
+export const DEFAULT_BRAND_NAME = SITE.name;
 
 /** جای‌نگهدار داده‌ی کسب‌وکار؛ `seo:audit` (فاز S5) وجودش را در HTML گزارش می‌کند */
-export const COMPLETION_MARKER = "{{تکمیل توسط علی حان";
+export const COMPLETION_MARKER = `{{تکمیل توسط ${SITE.name}`;
 
 export function todo(what?: string): string {
   return what ? `${COMPLETION_MARKER}: ${what}}}` : `${COMPLETION_MARKER}}}`;
@@ -44,19 +46,18 @@ export function hasCompletionMarker(text: string): boolean {
   return text.includes(COMPLETION_MARKER);
 }
 
-/** `"%s | {brandName}"` ⇒ `"%s | علی حان"` (قالب title در Next.js) */
+/** `"%s | {brandName}"` ⇒ `"%s | {نام برند}"` (قالب title در Next.js) */
 export function resolveTitleTemplate(template: string, brandName: string) {
   return template.replaceAll("{brandName}", brandName);
 }
 
-const HOME_DESCRIPTION =
-  "خرید آنلاین باقلوای ترکی علی حان؛ باقلوا گردویی، پسته‌ای، هاویج، کادایف و شکلات دبی با مواد اولیه‌ی درجه‌یک و بسته‌بندی لوکس.";
+const HOME_DESCRIPTION = `خرید آنلاین باقلوای ترکی ${DEFAULT_BRAND_NAME}؛ باقلوا گردویی، پسته‌ای، هاویج، کادایف و شکلات دبی با مواد اولیه‌ی درجه‌یک و بسته‌بندی لوکس.`;
 
 /** بلوک محتوای سئوی صفحه‌ی اصلی (SEO.md §۱۴.۱)؛ قالب `lib/rich-text.ts` */
 const HOME_CONTENT = [
-  "## باقلوای ترکی علی حان؛ طعم اصیل، تازه و دست‌ساز",
-  `باقلوای ترکی با لایه‌های نازک و ترد خمیر یوفکا، مغز پرملات و شربتی که نه زیاد شیرین است و نه کم، یکی از محبوب‌ترین شیرینی‌های شرقی است. در علی حان هر سینی باقلوا با مواد اولیه‌ی درجه‌یک تهیه می‌شود تا طعمی که روی میز شما می‌رسد، همان طعم اصیل باقلوای ترکی باشد. ${todo("یک یا دو جمله درباره‌ی سابقه و روش تولید")}`,
-  "## خرید آنلاین باقلوا از علی حان",
+  `## باقلوای ترکی ${DEFAULT_BRAND_NAME}؛ طعم اصیل، تازه و دست‌ساز`,
+  `باقلوای ترکی با لایه‌های نازک و ترد خمیر یوفکا، مغز پرملات و شربتی که نه زیاد شیرین است و نه کم، یکی از محبوب‌ترین شیرینی‌های شرقی است. در ${DEFAULT_BRAND_NAME} هر سینی باقلوا با مواد اولیه‌ی درجه‌یک تهیه می‌شود تا طعمی که روی میز شما می‌رسد، همان طعم اصیل باقلوای ترکی باشد. ${todo("یک یا دو جمله درباره‌ی سابقه و روش تولید")}`,
+  `## خرید آنلاین باقلوا از ${DEFAULT_BRAND_NAME}`,
   "برای خرید باقلوا کافی است محصول و وزن دلخواهتان را انتخاب کنید، سفارش را ثبت و مبلغ را کارت‌به‌کارت واریز کنید. پس از بارگذاری رسید و تأیید پرداخت، پیامک تأیید برایتان ارسال می‌شود و سفارش آماده‌ی ارسال می‌شود. امکان پرداخت از کیف پول حساب کاربری هم وجود دارد.",
   "## انواع باقلوا و شیرینی ترکی",
   [
@@ -69,7 +70,7 @@ const HOME_CONTENT = [
     "- [کنافه پنیری](/products/kanafeh-panir)، [بامیه ترکی](/products/bamiyeh-torki) و [شکلات دبی](/products/chocolate-dubai)",
   ].join("\n"),
   "## بسته‌بندی و ارسال",
-  `باقلواهای علی حان در بسته‌بندی‌های شیک و مناسب هدیه آماده می‌شوند. ${todo("مناطق تحت پوشش ارسال، روش‌ها و زمان تقریبی")}`,
+  `باقلواهای ${DEFAULT_BRAND_NAME} در بسته‌بندی‌های شیک و مناسب هدیه آماده می‌شوند. ${todo("مناطق تحت پوشش ارسال، روش‌ها و زمان تقریبی")}`,
 ].join("\n\n");
 
 /** سوالات متداول صفحه‌ی اصلی (SEO.md §۱۴.۲) */
@@ -104,14 +105,14 @@ export const SEO_SETTING_DEFAULTS: Record<
   string | string[] | SeoFaqItem[]
 > = {
   [SEO_KEYS.brandName]: DEFAULT_BRAND_NAME,
-  [SEO_KEYS.alternateNames]: ["علیحان", "علی‌حان", "Alihan", "ALIHAN"],
+  [SEO_KEYS.alternateNames]: [],
   [SEO_KEYS.titleTemplate]: "%s | {brandName}",
   [SEO_KEYS.defaultDescription]: HOME_DESCRIPTION,
   // تا فاز S2/S3 تصویر OG پیش‌فرض نداریم
   [SEO_KEYS.defaultOgImage]: "",
-  [SEO_KEYS.homeTitle]: "خرید باقلوای ترکی اصل و تازه | علی حان",
+  [SEO_KEYS.homeTitle]: `خرید باقلوای ترکی اصل و تازه | ${DEFAULT_BRAND_NAME}`,
   [SEO_KEYS.homeDescription]: HOME_DESCRIPTION,
-  [SEO_KEYS.homeH1]: "خرید باقلوای ترکی علی حان",
+  [SEO_KEYS.homeH1]: `خرید باقلوای ترکی ${DEFAULT_BRAND_NAME}`,
   [SEO_KEYS.homeContent]: HOME_CONTENT,
   [SEO_KEYS.homeFaq]: HOME_FAQ,
   [SEO_KEYS.orgLegalName]: todo("نام حقوقی ثبت‌شده‌ی کسب‌وکار"),

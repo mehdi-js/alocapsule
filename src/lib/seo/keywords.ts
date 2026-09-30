@@ -1,7 +1,7 @@
 import { normalizeFa } from "./text";
 
 export interface KeywordOwner {
-  /** برای پیام: «محصول باقلوا گردویی» */
+  /** برای پیام: «محصول نمونه» */
   label: string;
   focusKeyword: string | null;
 }

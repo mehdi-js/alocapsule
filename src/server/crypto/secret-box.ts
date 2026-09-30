@@ -6,6 +6,7 @@ import {
 } from "node:crypto";
 
 import { getAuthSecret } from "@/lib/env";
+import { SITE } from "@/lib/site-content";
 
 /**
  * رمزنگاری مقادیر محرمانه‌ای که در دیتابیس ذخیره می‌شوند (مثل رمز/ApiKey
@@ -18,7 +19,7 @@ const VERSION = "v1";
 
 function key(): Buffer {
   return createHash("sha256")
-    .update(`alihan-settings-secret:${getAuthSecret()}`)
+    .update(`${SITE.slug}-settings-secret:${getAuthSecret()}`)
     .digest();
 }
 

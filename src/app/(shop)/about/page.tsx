@@ -14,7 +14,7 @@ import { RichText } from "@/components/ui/RichText";
 import { BANNER_SLOTS } from "@/lib/banners";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { effectiveMeta } from "@/lib/seo/title";
-import { ABOUT_PAGE } from "@/lib/site-content";
+import { ABOUT_PAGE, SITE } from "@/lib/site-content";
 import { getBanners } from "@/server/services/banner.service";
 import { getFixedPage } from "@/server/services/page.service";
 import { getSeoContext } from "@/server/services/seo-settings.service";
@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: page?.seoTitle || page?.title || "درباره ما",
     description:
       effectiveMeta(page?.metaDescription, page?.content) ||
-      "داستان علی حان؛ هنر باقلواسازی ترکی، مواد اولیه‌ی درجه یک و بسته‌بندی شایسته‌ی هدیه.",
+      `داستان ${SITE.name}؛ هنر باقلواسازی ترکی، مواد اولیه‌ی درجه یک و بسته‌بندی شایسته‌ی هدیه.`,
     path: "/about",
     noindex: page?.noindex,
   });
@@ -44,7 +44,7 @@ export default async function AboutPage() {
       <PageHero
         eyebrow={ABOUT_PAGE.eyebrow}
         title={[...ABOUT_PAGE.title]}
-        imageLabel="بنر درباره علی حان"
+        imageLabel={`بنر درباره ${SITE.name}`}
         images={banners.images.aboutHero}
       />
 
@@ -121,7 +121,7 @@ export default async function AboutPage() {
       </section>
 
       <section aria-labelledby="branches-title" className="flex flex-col gap-6">
-        <SectionTitle id="branches-title">شعب علی حان</SectionTitle>
+        <SectionTitle id="branches-title">شعب {SITE.name}</SectionTitle>
         <BranchCards />
       </section>
 

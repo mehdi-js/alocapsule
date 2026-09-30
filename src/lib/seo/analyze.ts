@@ -254,7 +254,8 @@ export function analyzeSeo(input: SeoAnalysisInput): SeoCheck[] {
       : {
           id: "internalLinks",
           status: "warn",
-          message: "متن لینک داخلی ندارد؛ مثلاً [باقلوا](/category/baklava).",
+          message:
+            "متن لینک داخلی ندارد؛ مثلاً [دسته‌ی نمونه](/category/example-category).",
         },
   );
 

@@ -3,12 +3,16 @@ import type { ReactNode } from "react";
 
 import { AdminShell } from "@/components/admin/AdminShell";
 import { ToastProvider } from "@/components/ui/Toast";
+import { SITE } from "@/lib/site-content";
 import { logoutAction } from "@/server/actions/auth";
 import { requireAdmin } from "@/server/auth/current-user";
 import { getMaintenance } from "@/server/services/maintenance.service";
 
 export const metadata: Metadata = {
-  title: { default: "مدیریت | علی حان", template: "%s | مدیریت علی حان" },
+  title: {
+    default: `مدیریت | ${SITE.name}`,
+    template: `%s | مدیریت ${SITE.name}`,
+  },
   robots: { index: false, follow: false },
 };
 

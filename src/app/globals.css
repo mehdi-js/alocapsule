@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* توکن‌های طراحی — design_handoff_alihan_store/README.md */
+/* توکن‌های طراحی */
 @theme {
   --font-sans:
     var(--font-vazirmatn), ui-sans-serif, system-ui, -apple-system, "Segoe UI",

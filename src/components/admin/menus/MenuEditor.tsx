@@ -160,7 +160,7 @@ export function MenuEditor({
       {categories.length === 0 ? (
         <EmptyState
           title="این منو هنوز دسته‌ای ندارد"
-          description="اول یک دسته (مثلاً باقلوا یا دمنوش‌ها) بسازید، بعد آیتم‌ها را اضافه کنید."
+          description="اول یک دسته (مثلاً «پیش‌غذا» یا «نوشیدنی‌ها») بسازید، بعد آیتم‌ها را اضافه کنید."
         />
       ) : (
         <SortableList items={categories} onReorder={reorderCategories}>

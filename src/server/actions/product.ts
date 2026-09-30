@@ -40,7 +40,7 @@ const redirectTargetSchema = z
   .max(300)
   .regex(
     /^\/(?!\/)\S*$/,
-    "مقصد ریدایرکت باید مسیری داخلی مثل /category/baklava باشد",
+    "مقصد ریدایرکت باید مسیری داخلی مثل /category/example-category باشد",
   )
   .nullish()
   .transform((value) => value || null);

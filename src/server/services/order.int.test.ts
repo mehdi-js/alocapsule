@@ -2,7 +2,11 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { TOTAL_LIMIT_MESSAGE } from "@/lib/coupon";
 import { db } from "@/lib/db";
-import { ORDER_NUMBER_PATTERN } from "@/lib/order-number";
+import {
+  DEFAULT_ORDER_NUMBER_PREFIX,
+  ORDER_NUMBER_PATTERN,
+  ORDER_NUMBER_PREFIX_KEY,
+} from "@/lib/order-number";
 import {
   type Catalog,
   cleanupFixtures,
@@ -255,5 +259,37 @@ describe("createOrder()", () => {
       placeOrder(customer, catalog.post, { expectedGrandTotal: 1 }),
     ).rejects.toThrow(PRICE_CHANGED_MESSAGE);
     expect(await ordersOf(customer.userId)).toHaveLength(0);
+  });
+  it("پیشوند شماره‌ی سفارش از Setting `order.numberPrefix` خوانده می‌شود", async () => {
+    const previous = await db.setting.findUnique({
+      where: { key: ORDER_NUMBER_PREFIX_KEY },
+    });
+    const setPrefix = (value: string | null) =>
+      value === null
+        ? db.setting.deleteMany({ where: { key: ORDER_NUMBER_PREFIX_KEY } })
+        : db.setting.upsert({
+            where: { key: ORDER_NUMBER_PREFIX_KEY },
+            create: { key: ORDER_NUMBER_PREFIX_KEY, value },
+            update: { value },
+          });
+    try {
+      await setPrefix("ZZ");
+      const custom = await createCustomer();
+      await fillCart(custom, [[catalog.small, 1]]);
+      const first = await placeOrder(custom, catalog.post);
+      expect(first.orderNumber).toMatch(/^ZZ-\d{8}-\d{4,}$/);
+      expect(first.orderNumber).toMatch(ORDER_NUMBER_PATTERN);
+
+      // نامعتبر یا نبود ⇒ پیش‌فرض
+      await setPrefix(null);
+      await fillCart(custom, [[catalog.small, 1]]);
+      const second = await placeOrder(custom, catalog.post);
+      expect(
+        second.orderNumber.startsWith(`${DEFAULT_ORDER_NUMBER_PREFIX}-`),
+      ).toBe(true);
+    } finally {
+      if (previous) await setPrefix(previous.value as string);
+      else await setPrefix(null);
+    }
   });
 });

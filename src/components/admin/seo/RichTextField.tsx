@@ -57,8 +57,7 @@ export function RichTextField({
               <code>- مورد</code> ⇒ فهرست، <code>**متن**</code> ⇒ پررنگ
             </li>
             <li>
-              <code>[باقلوا گردویی](/products/baklava-gerdouyi)</code> ⇒ لینک
-              داخلی
+              <code>[محصول نمونه](/products/example-product)</code> ⇒ لینک داخلی
             </li>
           </ul>
         </details>

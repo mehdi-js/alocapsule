@@ -96,7 +96,7 @@ function RedirectForm({
           dir="ltr"
           value={state.fromPath}
           invalid={!!errors.fromPath}
-          placeholder="/product/باقلوا-گردویی"
+          placeholder="/product/نام-قدیمی"
           onChange={(event) => patch({ fromPath: event.target.value })}
         />
       </Field>
@@ -117,7 +117,7 @@ function RedirectForm({
           label="آدرس جدید (مقصد)"
           htmlFor="redirect-to"
           error={errors.toPath}
-          hint="مسیر داخلی مثل /products/baklava-gerdouyi"
+          hint="مسیر داخلی مثل /products/example-product"
           required
         >
           <Input

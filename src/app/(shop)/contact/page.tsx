@@ -12,6 +12,7 @@ import { btnOutline, iconButton } from "@/components/shop/styles";
 import { RichText } from "@/components/ui/RichText";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { effectiveMeta } from "@/lib/seo/title";
+import { SITE } from "@/lib/site-content";
 import { phoneHref, socialLinks } from "@/lib/site-settings";
 import { cn } from "@/lib/utils";
 import { getBanners } from "@/server/services/banner.service";
@@ -25,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: page?.seoTitle || page?.title || "تماس با ما",
     description:
       effectiveMeta(page?.metaDescription, page?.content) ||
-      "راه‌های ارتباط با فروشگاه علی حان: تلفن، ایمیل، آدرس و شبکه‌های اجتماعی.",
+      `راه‌های ارتباط با فروشگاه ${SITE.name}: تلفن، ایمیل، آدرس و شبکه‌های اجتماعی.`,
     path: "/contact",
     noindex: page?.noindex,
   });
@@ -44,7 +45,7 @@ export default async function ContactPage() {
     <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-10 px-5 pt-4 md:pt-5">
       <PageHero
         eyebrow="در خدمت شما هستیم"
-        title={["تماس با علی حان"]}
+        title={[`تماس با ${SITE.name}`]}
         imageLabel="بنر تماس"
         images={banners.images.contactHero}
       >

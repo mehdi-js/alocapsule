@@ -46,7 +46,7 @@ export function PopularProducts({ products }: { products: ProductCardDto[] }) {
 }
 
 /**
- * «داستان علی حان». دکمه‌ی «ویدیو معرفی برند» طراحی ساخته نشده، چون هنوز
+ * «داستان برند». دکمه‌ی «ویدیو معرفی برند» طراحی ساخته نشده، چون هنوز
  * ویدیویی وجود ندارد (دکمه‌ی بی‌عمل نمی‌گذاریم).
  */
 export function BrandStory({ images }: { images: BannerImages }) {

@@ -69,7 +69,7 @@ export function RedirectImport() {
           rows={6}
           value={text}
           placeholder={
-            "from,to,status\n/product/old-name,/products/baklava-gerdouyi,301\n/old-page,,410"
+            "from,to,status\n/product/old-name,/products/example-product,301\n/old-page,,410"
           }
           onChange={(event) => setText(event.target.value)}
         />

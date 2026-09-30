@@ -1,3 +1,4 @@
+import { DEFAULT_ORDER_NUMBER_PREFIX } from "@/lib/order-number";
 import type { OrderNotificationType } from "@/lib/order-status";
 import { SITE } from "@/lib/site-content";
 import { sanitizeSmsArg } from "@/lib/sms/sanitize";
@@ -66,7 +67,10 @@ export const VARIABLES: Record<VariableKey, { label: string; sample: string }> =
     code: { label: "کد ورود (۶ رقمی)", sample: "482913" },
     customerName: { label: "نام مشتری", sample: "مریم احمدی" },
     customerPhone: { label: "موبایل مشتری", sample: "09121234567" },
-    orderNumber: { label: "شماره‌ی سفارش", sample: "AL-14050701-0001" },
+    orderNumber: {
+      label: "شماره‌ی سفارش",
+      sample: `${DEFAULT_ORDER_NUMBER_PREFIX}-14050701-0001`,
+    },
     amount: { label: "مبلغ (تومان)", sample: "357,000" },
     trackingCode: { label: "کد رهگیری", sample: "123456789012" },
   };
@@ -108,14 +112,15 @@ export const DEFAULT_VARIABLES: Record<SmsType, readonly VariableKey[]> = {
 
 /** ملی پیامک درج نشانی سایت در انتهای الگو را اجباری کرده است */
 const SITE_HOST = new URL(SITE.url).host;
+const BRAND = SITE.name;
 
 export const DEFAULT_TEMPLATES: Record<SmsType, string> = {
-  OTP: `کد ورود شما به علی‌حان: {0}\nاین کد را در اختیار دیگران قرار ندهید.\n${SITE_HOST}`,
-  ORDER_PLACED: `{0} عزیز، سفارش {1} به مبلغ {2} تومان در علی‌حان ثبت شد. لطفاً مبلغ را کارت‌به‌کارت کنید و رسید را در سایت بارگذاری کنید.\n${SITE_HOST}`,
-  PAYMENT_APPROVED: `{0} عزیز، پرداخت سفارش {1} تأیید شد و سفارش شما در حال آماده‌سازی است.\nعلی‌حان\n${SITE_HOST}`,
-  PAYMENT_REJECTED: `{0} عزیز، رسید پرداخت سفارش {1} تأیید نشد. لطفاً از بخش سفارش‌های من رسید صحیح را بارگذاری کنید.\nعلی‌حان\n${SITE_HOST}`,
-  ORDER_SHIPPED: `{0} عزیز، سفارش {1} ارسال شد.\nکد رهگیری: {2}\nعلی‌حان\n${SITE_HOST}`,
-  ORDER_CANCELED: `{0} عزیز، سفارش {1} لغو شد. اگر مبلغی پرداخت کرده بودید به کیف پول حساب شما برگشت داده شده است.\nعلی‌حان\n${SITE_HOST}`,
+  OTP: `کد ورود شما به ${BRAND}: {0}\nاین کد را در اختیار دیگران قرار ندهید.\n${SITE_HOST}`,
+  ORDER_PLACED: `{0} عزیز، سفارش {1} به مبلغ {2} تومان در ${BRAND} ثبت شد. لطفاً مبلغ را کارت‌به‌کارت کنید و رسید را در سایت بارگذاری کنید.\n${SITE_HOST}`,
+  PAYMENT_APPROVED: `{0} عزیز، پرداخت سفارش {1} تأیید شد و سفارش شما در حال آماده‌سازی است.\n${BRAND}\n${SITE_HOST}`,
+  PAYMENT_REJECTED: `{0} عزیز، رسید پرداخت سفارش {1} تأیید نشد. لطفاً از بخش سفارش‌های من رسید صحیح را بارگذاری کنید.\n${BRAND}\n${SITE_HOST}`,
+  ORDER_SHIPPED: `{0} عزیز، سفارش {1} ارسال شد.\nکد رهگیری: {2}\n${BRAND}\n${SITE_HOST}`,
+  ORDER_CANCELED: `{0} عزیز، سفارش {1} لغو شد. اگر مبلغی پرداخت کرده بودید به کیف پول حساب شما برگشت داده شده است.\n${BRAND}\n${SITE_HOST}`,
   ADMIN_RECEIPT_SUBMITTED: `رسید جدید برای بررسی\nسفارش {0} به مبلغ {1} تومان\nمشتری: {2}\n${SITE_HOST}`,
   ADMIN_WALLET_PAID: `پرداخت با کیف پول\nسفارش {0} به مبلغ {1} تومان آماده‌سازی شود.\nمشتری: {2}\n${SITE_HOST}`,
 };

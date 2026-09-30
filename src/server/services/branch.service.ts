@@ -20,7 +20,7 @@ import type { PageLookup } from "./catalog-page.service";
 import { clearRedirectCache } from "./redirect.service";
 
 /**
- * شعب (SEO.md §۶.۴ و فاز S4): صفحه‌ی `/branches/{slug}` با schema `Bakery`.
+ * شعب (SEO.md §۶.۴ و فاز S4): صفحه‌ی `/branches/{slug}` با schema `LocalBusiness`.
  * نام، آدرس و تلفن هر شعبه فقط همین‌جا ثبت می‌شود (یک منبع برای صفحات،
  * درباره ما و schema).
  */

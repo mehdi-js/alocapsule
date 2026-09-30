@@ -4,7 +4,7 @@ import { truncateAtWord } from "@/lib/seo/text";
 const TITLE_CUT = 60;
 const META_CUT = 160;
 
-/** «https://alihan.ir/products/x» ⇒ «alihan.ir › products › x» */
+/** «https://example.ir/products/x» ⇒ «example.ir › products › x» */
 function breadcrumb(url: string): string {
   try {
     const { host, pathname } = new URL(url);
