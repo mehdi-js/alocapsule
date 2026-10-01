@@ -103,7 +103,7 @@ npm install --registry <آدرس-میرور-npm>
 - تم روشن و نارنجی؛ همه‌ی رنگ‌ها توکن معنایی در `@theme` فایل `src/app/globals.css` هستند (هیچ کامپوننتی رنگ خام نمی‌نویسد) و جدول کنتراست در `docs/DESIGN_TOKENS.md` است.
 - نام برند فقط در `src/lib/brand.ts` نوشته می‌شود (`SITE` در `src/lib/site-content.ts` از آن می‌خواند).
 - متن‌های صفحه‌ی اصلی، تماس، تحویل حضوری و شرایط خدمت از «تنظیمات ← صفحه‌ی اصلی» و «کسب‌وکار و خدمت» در پنل ادمین ویرایش می‌شوند؛ ادعای واقعی کسب‌وکار در کد/seed با `{{تکمیل توسط الو کپسول: …}}` علامت‌گذاری شده و باید پر شود.
-- لوگو و favicon جای‌نگهدارند (`public/brand/logo.svg`، `src/app/icon.svg`) تا فایل نهایی برسد.
+- لوگو و favicon فایل رسمی کارفرمایند: `public/brand/logo.png`، `public/brand/mark.png`، `src/app/icon.png`، `src/app/apple-icon.png`، `src/app/favicon.ico`.
 
 ## قواعد مهم
 

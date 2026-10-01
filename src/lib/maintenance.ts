@@ -37,7 +37,10 @@ const EXEMPT_PREFIXES = [
   MAINTENANCE_PATH,
 ];
 const EXEMPT_FILES = [
-  "/icon.svg",
+  "/icon.png",
+  "/apple-icon.png",
+  "/brand/logo.png",
+  "/brand/mark.png",
   "/favicon.ico",
   "/robots.txt",
   "/sitemap.xml",

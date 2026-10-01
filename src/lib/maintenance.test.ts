@@ -16,7 +16,7 @@ describe("حالت بروزرسانی", () => {
       "/admin/settings",
       "/api/media/menu/x.webp",
       "/_next/static/chunk.js",
-      "/icon.svg",
+      "/icon.png",
       "/maintenance",
     ]) {
       expect(isMaintenanceExempt(path), path).toBe(true);

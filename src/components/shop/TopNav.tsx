@@ -27,7 +27,7 @@ export function TopNav({ contact }: { contact: HeaderContact }) {
     <header className="border-b border-hair">
       {/* دسکتاپ */}
       <div className="mx-auto hidden w-full max-w-[1400px] items-center justify-between gap-8 px-11 py-4 md:flex">
-        <Logo priority />
+        <Logo priority size={40} />
 
         <nav
           aria-label="منوی اصلی"
@@ -86,7 +86,7 @@ export function TopNav({ contact }: { contact: HeaderContact }) {
       {/* موبایل */}
       <div className="flex items-center justify-between gap-3 px-5 py-3 md:hidden">
         <MobileMenu contact={contact} />
-        <Logo size={26} />
+        <Logo size={30} />
         <Link href="/cart" aria-label="سبد خرید" className={iconButton}>
           <CartIcon size={18} />
           {cartCount > 0 ? <CartBadge count={cartCount} /> : null}

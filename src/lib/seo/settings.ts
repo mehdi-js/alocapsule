@@ -83,7 +83,7 @@ export const SEO_SETTING_DEFAULTS: Record<
   [SEO_KEYS.homeContent]: HOME_CONTENT,
   [SEO_KEYS.homeFaq]: HOME_FAQ,
   [SEO_KEYS.orgLegalName]: todo("نام حقوقی ثبت‌شده‌ی کسب‌وکار"),
-  [SEO_KEYS.orgLogoUrl]: "/brand/logo.svg",
+  [SEO_KEYS.orgLogoUrl]: "/brand/logo.png",
   [SEO_KEYS.verificationGoogle]: "",
   [SEO_KEYS.verificationBing]: "",
 };

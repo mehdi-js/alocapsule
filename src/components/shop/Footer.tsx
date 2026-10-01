@@ -35,7 +35,8 @@ export async function Footer() {
       <div className="mx-auto w-full max-w-[1400px]">
         <div className="grid gap-10 md:grid-cols-[1.2fr_0.8fr_0.8fr_1.2fr]">
           <div className="flex flex-col gap-4">
-            <Logo />
+            {/* لوگوی رسمی (آبی/نارنجی) روی زمینه‌ی تیره‌ی فوتر خوانا نیست؛ روی کاشی روشن */}
+            <Logo className="w-fit rounded-2xl bg-white px-4 py-2.5" />
             <p className="text-on-media/75 text-sm">{SITE.tagline}</p>
             <div className="flex items-center gap-3">
               {socialLinks(social).map((item) => {

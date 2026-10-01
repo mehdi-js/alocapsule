@@ -99,6 +99,8 @@ const LEGACY_SETTING_VALUES: Record<string, unknown[]> = {
     "الو کپسول؛ شارژ، خرید و ارسال کپسول گاز مایع (LPG) در تهران. سفارش آنلاین، ارسال با پیک یا تحویل حضوری.",
   ],
   "home.hero.primaryHref": ["/category/lpg-charge"],
+  // لوگوی جای‌نگهدار قبلی (فایل رسمی کارفرما جایگزین شد)
+  [SEO_KEYS.orgLogoUrl]: ["/brand/logo.svg"],
 };
 
 /**
