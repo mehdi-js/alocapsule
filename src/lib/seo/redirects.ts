@@ -94,7 +94,11 @@ export type LegacyResult =
  */
 export function legacyRule(path: string, search: string): LegacyResult | null {
   const params = new URLSearchParams(search);
-  if (path === "/" && (params.has("add-to-cart") || params.has("p"))) {
+  // `/?s=…` جستجوی وردپرس (SEO.md §۹.۲)؛ `?p=ID` و `?add-to-cart=` ووکامرس
+  if (
+    path === "/" &&
+    (params.has("add-to-cart") || params.has("p") || params.has("s"))
+  ) {
     return { kind: "redirect", to: "/", log: false };
   }
   if (path === "/shop" || path.startsWith("/shop/")) {

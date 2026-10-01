@@ -99,7 +99,8 @@ describe("ریدایرکت‌ها", () => {
     expect(await matchRedirect("/wp-json/", "", null)).toEqual({
       kind: "gone",
     });
-    expect(await matchRedirect("/shop/", "", null)).toEqual({
+    // `/shop/` حالا ردیف seed دارد (P4)؛ قاعده‌ی الگویی برای زیرمسیرهای بدون ردیف است
+    expect(await matchRedirect("/shop/page/2/", "", null)).toEqual({
       kind: "redirect",
       to: "/products",
       log: false,

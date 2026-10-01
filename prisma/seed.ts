@@ -10,6 +10,10 @@ import {
 import { normalizePhone } from "@/lib/phone";
 import { buildOptionKey, buildVariantTitle } from "@/lib/product-options";
 import { DEFAULT_RELATED_RULES, RELATED_RULES_KEY } from "@/lib/related-rules";
+import {
+  normalizeRedirectPath,
+  normalizeRedirectTarget,
+} from "@/lib/seo/redirects";
 import { SEO_KEYS, SEO_SETTING_DEFAULTS } from "@/lib/seo/settings";
 
 import {
@@ -24,6 +28,7 @@ import {
   smsTemplates,
 } from "./seed-data";
 import { seedPages } from "./seed-pages";
+import { SEED_REDIRECTS } from "./seed-redirects";
 
 const prisma = new PrismaClient();
 
@@ -379,6 +384,29 @@ async function seedStaticPages(refreshDrafts: boolean) {
   }
 }
 
+/**
+ * ریدایرکت‌های احتیاطی سایت قدیمی (`seed-redirects.ts`، SEO.md §۹.۱). فقط اگر برای
+ * آن مبدأ ردیفی نیست ساخته می‌شود؛ ویرایش یا حذف ادمین بازنویسی نمی‌شود. ردیفی
+ * که مبدأ و مقصدش بعد از نرمال‌سازی یکی است (حلقه) ساخته نمی‌شود.
+ */
+async function seedRedirects() {
+  for (const { from, to } of SEED_REDIRECTS) {
+    const fromPath = normalizeRedirectPath(from);
+    const toPath = normalizeRedirectTarget(to);
+    if (!toPath || normalizeRedirectPath(toPath) === fromPath) continue;
+    await prisma.redirect.upsert({
+      where: { fromPath },
+      create: {
+        fromPath,
+        toPath,
+        statusCode: 301,
+        note: "سایت قبلی (SEO.md §۹.۱)",
+      },
+      update: {},
+    });
+  }
+}
+
 async function main() {
   const adminPhone = await seedAdmin();
   const version = await prisma.setting.findUnique({
@@ -391,6 +419,7 @@ async function main() {
   await seedCoupons();
   await seedStoreSettings();
   await seedStaticPages(migrate);
+  await seedRedirects();
   if (migrate) {
     await prisma.setting.upsert({
       where: { key: SEED_VERSION_KEY },

@@ -66,6 +66,7 @@ describe("قواعد الگویی ووکامرس (SEO.md §۱۱.۲)", () => {
       { kind: "redirect", to: "/sitemap.xml", log: false },
     ],
     ["/", "add-to-cart=12", { kind: "redirect", to: "/", log: false }],
+    ["/", "s=test", { kind: "redirect", to: "/", log: false }],
     ["/", "p=45", { kind: "redirect", to: "/", log: false }],
     ["/feed", "", { kind: "gone" }],
     ["/blog/feed", "", { kind: "gone" }],
