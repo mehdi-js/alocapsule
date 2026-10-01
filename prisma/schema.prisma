@@ -205,7 +205,8 @@ model Category {
   bottomContent     String?
   /// [{question, answer}]
   faq               Json?
-  noindex           Boolean  @default(false)
+  /// پیش‌فرض true: فقط دو hub ایندکس می‌شوند (SEO.md §۷.۴)
+  noindex           Boolean  @default(true)
   ogImageUrl        String?
   updatedAt         DateTime @default(now()) @updatedAt @db.Timestamptz(3)
 

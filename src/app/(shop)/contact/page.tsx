@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { JsonLd } from "@/components/seo/JsonLd";
 import { ContentPanel, PageHero } from "@/components/shop/ContentBlocks";
 import {
   MailIcon,
@@ -17,6 +18,7 @@ import { phoneHref, socialLinks } from "@/lib/site-settings";
 import { cn } from "@/lib/utils";
 import { getBanners } from "@/server/services/banner.service";
 import { listActiveBranches } from "@/server/services/branch.service";
+import { getLocalBusinessJsonLd } from "@/server/services/business-schema.service";
 import { getFixedPage } from "@/server/services/page.service";
 import { getSeoContext } from "@/server/services/seo-settings.service";
 import { getSiteSettings } from "@/server/services/site-settings.service";
@@ -24,7 +26,10 @@ import { getSiteSettings } from "@/server/services/site-settings.service";
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getFixedPage("contact");
   return buildPageMetadata(await getSeoContext(), {
-    title: page?.seoTitle || page?.title || "تماس با ما",
+    title:
+      page?.seoTitle ||
+      page?.title ||
+      `تماس با ${SITE.name}؛ سفارش تلفنی کپسول گاز`,
     description:
       effectiveMeta(page?.metaDescription, page?.content) ||
       `راه‌های ارتباط با فروشگاه ${SITE.name}: تلفن، ایمیل، آدرس و شبکه‌های اجتماعی.`,
@@ -37,14 +42,17 @@ const rowClass =
   "bg-card flex items-center gap-4 rounded-[18px] border border-hair p-5";
 
 export default async function ContactPage() {
-  const [{ contact, social }, banners, page, branches] = await Promise.all([
-    getSiteSettings(),
-    getBanners(),
-    getFixedPage("contact"),
-    listActiveBranches(),
-  ]);
+  const [{ contact, social }, banners, page, branches, localBusiness] =
+    await Promise.all([
+      getSiteSettings(),
+      getBanners(),
+      getFixedPage("contact"),
+      listActiveBranches(),
+      getLocalBusinessJsonLd(),
+    ]);
   return (
     <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-10 px-5 pt-4 md:pt-5">
+      <JsonLd data={localBusiness} />
       <PageHero
         eyebrow="در خدمت شما هستیم"
         title={[`تماس با ${SITE.name}`]}

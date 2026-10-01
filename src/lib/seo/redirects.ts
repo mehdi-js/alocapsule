@@ -10,6 +10,14 @@ export interface RedirectRule {
   statusCode: RedirectStatus;
 }
 
+/** ارقام فارسی (۰-۹) و عربی (٠-٩) ⇒ لاتین؛ `…-۱۱-کیلویی` با `…-11-کیلویی` یکی می‌شود (SEO.md §۷.۱) */
+function latinizeDigits(value: string): string {
+  return value.replace(/[۰-۹٠-٩]/g, (digit) => {
+    const code = digit.charCodeAt(0);
+    return String(code >= 0x06f0 ? code - 0x06f0 : code - 0x0660);
+  });
+}
+
 function safeDecode(value: string): string {
   try {
     return decodeURIComponent(value);
@@ -20,7 +28,9 @@ function safeDecode(value: string): string {
 
 /**
  * مسیر قابل مقایسه: فقط pathname (بدون query/hash)، decode درصدی (slugهای
- * فارسی قدیمی)، ی/ک عربی ⇒ فارسی، حروف لاتین کوچک، بدون `//` و اسلش انتهایی.
+ * فارسی قدیمی)، ی/ک عربی ⇒ فارسی، ارقام فارسی/عربی ⇒ لاتین، حروف لاتین کوچک،
+ * بدون `//` و اسلش انتهایی. همین تابع هنگام ذخیره‌ی `Redirect.fromPath` و هنگام
+ * تطبیق درخواست استفاده می‌شود.
  * آدرس کامل (`https://old.site/x`) هم پذیرفته می‌شود.
  */
 export function normalizeRedirectPath(input: string): string {
@@ -36,6 +46,7 @@ export function normalizeRedirectPath(input: string): string {
     .replace(/[يى]/g, "ی")
     .replace(/ك/g, "ک")
     .toLowerCase()
+    .replace(/[۰-۹٠-٩]/g, (digit) => latinizeDigits(digit))
     .replace(/\/{2,}/g, "/");
   if (!path.startsWith("/")) path = `/${path}`;
   if (path.length > 1) path = path.replace(/\/+$/, "");

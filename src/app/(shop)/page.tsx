@@ -20,8 +20,13 @@ import {
   websiteJsonLd,
 } from "@/lib/seo/jsonld";
 import { buildHomeMetadata } from "@/lib/seo/metadata";
+import { BRAND_TAGLINE } from "@/lib/seo/settings";
 import { socialLinks } from "@/lib/site-settings";
 import { getBanners } from "@/server/services/banner.service";
+import {
+  getLocalBusinessJsonLd,
+  profileUrls,
+} from "@/server/services/business-schema.service";
 import { listFeaturedProducts } from "@/server/services/catalog.service";
 import { listFeaturedCategories } from "@/server/services/catalog-page.service";
 import { getContentTokenValues } from "@/server/services/content-tokens.service";
@@ -43,17 +48,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return buildHomeMetadata(context, seo.home);
 }
 
-/** آدرس شبکه‌ی اجتماعی فقط اگر به صفحه‌ی مشخصی اشاره کند (نه دامنه‌ی خالی) */
-function profileUrls(hrefs: string[]): string[] {
-  return hrefs.filter((href) => {
-    try {
-      return new URL(href).pathname.replace(/\/+$/, "") !== "";
-    } catch {
-      return false;
-    }
-  });
-}
-
 export default async function HomePage() {
   const [
     featured,
@@ -65,6 +59,7 @@ export default async function HomePage() {
     home,
     business,
     tokens,
+    localBusiness,
   ] = await Promise.all([
     listFeaturedProducts(),
     listFeaturedCategories(),
@@ -75,6 +70,7 @@ export default async function HomePage() {
     getHomeSettings(),
     getBusinessSettings(),
     getContentTokenValues(),
+    getLocalBusinessJsonLd(),
   ]);
   // مقدارهای ارسال از تنظیمات جایگزین می‌شوند، نه متن ثابت (SEO.md §۱۰.۱)
   const homeContent = applyContentTokens(seo.home.content, tokens);
@@ -88,12 +84,14 @@ export default async function HomePage() {
             siteUrl: context.siteUrl,
             brandName: seo.brandName,
             alternateNames: seo.alternateNames,
+            description: BRAND_TAGLINE,
             legalName: seo.orgLegalName || null,
             logoUrl: seo.orgLogoUrl || null,
             phone: business.phone || null,
             email: site.contact.email || null,
             sameAs: profileUrls(socialLinks(site.social).map((s) => s.href)),
           }),
+          localBusiness,
           websiteJsonLd({
             siteUrl: context.siteUrl,
             brandName: seo.brandName,

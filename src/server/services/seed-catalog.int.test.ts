@@ -297,7 +297,7 @@ describe("روش‌های ارسال و توکن‌های متن", () => {
     expect(String(value["seo.home.content"])).toContain(
       "## شارژ کپسول گاز با تعویض سریع",
     );
-    expect(value["seed.version"]).toBe("seo-p2");
+    expect(value["seed.version"]).toBe("seo-p3");
     expect(String(value["catalog.priceIncludesNote"])).toContain(
       "فقط شامل هزینه‌ی شارژ",
     );

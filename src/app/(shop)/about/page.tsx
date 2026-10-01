@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { JsonLd } from "@/components/seo/JsonLd";
 import { BannerImage } from "@/components/shop/BannerImage";
 import {
   BranchCards,
@@ -17,6 +18,7 @@ import { effectiveMeta } from "@/lib/seo/title";
 import { ABOUT_PAGE, SITE } from "@/lib/site-content";
 import { getBanners } from "@/server/services/banner.service";
 import { listActiveBranches } from "@/server/services/branch.service";
+import { getLocalBusinessJsonLd } from "@/server/services/business-schema.service";
 import { getFixedPage } from "@/server/services/page.service";
 import { getSeoContext } from "@/server/services/seo-settings.service";
 import { getSiteSettings } from "@/server/services/site-settings.service";
@@ -25,7 +27,11 @@ export async function generateMetadata(): Promise<Metadata> {
   // متن و سئو از صفحه‌ی «about» پنل (اگر منتشر شده)؛ وگرنه پیش‌فرض طراحی
   const page = await getFixedPage("about");
   return buildPageMetadata(await getSeoContext(), {
-    title: page?.seoTitle || page?.title || "درباره ما",
+    // عنوان سند (SEO.md §۲.۶) تا صفحه‌ی ثابت در پنل منتشر و ویرایش شود
+    title:
+      page?.seoTitle ||
+      page?.title ||
+      `درباره ${SITE.name}؛ تأمین و ارسال کپسول گاز`,
     description:
       effectiveMeta(page?.metaDescription, page?.content) ||
       `درباره‌ی ${SITE.name}؛ تأمین، شارژ و ارسال کپسول گاز مایع (LPG) در تهران.`,
@@ -35,14 +41,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [{ aboutStats }, banners, page, branches] = await Promise.all([
-    getSiteSettings(),
-    getBanners(),
-    getFixedPage("about"),
-    listActiveBranches(),
-  ]);
+  const [{ aboutStats }, banners, page, branches, localBusiness] =
+    await Promise.all([
+      getSiteSettings(),
+      getBanners(),
+      getFixedPage("about"),
+      listActiveBranches(),
+      getLocalBusinessJsonLd(),
+    ]);
   return (
     <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-10 px-5 pt-4 md:gap-14 md:pt-5">
+      <JsonLd data={localBusiness} />
       <PageHero
         eyebrow={ABOUT_PAGE.eyebrow}
         title={[...ABOUT_PAGE.title]}

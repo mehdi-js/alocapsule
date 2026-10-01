@@ -27,6 +27,8 @@ beforeAll(async () => {
       name: `دسته‌ی نمایش ${RUN}`,
       slug: `show-cat-${RUN}`,
       isFeatured: true,
+      // دسته‌ی noindex کارتش مستقیم به محصول می‌رود؛ این تست مسیر hub را می‌سنجد
+      noindex: false,
     },
   });
   categoryId = category.id;

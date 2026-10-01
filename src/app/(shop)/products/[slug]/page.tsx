@@ -170,7 +170,10 @@ export default async function ProductPage({
 
   const crumbs = [
     { name: "خانه", path: "/" },
-    ...product.categoryTrail,
+    // دسته‌ی noindex در مسیر نمی‌آید (صفحه‌ی ایندکس‌نشده)؛ «محصولات» به‌جایش
+    ...(product.categoryNoindex
+      ? [{ name: "محصولات", path: "/products" }]
+      : product.categoryTrail),
     { name: product.name, path: `/products/${product.slug}` },
   ];
 

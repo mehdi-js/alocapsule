@@ -41,7 +41,8 @@ export function categoryFormFrom(
       isFeatured: false,
       introText: "",
       bottomContent: "",
-      seo: emptySeoForm(),
+      // دسته‌ی جدید پیش‌فرض noindex است؛ فقط hubها ایندکس می‌شوند (SEO.md §۷.۴)
+      seo: emptySeoForm(true),
     };
   }
   return {

@@ -177,3 +177,42 @@ describe("parseRedirectCsv", () => {
     expect(errors.map((e) => e.line)).toEqual([5, 6, 7]);
   });
 });
+
+describe("نرمال‌سازی ارقام و query مقصد (SEO.md §۷.۱ و §۷.۲)", () => {
+  it("ارقام فارسی و عربی با لاتین یکی می‌شوند (حتی درصد-کدشده)", () => {
+    const latin = normalizeRedirectPath(
+      "/product/شارژ-کپسول-گاز-11-کیلویی-بوتان/",
+    );
+    expect(
+      normalizeRedirectPath("/product/شارژ-کپسول-گاز-۱۱-کیلویی-بوتان/"),
+    ).toBe(latin);
+    expect(
+      normalizeRedirectPath("/product/شارژ-کپسول-گاز-١١-کیلویی-بوتان"),
+    ).toBe(latin);
+    expect(
+      normalizeRedirectPath(
+        encodeURI("/product/شارژ-کپسول-گاز-۱۱-کیلویی-بوتان/"),
+      ),
+    ).toBe(latin);
+    expect(latin).toContain("-11-");
+  });
+
+  it("مقصد با query نگه داشته می‌شود و در زنجیره دست‌نخورده منتقل می‌شود", () => {
+    expect(
+      normalizeRedirectTarget("/Products/Gas-Capsule-Refill-11kg?valve=butane"),
+    ).toBe("/products/gas-capsule-refill-11kg?valve=butane");
+    const rules = new Map([
+      [
+        "/old",
+        {
+          toPath: "/products/gas-capsule-refill-11kg?valve=butane",
+          statusCode: 301 as const,
+        },
+      ],
+    ]);
+    expect(resolveRedirect(rules, "/old")).toEqual({
+      kind: "redirect",
+      to: "/products/gas-capsule-refill-11kg?valve=butane",
+    });
+  });
+});

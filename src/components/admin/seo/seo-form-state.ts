@@ -30,13 +30,14 @@ export function newFaqRow(item?: FaqItem): FaqRow {
   };
 }
 
-export function emptySeoForm(): SeoFormState {
+/** `noindex` پیش‌فرض: محصول false؛ دسته true (SEO.md §۷.۴) */
+export function emptySeoForm(noindex = false): SeoFormState {
   return {
     seoTitle: "",
     metaDescription: "",
     focusKeyword: "",
     secondaryKeywords: "",
-    noindex: false,
+    noindex,
     faq: [],
   };
 }

@@ -155,7 +155,7 @@ export const catalogCategories: SeedCategory[] = [
     bottomContent: "",
     faq: [],
     noindex: true,
-    isFeatured: false,
+    isFeatured: true,
     sortOrder: 3,
   },
   {
@@ -172,7 +172,7 @@ export const catalogCategories: SeedCategory[] = [
     bottomContent: "",
     faq: [],
     noindex: true,
-    isFeatured: false,
+    isFeatured: true,
     sortOrder: 4,
   },
   {
@@ -189,7 +189,7 @@ export const catalogCategories: SeedCategory[] = [
     bottomContent: "",
     faq: [],
     noindex: true,
-    isFeatured: false,
+    isFeatured: true,
     sortOrder: 5,
   },
 ];

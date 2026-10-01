@@ -3,26 +3,26 @@ import type { MetadataRoute } from "next";
 import { isBuildWithoutDb } from "@/lib/build-phase";
 import { SITE } from "@/lib/site-content";
 import { findSitemapEntries } from "@/server/repositories/catalog-page.repository";
-import { listActiveBranches } from "@/server/services/branch.service";
 import { listPublishedPages } from "@/server/services/page.service";
 
 /** با هر تغییر کاتالوگ در ادمین هم revalidate می‌شود */
 export const revalidate = 3600;
 
 /**
- * SEO.md §۸.۱: صفحه‌ی اصلی، همه‌ی محصولات، دسته‌های فعال بدون noindex،
- * محصولات بایگانی‌نشده و بدون noindex (فعال و غیرفعال)، شعب فعال و صفحات
- * ثابت منتشرشده.
- * `changefreq`/`priority` عمداً نیست (گوگل نادیده می‌گیرد). ساختار آماده‌ی
- * `generateSitemaps` برای چندتکه شدن در آینده است.
+ * SEO.md §۸: `/`، `/products`، دسته‌های hub (فعال و بدون noindex)، صفحه‌های
+ * محصول بدون noindex (بایگانی‌نشده)، `/about`، `/contact` و صفحات `terms` و
+ * `privacy` (فقط اگر منتشر شده‌اند). **نه** دسته‌های noindex، **نه** URLهای دارای
+ * پارامتر گزینه (`?valve=…`)، **نه** صفحه‌های شعب و بقیه‌ی صفحات ثابت.
+ * `changefreq`/`priority` عمداً نیست (گوگل نادیده می‌گیرد).
  */
+const SITEMAP_PAGE_SLUGS = ["terms", "privacy"] as const;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [{ products, categories }, pages, branches] = await Promise.all([
+  const [{ products, categories }, pages] = await Promise.all([
     isBuildWithoutDb()
       ? { products: [], categories: [] }
       : findSitemapEntries(),
     listPublishedPages(),
-    listActiveBranches(),
   ]);
   const url = (path: string) => new URL(path, SITE.url).toString();
 
@@ -39,16 +39,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     { url: url("/about") },
     { url: url("/contact") },
-    { url: url("/branches") },
-    ...branches.map((branch) => ({
-      url: url(`/branches/${branch.slug}`),
-      lastModified: branch.updatedAt,
-    })),
-    // صفحات ثابت منتشرشده و بدون noindex (درباره ما و تماس بالاتر آمده‌اند)
     ...pages
       .filter(
         (page) =>
-          !page.noindex && page.slug !== "about" && page.slug !== "contact",
+          !page.noindex &&
+          (SITEMAP_PAGE_SLUGS as readonly string[]).includes(page.slug),
       )
       .map((page) => ({
         url: url(`/${page.slug}`),

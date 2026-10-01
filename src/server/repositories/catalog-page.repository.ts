@@ -1,4 +1,4 @@
-import type { SlugEntityType } from "@prisma/client";
+import type { Prisma, SlugEntityType } from "@prisma/client";
 
 import { db } from "@/lib/db";
 
@@ -14,7 +14,13 @@ export function findProductPageRow(slug: string) {
     where: { slug },
     include: {
       category: {
-        select: { id: true, name: true, slug: true, parentId: true },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          parentId: true,
+          noindex: true,
+        },
       },
       variants: {
         orderBy: [
@@ -126,6 +132,18 @@ export function listCategoryTree() {
   });
 }
 
+/** نامک اولین محصول قابل‌فروش دسته (کارت صفحه‌ی اصلی برای دسته‌ی noindex) */
+export async function findFirstSellableSlug(
+  categoryId: string,
+): Promise<string | null> {
+  const row = await db.product.findFirst({
+    where: { ...SELLABLE, categoryId },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    select: { slug: true },
+  });
+  return row?.slug ?? null;
+}
+
 /** دسته‌های فعال با پرچم «نمایش در صفحه‌ی اصلی» (`isFeatured`) */
 export function findFeaturedCategories() {
   return db.category.findMany({
@@ -135,6 +153,7 @@ export function findFeaturedCategories() {
       id: true,
       name: true,
       slug: true,
+      noindex: true,
       description: true,
       imageUrl: true,
     },
@@ -143,6 +162,19 @@ export function findFeaturedCategories() {
 
 export function findActiveCategoryPageRow(slug: string) {
   return db.category.findFirst({ where: { slug, isActive: true } });
+}
+
+/** کارت محصولات قابل‌فروش با شرط دلخواه (محصولات مرتبط: متناظر و موردهای قاعده) */
+export function findSellableCards(
+  where: Prisma.ProductWhereInput,
+  take: number,
+) {
+  return db.product.findMany({
+    where: { ...SELLABLE, ...where },
+    select: { ...cardSelect, categoryId: true },
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+    take,
+  });
 }
 
 /** محصولات قابل فروش دسته‌ها به ترتیب اولویت دسته‌ها (مرتبط‌ها) */

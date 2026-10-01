@@ -24,8 +24,9 @@ export const SITE = {
 export const CONTACT = {
   phone: "۰۹۱۲۶۲۷۰۵۹۵",
   phoneHref: "tel:+989126270595",
-  email: todo("ایمیل"),
-  address: todo("آدرس محل تحویل حضوری"),
+  // SEO.md §۶.۱ و §۱۰.۶ (اطلاعات سایت فعلی)؛ کارفرما در «تنظیمات ← عمومی» تأیید/ویرایش کند
+  email: "info@alocapsule.ir",
+  address: "کوهسار، میدان بهاران، اول جاده سولقان",
 } as const;
 
 export const SOCIAL = [

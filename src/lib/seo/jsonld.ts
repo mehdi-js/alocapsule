@@ -38,6 +38,8 @@ export interface OrganizationInput {
   siteUrl: string;
   brandName: string;
   alternateNames: string[];
+  /** تگ‌لاین برند (SEO.md §۳.۲) */
+  description?: string | null;
   legalName: string | null;
   logoUrl: string | null;
   phone: string | null;
@@ -56,6 +58,7 @@ export function organizationJsonLd(input: OrganizationInput): JsonObject {
     alternateName: input.alternateNames.length
       ? input.alternateNames
       : undefined,
+    description: real(input.description),
     legalName: real(input.legalName),
     url: absoluteUrl("/", input.siteUrl),
     logo: input.logoUrl ? absoluteUrl(input.logoUrl, input.siteUrl) : undefined,
@@ -133,7 +136,11 @@ export function productJsonLd(input: ProductJsonLdInput): JsonObject {
   const availability = input.available
     ? "https://schema.org/InStock"
     : "https://schema.org/OutOfStock";
-  const prices = input.variants.map((variant) => variant.price);
+  // ترکیب بدون قیمت (۰) هرگز وارد offers نمی‌شود (قیمت ساختگی ممنوع)
+  const prices = input.variants
+    .map((variant) => variant.price)
+    .filter((price) => price > 0);
+  const distinct = [...new Set(prices)];
   const skus = input.variants.flatMap((variant) =>
     variant.sku ? [variant.sku] : [],
   );
@@ -142,16 +149,17 @@ export function productJsonLd(input: ProductJsonLdInput): JsonObject {
     300,
   );
 
+  // همه‌ی ترکیب‌ها یک قیمت دارند (مثل شارژ که پرسی و بوتان هم‌قیمت‌اند) ⇒ Offer ساده
   let offers: JsonObject | undefined;
-  if (prices.length === 1) {
+  if (distinct.length === 1) {
     offers = {
       "@type": "Offer",
       priceCurrency: "IRR",
-      price: tomanToRial(prices[0]!),
+      price: tomanToRial(distinct[0]!),
       availability,
       url,
     };
-  } else if (prices.length > 1) {
+  } else if (distinct.length > 1) {
     offers = {
       "@type": "AggregateOffer",
       priceCurrency: "IRR",
@@ -266,5 +274,68 @@ export function localBusinessJsonLd(input: LocalBusinessInput): JsonObject {
     openingHoursSpecification: input.openingHours.length
       ? input.openingHours
       : undefined,
+  };
+}
+
+export interface BusinessLocationInput {
+  siteUrl: string;
+  brandName: string;
+  alternateNames: string[];
+  description: string | null;
+  phone: string | null;
+  email: string | null;
+  /** آدرس خیابانی؛ جای‌نگهدار `{{…}}` ⇒ حذف */
+  streetAddress: string | null;
+  /** شهر/استان محل و منطقه‌ی خدمت (فعلاً «تهران») */
+  city: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  /** `openingHoursSpecification` آماده؛ خالی ⇒ فیلد حذف می‌شود */
+  openingHours?: Record<string, unknown>[];
+  sameAs?: string[];
+}
+
+/**
+ * `LocalBusiness` سایت (SEO.md §۶.۱): صفحه‌ی اصلی، درباره ما و تماس. فقط داده‌ی
+ * واقعی؛ مقدار جای‌نگهدار یا خالی (آدرس، ایمیل، ساعات کاری) از خروجی حذف می‌شود.
+ * `areaServed` شهر محدوده‌ی خدمت است (فقط تهران).
+ */
+export function businessLocationJsonLd(
+  input: BusinessLocationInput,
+): JsonObject {
+  const telephone = input.phone ? toE164(input.phone) : undefined;
+  const street = real(input.streetAddress);
+  return {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "@id": absoluteUrl("/#localbusiness", input.siteUrl),
+    name: input.brandName,
+    alternateName: input.alternateNames.length
+      ? input.alternateNames
+      : undefined,
+    description: real(input.description),
+    url: absoluteUrl("/", input.siteUrl),
+    telephone,
+    email: real(input.email),
+    address: {
+      "@type": "PostalAddress",
+      addressCountry: "IR",
+      addressRegion: input.city,
+      addressLocality: input.city,
+      streetAddress: street,
+    },
+    areaServed: { "@type": "City", name: input.city },
+    geo:
+      input.latitude != null && input.longitude != null
+        ? {
+            "@type": "GeoCoordinates",
+            latitude: input.latitude,
+            longitude: input.longitude,
+          }
+        : undefined,
+    openingHoursSpecification: input.openingHours?.length
+      ? input.openingHours
+      : undefined,
+    sameAs: input.sameAs?.length ? input.sameAs : undefined,
   };
 }

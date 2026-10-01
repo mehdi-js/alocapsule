@@ -9,6 +9,7 @@ import {
 } from "@/lib/order-number";
 import { normalizePhone } from "@/lib/phone";
 import { buildOptionKey, buildVariantTitle } from "@/lib/product-options";
+import { DEFAULT_RELATED_RULES, RELATED_RULES_KEY } from "@/lib/related-rules";
 import { SEO_KEYS, SEO_SETTING_DEFAULTS } from "@/lib/seo/settings";
 
 import {
@@ -66,7 +67,7 @@ function missingFields<T extends Record<string, unknown>>(
 
 /** نسخه‌ی محتوای seed؛ مهاجرت یک‌باره‌ی داده‌ی نمونه‌ی قبلی فقط وقتی اجرا می‌شود که این کلید نباشد */
 const SEED_VERSION_KEY = "seed.version";
-const SEED_VERSION = "seo-p2";
+const SEED_VERSION = "seo-p3";
 
 /** داده‌ی نمونه‌ی فاز FORK که جایگزین شد (نامک‌های قبلی) */
 const LEGACY_PRODUCT_SLUGS = [
@@ -126,13 +127,30 @@ async function removeLegacySamples() {
   }
   await prisma.shippingMethod.deleteMany({
     where: { id: { in: LEGACY_SHIPPING_IDS } },
-  }); // ترتیب روش‌های seed: عادی، فوری، حضوری (حضوری قبلاً دوم بود)
+  });
+  // ترتیب روش‌های seed: عادی، فوری، حضوری (حضوری قبلاً دوم بود)
   for (const method of shippingMethods) {
     await prisma.shippingMethod.updateMany({
       where: { id: method.id },
       data: { sortOrder: method.sortOrder },
     });
   }
+}
+
+/**
+ * مهاجرت یک‌باره‌ی seo-p3: کارت صفحه‌ی اصلی برای دسته‌های noindex (لینک مستقیم
+ * محصول؛ SEO.md §۵.۲). seed فقط فیلدهای خالی را پر می‌کند و `isFeatured`
+ * (بولی) خالی حساب نمی‌شود، پس این‌جا صریح به‌روز می‌شود.
+ */
+async function featureNoindexCategories() {
+  await prisma.category.updateMany({
+    where: {
+      slug: {
+        in: catalogCategories.filter((c) => c.isFeatured).map((c) => c.slug),
+      },
+    },
+    data: { isFeatured: true },
+  });
 }
 
 /**
@@ -319,6 +337,7 @@ async function seedStoreSettings() {
     ...(SEO_SETTING_DEFAULTS as Record<string, Prisma.InputJsonValue>),
     ...(BUSINESS_SETTING_DEFAULTS as Record<string, Prisma.InputJsonValue>),
     ...(HOME_SETTING_DEFAULTS as Record<string, Prisma.InputJsonValue>),
+    [RELATED_RULES_KEY]: DEFAULT_RELATED_RULES,
   };
   // اجرای دوباره‌ی seed تنظیمات ادمین را بازنویسی نمی‌کند: فقط کلید نبود، مقدار
   // خالی، یا (در مهاجرت یک‌باره) مقدار پیش‌فرض قدیمیِ دست‌نخورده عوض می‌شود
@@ -368,6 +387,7 @@ async function main() {
   const migrate = version?.value !== SEED_VERSION;
   if (migrate) await removeLegacySamples();
   await seedCatalog();
+  if (migrate) await featureNoindexCategories();
   await seedCoupons();
   await seedStoreSettings();
   await seedStaticPages(migrate);

@@ -11,6 +11,11 @@ import {
   type TableProduct,
 } from "@/lib/option-selection";
 import { parseOptionKey, type Selection } from "@/lib/product-options";
+import {
+  orderRelated,
+  parseRelatedRules,
+  RELATED_RULES_KEY,
+} from "@/lib/related-rules";
 import { parseFaq } from "@/lib/seo/faq";
 import { buildShippingInfo, type ShippingInfoItem } from "@/lib/shipping-info";
 import { calculatePricePerKg, resolveVariantTitle } from "@/lib/unit";
@@ -20,13 +25,16 @@ import {
   findCategoryRedirectInfo,
   findCategoryTableProducts,
   findFeaturedCategories,
+  findFirstSellableSlug,
   findProductPageRow,
   findProductRedirectInfo,
+  findSellableCards,
   findSellableInCategories,
   findSlugHistoryTarget,
   listCategoryTree,
   listTopCategories,
 } from "@/server/repositories/catalog-page.repository";
+import { getSetting } from "@/server/repositories/setting.repository";
 import { listActiveShippingMethods } from "@/server/repositories/shipping.repository";
 
 import { type ProductCardDto, toProductCard } from "./catalog.service";
@@ -84,6 +92,10 @@ export interface ProductPageDto {
   categorySlug: string;
   /** دسته‌ها از ریشه تا دسته‌ی محصول (breadcrumb) */
   categoryTrail: Crumb[];
+  /** دسته noindex است ⇒ breadcrumb به‌جای دسته «محصولات» دارد (SEO.md §۵.۳) */
+  categoryNoindex: boolean;
+  /** محصول متناظر (دوطرفه) برای محصولات مرتبط */
+  pairedProductId: string | null;
   images: {
     url: string;
     thumbUrl: string;
@@ -208,6 +220,8 @@ export async function getProductPage(
       categoryName: row.category.name,
       categorySlug: row.category.slug,
       categoryTrail: toCrumbs(trail),
+      categoryNoindex: row.category.noindex,
+      pairedProductId: row.pairedProductId,
       images: row.images.map((image) => ({
         url: image.url,
         thumbUrl: thumbnailUrl(image.url),
@@ -246,25 +260,55 @@ export async function getProductPage(
 }
 
 /**
- * محصولات مرتبط (SEO.md §۱۲): محصولات فعال همان دسته، سپس دسته‌ی والد.
+ * محصولات مرتبط (SEO.md §۵.۳): ۱) محصول متناظر، ۲) موردهای قاعده‌ی دسته
+ * (`catalog.relatedRules`: مثلاً پیک‌نیک، کپسول دست دوم، hub شارژ)، ۳) بقیه‌ی
+ * محصولات همان دسته، سپس دسته‌ی والد. فقط محصول قابل‌فروش (غیرفعال نمی‌آید).
  */
 export async function listRelatedProducts(
-  product: Pick<ProductPageDto, "id" | "categoryId">,
+  product: Pick<
+    ProductPageDto,
+    "id" | "categoryId" | "categorySlug" | "pairedProductId"
+  >,
 ): Promise<ProductCardDto[]> {
-  const trail = categoryTrail(await listCategoryTree(), product.categoryId);
+  const [tree, rulesRaw] = await Promise.all([
+    listCategoryTree(),
+    isBuildWithoutDb() ? null : getSetting(RELATED_RULES_KEY),
+  ]);
+  const trail = categoryTrail(tree, product.categoryId);
   const order = [product.categoryId];
   const parent = trail.at(-2);
   if (parent) order.push(parent.id);
 
-  const rows = await findSellableInCategories({
-    categoryIds: order,
-    excludeId: product.id,
-    take: RELATED_COUNT,
-  });
-  return [...rows]
-    .sort((a, b) => order.indexOf(a.categoryId) - order.indexOf(b.categoryId))
-    .slice(0, RELATED_COUNT)
-    .map(toProductCard);
+  const refs = parseRelatedRules(rulesRaw)[product.categorySlug] ?? [];
+  const [paired, ruleGroups, sameCategory] = await Promise.all([
+    product.pairedProductId
+      ? findSellableCards({ id: product.pairedProductId }, 1)
+      : Promise.resolve([]),
+    Promise.all(
+      refs.map((ref) =>
+        findSellableCards(
+          ref.kind === "product"
+            ? { slug: ref.slug }
+            : { category: { slug: ref.slug } },
+          RELATED_COUNT,
+        ),
+      ),
+    ),
+    findSellableInCategories({
+      categoryIds: order,
+      excludeId: product.id,
+      take: RELATED_COUNT,
+    }).then((rows) =>
+      [...rows].sort(
+        (a, b) => order.indexOf(a.categoryId) - order.indexOf(b.categoryId),
+      ),
+    ),
+  ]);
+  return orderRelated(
+    product.id,
+    [paired, ...ruleGroups, sameCategory],
+    RELATED_COUNT,
+  ).map(toProductCard);
 }
 
 export interface CategoryPageDto {
@@ -418,16 +462,32 @@ export interface FeaturedCategoryDto {
   description: string | null;
 }
 
-/** دسته‌های بخش «دسته‌بندی‌ها»ی صفحه‌ی اصلی؛ از دیتابیس، نه فهرست ثابت در کد */
+/**
+ * دسته‌های بخش «دسته‌بندی‌ها»ی صفحه‌ی اصلی؛ از دیتابیس، نه فهرست ثابت در کد
+ * (SEO.md §۵.۲). hub ⇒ لینک صفحه‌ی دسته؛ دسته‌ی noindex (دست دوم، پیک‌نیک،
+ * سایر گازها) ⇒ لینک مستقیم اولین محصول قابل‌فروش، و بدون محصول قابل‌فروش کارتی
+ * نمی‌آید (صفحه‌ی محصولِ غیرفعال «قابل سفارش نیست» است).
+ */
 export const listFeaturedCategories = cache(
   async (): Promise<FeaturedCategoryDto[]> => {
     if (isBuildWithoutDb()) return [];
     const categories = await findFeaturedCategories();
-    return categories.map((category) => ({
-      id: category.id,
-      name: category.name,
-      path: `/category/${category.slug}`,
-      description: category.description,
-    }));
+    const cards = await Promise.all(
+      categories.map(async (category) => {
+        let path = `/category/${category.slug}`;
+        if (category.noindex) {
+          const productSlug = await findFirstSellableSlug(category.id);
+          if (!productSlug) return null;
+          path = `/products/${productSlug}`;
+        }
+        return {
+          id: category.id,
+          name: category.name,
+          path,
+          description: category.description,
+        };
+      }),
+    );
+    return cards.filter((card) => card !== null);
   },
 );

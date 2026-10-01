@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   breadcrumbJsonLd,
+  businessLocationJsonLd,
   faqPageJsonLd,
   itemListJsonLd,
   localBusinessJsonLd,
@@ -218,5 +219,129 @@ describe("productJsonLd: محصول استعلامی", () => {
     });
     expect(data.offers).toBeUndefined();
     expect(data["@type"]).toBe("Product");
+  });
+});
+
+describe("productJsonLd: ترکیب‌های هم‌قیمت و بی‌قیمت (SEO.md §۶.۲)", () => {
+  it("همه‌ی ترکیب‌ها یک قیمت (شارژ: پرسی و بوتان) ⇒ Offer ساده", () => {
+    const data = product({
+      variants: [
+        { price: 3_850_000, sku: null },
+        { price: 3_850_000, sku: null },
+      ],
+    });
+    expect(data.offers).toMatchObject({
+      "@type": "Offer",
+      priceCurrency: "IRR",
+      price: "38500000",
+    });
+    expect(data.offers).not.toHaveProperty("lowPrice");
+  });
+
+  it("خرید ۵۰: AggregateOffer با low/high از ترکیب‌های فعال و offerCount", () => {
+    const data = product({
+      variants: [
+        { price: 15_000_000, sku: null },
+        { price: 18_850_000, sku: null },
+      ],
+    });
+    expect(data.offers).toMatchObject({
+      "@type": "AggregateOffer",
+      lowPrice: "150000000",
+      highPrice: "188500000",
+      offerCount: 2,
+    });
+  });
+
+  it("🔴 ترکیب بدون قیمت (۰) هرگز offer نمی‌سازد", () => {
+    expect(
+      product({ variants: [{ price: 0, sku: null }], available: false }).offers,
+    ).toBeUndefined();
+    expect(
+      product({
+        variants: [
+          { price: 0, sku: null },
+          { price: 5_000, sku: null },
+        ],
+      }).offers,
+    ).toMatchObject({ "@type": "Offer", price: "50000" });
+    const json = JSON.stringify(product());
+    expect(json).not.toMatch(/aggregateRating|"review"/);
+  });
+});
+
+describe("businessLocationJsonLd (SEO.md §۶.۱)", () => {
+  const base = {
+    siteUrl: SITE,
+    brandName: "الو کپسول",
+    alternateNames: ["Alo Capsule", "الوکپسول", "alocapsule"],
+    description: "تأمین، شارژ و ارسال کپسول گاز مایع (LPG)",
+    phone: "09126270595",
+    email: "info@alocapsule.ir",
+    streetAddress: "کوهسار، میدان بهاران، اول جاده سولقان",
+    city: "تهران",
+  };
+
+  it("LocalBusiness با آدرس، تلفن E.164 و areaServed شهر تهران", () => {
+    const data = businessLocationJsonLd(base);
+    expect(data).toMatchObject({
+      "@type": "LocalBusiness",
+      name: "الو کپسول",
+      alternateName: ["Alo Capsule", "الوکپسول", "alocapsule"],
+      telephone: "+989126270595",
+      email: "info@alocapsule.ir",
+      areaServed: { "@type": "City", name: "تهران" },
+      address: {
+        addressCountry: "IR",
+        addressRegion: "تهران",
+        addressLocality: "تهران",
+        streetAddress: "کوهسار، میدان بهاران، اول جاده سولقان",
+      },
+    });
+  });
+
+  it("🔴 جای‌نگهدار و ساعات کاری نامشخص هرگز وارد JSON-LD نمی‌شوند", () => {
+    const data = businessLocationJsonLd({
+      ...base,
+      email: todo("ایمیل"),
+      streetAddress: todo("آدرس"),
+    });
+    const json = JSON.stringify(data);
+    expect(json).not.toContain("{{");
+    // کلید با مقدار undefined در JSON نمی‌آید
+    expect(json).not.toContain("openingHoursSpecification");
+    expect(json).not.toContain('"geo"');
+    expect(data.email).toBeUndefined();
+    expect(
+      (data.address as Record<string, unknown>).streetAddress,
+    ).toBeUndefined();
+  });
+
+  it("ساعات و مختصات واقعی (اگر باشد) اضافه می‌شود", () => {
+    const data = businessLocationJsonLd({
+      ...base,
+      latitude: 35.8,
+      longitude: 51.3,
+      openingHours: [{ "@type": "OpeningHoursSpecification", opens: "09:00" }],
+    });
+    expect(data.geo).toMatchObject({ latitude: 35.8, longitude: 51.3 });
+    expect(data.openingHoursSpecification).toHaveLength(1);
+  });
+});
+
+describe("organizationJsonLd: تگ‌لاین برند", () => {
+  it("description از تگ‌لاین؛ جای‌نگهدار حذف", () => {
+    const data = organizationJsonLd({
+      siteUrl: SITE,
+      brandName: "الو کپسول",
+      alternateNames: [],
+      description: "تأمین، شارژ و ارسال کپسول گاز مایع (LPG)",
+      legalName: null,
+      logoUrl: null,
+      phone: null,
+      email: null,
+      sameAs: [],
+    });
+    expect(data.description).toBe("تأمین، شارژ و ارسال کپسول گاز مایع (LPG)");
   });
 });

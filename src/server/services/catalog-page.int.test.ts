@@ -135,6 +135,8 @@ describe("محصولات مرتبط", () => {
     const related = await listRelatedProducts({
       id: self,
       categoryId: childId,
+      categorySlug: `cp-child-${RUN}`,
+      pairedProductId: null,
     });
     const slugs = related.map((item) => item.slug);
     expect(slugs).not.toContain(`cp-rel-self-${RUN}`);

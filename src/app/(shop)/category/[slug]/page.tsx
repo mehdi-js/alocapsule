@@ -122,7 +122,7 @@ export default async function CategoryPage({
         ]}
       />
       <CatalogView
-        title={category.name}
+        title={category.h1 ?? category.name}
         subtitle={category.description}
         crumbs={crumbs.map((crumb, index) => ({
           label: crumb.name,
