@@ -19,6 +19,8 @@ export interface PageAudit {
   title: string | null;
   description: string | null;
   issues: AuditIssue[];
+  /** متن توضیح هر `{{تکمیل…}}` که در HTML قابل‌مشاهده مانده (برای فهرست کارفرما) */
+  placeholders?: string[];
 }
 
 /** آدرس‌های `<loc>` یک sitemap */
@@ -79,6 +81,11 @@ export function auditPage(params: {
   html: string;
   /** سایت با ALLOW_INDEXING بسته است ⇒ noindex صفحه خطا حساب نمی‌شود */
   indexingClosed: boolean;
+  /**
+   * `{{تکمیل…}}` مانده: پیش‌فرض `error`؛ `warn` برای جدا کردن نقص‌های ساختاری از
+   * داده‌ی در انتظار کارفرما (`--allow-placeholders`).
+   */
+  placeholderLevel?: AuditLevel;
 }): PageAudit {
   const { url, status, html } = params;
   const issues: AuditIssue[] = [];
@@ -140,12 +147,16 @@ export function auditPage(params: {
 
   // فقط متن قابل مشاهده (داده‌ی RSC داخل <script> همان متن را تکرار می‌کند)
   const visible = html.replace(/<script\b[\s\S]*?<\/script>/gi, "");
+  const found = [...visible.matchAll(/\{\{تکمیل توسط [^}]*\}\}/g)].map((m) =>
+    decodeXml(m[0]),
+  );
   const placeholders = visible.split(COMPLETION_MARKER).length - 1;
   if (placeholders > 0) {
-    error(`${placeholders} متن «${COMPLETION_MARKER}…}}» هنوز جایگزین نشده`);
+    const add = params.placeholderLevel === "warn" ? warn : error;
+    add(`${placeholders} متن «${COMPLETION_MARKER}…}}» هنوز جایگزین نشده`);
   }
 
-  return { url, status, title, description, issues };
+  return { url, status, title, description, issues, placeholders: found };
 }
 
 /** عنوان یا متای تکراری بین صفحات (هر مورد به همه‌ی صفحات درگیر اضافه می‌شود) */

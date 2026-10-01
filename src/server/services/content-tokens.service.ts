@@ -21,9 +21,13 @@ export const getContentTokenValues = cache(
       getBusinessSettings(),
     ]);
     const express = methods.find((method) => method.businessHoursOnly);
-    const normal = methods.find(
+    // روش عادی: اولین روش دارای آدرس که فوری نیست و زمان تحویل دارد (روش بی‌زمان
+    // مثل روش‌های تستی یا ساخته‌شده توسط ادمین مقدار توکن را خالی نکند)
+    const regular = methods.filter(
       (method) => method.requiresAddress && !method.businessHoursOnly,
     );
+    const normal =
+      regular.find((method) => method.deliveryEstimate) ?? regular[0];
     return {
       "normal.estimate": normal?.deliveryEstimate ?? undefined,
       "express.estimate": express?.deliveryEstimate ?? undefined,

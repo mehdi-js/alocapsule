@@ -155,3 +155,39 @@ describe("sitemap، robots و مقایسه‌ی آدرس", () => {
     expect(sameUrl("https://a.ir/x", "https://b.ir/x")).toBe(false);
   });
 });
+
+describe("auditPage: --allow-placeholders", () => {
+  const html = page(`<h1>الف</h1><p>${todo("ساعات پاسخگویی")}</p>`);
+
+  it("جای‌نگهدار ⇒ 🟠 و متن توضیحش برای فهرست کارفرما برمی‌گردد", () => {
+    const result = auditPage({
+      url: URL_,
+      status: 200,
+      html,
+      indexingClosed: false,
+      placeholderLevel: "warn",
+    });
+    expect(result.issues.map((i) => i.level)).toEqual(["warn"]);
+    expect(result.placeholders).toEqual([todo("ساعات پاسخگویی")]);
+  });
+
+  it("پیش‌فرض ⇒ خطا", () => {
+    const result = auditPage({
+      url: URL_,
+      status: 200,
+      html,
+      indexingClosed: false,
+    });
+    expect(result.issues.map((i) => i.level)).toEqual(["error"]);
+  });
+
+  it("جای‌نگهدار داخل <script> (داده‌ی RSC) شمرده نمی‌شود", () => {
+    const result = auditPage({
+      url: URL_,
+      status: 200,
+      html: page("<h1>الف</h1>", `<script>self.x="${todo("x")}"</script>`),
+      indexingClosed: false,
+    });
+    expect(result.placeholders).toEqual([]);
+  });
+});

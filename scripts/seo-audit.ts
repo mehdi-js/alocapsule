@@ -9,6 +9,10 @@
  * خالی یا تکراری، canonical، noindex، JSON-LD، تصاویر بدون alt و متن
  * «{{تکمیل توسط <نام برند>…}}». با خطای 🔴 کد خروج ۱ است.
  *
+ * `--allow-placeholders`: متن `{{تکمیل…}}` خطا نیست و 🟠 است (برای جدا کردن
+ * نقص‌های ساختاری از داده‌ی در انتظار کارفرما؛ برای انتشار نباید استفاده شود).
+ * در پایان فهرست یکتای همه‌ی جای‌نگهدارهای مانده چاپ می‌شود.
+ *
  * آدرس‌های sitemap با دامنه‌ی `NEXT_PUBLIC_SITE_URL` ساخته شده‌اند؛ اگر
  * سایت دیگری (مثلاً localhost) بررسی می‌شود، درخواست‌ها به همان آدرس ورودی
  * فرستاده می‌شوند ولی canonical با آدرس sitemap مقایسه می‌شود.
@@ -36,6 +40,7 @@ function parseArgs(argv: string[]) {
     process.env.NEXT_PUBLIC_SITE_URL ??
     "http://localhost:3000";
   return {
+    allowPlaceholders: argv.includes("--allow-placeholders"),
     base: new URL(base).origin,
     concurrency: Math.max(1, Math.min(8, Number(flag("concurrency") ?? 4))),
   };
@@ -75,7 +80,9 @@ async function mapLimit<T, R>(
 }
 
 async function main() {
-  const { base, concurrency } = parseArgs(process.argv.slice(2));
+  const { base, concurrency, allowPlaceholders } = parseArgs(
+    process.argv.slice(2),
+  );
   console.log(`🔎 بررسی سئوی ${base}\n`);
 
   const robots = await get(`${base}/robots.txt`);
@@ -109,6 +116,7 @@ async function main() {
         status,
         html: text,
         indexingClosed: closed,
+        placeholderLevel: allowPlaceholders ? "warn" : "error",
       });
     } catch (error) {
       return {
@@ -142,6 +150,19 @@ async function main() {
       console.log(
         `    ${issue.level === "error" ? "🔴" : "🟠"} ${issue.message}`,
       );
+    }
+  }
+
+  const remaining = new Map<string, number>();
+  for (const page of pages) {
+    for (const text of new Set(page.placeholders ?? [])) {
+      remaining.set(text, (remaining.get(text) ?? 0) + 1);
+    }
+  }
+  if (remaining.size > 0) {
+    console.log(`\nجای‌نگهدارهای مانده (${remaining.size} مورد یکتا):`);
+    for (const [text, count] of remaining) {
+      console.log(`  - ${text}${count > 1 ? ` (${count} صفحه)` : ""}`);
     }
   }
 

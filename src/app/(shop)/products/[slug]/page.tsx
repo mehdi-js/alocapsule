@@ -18,6 +18,7 @@ import { ServiceTermsBox } from "@/components/shop/ServiceTermsBox";
 import { SizeSwitch } from "@/components/shop/SizeSwitch";
 import { TrustTiles } from "@/components/shop/TrustBar";
 import { RichText } from "@/components/ui/RichText";
+import { applyContentTokens } from "@/lib/content-tokens";
 import { formatJalali } from "@/lib/date";
 import {
   buildPriceTable,
@@ -40,6 +41,7 @@ import {
   listRelatedProducts,
   type ProductPageDto,
 } from "@/server/services/catalog-page.service";
+import { getContentTokenValues } from "@/server/services/content-tokens.service";
 import {
   getSeoContext,
   getSeoSettings,
@@ -115,6 +117,7 @@ export default async function ProductPage({
     seo,
     business,
     tableProducts,
+    tokens,
   ] = await Promise.all([
     listRelatedProducts(product),
     getMaxQuantityPerItem(),
@@ -123,6 +126,7 @@ export default async function ProductPage({
     getSeoSettings(),
     getBusinessSettings(),
     listCategoryTableProducts(product.categoryId),
+    getContentTokenValues(),
   ]);
   const shipping = await getProductShippingInfo(business.pickupHours);
   const inquiry = product.pricingMode === "INQUIRY";
@@ -191,7 +195,8 @@ export default async function ProductPage({
     {
       id: "shipping",
       title: "ارسال و نگهداری",
-      content: <p>{shippingNote}</p>,
+      // زمان تحویل از تنظیمات ارسال (توکن)، نه متن ثابت
+      content: <p>{applyContentTokens(shippingNote, tokens)}</p>,
     },
   ];
 
