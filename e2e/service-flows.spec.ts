@@ -82,7 +82,7 @@ test.describe.serial("مسیرهای الو کپسول", () => {
     customer = await browser.newContext();
     const page = await customer.newPage();
     await signUpWithOtp(page, PHONE, PASSWORD, "/");
-    await addToCart(page, "charge-butane");
+    await addToCart(page, "gas-capsule-refill-11kg?valve=butane");
 
     await page.goto("/checkout");
     await page.getByLabel("نام گیرنده").fill("مشتری خدمت");
@@ -143,7 +143,9 @@ test.describe.serial("مسیرهای الو کپسول", () => {
     await expect(
       adminPage.getByText("کپسول‌های خالی قابل تحویل گرفتن"),
     ).toBeVisible();
-    await expect(adminPage.getByText("۱ × شارژ کپسول گاز بوتان")).toBeVisible();
+    await expect(
+      adminPage.getByText("۱ × شارژ کپسول گاز ۱۱ کیلویی · بوتان"),
+    ).toBeVisible();
     await adminPage.getByRole("button", { name: "تأیید پرداخت" }).click();
     await adminPage.getByRole("button", { name: "بله، تأیید شود" }).click();
     await expect(
@@ -160,8 +162,8 @@ test.describe.serial("مسیرهای الو کپسول", () => {
 
   test("۲. خرید مخلوط (خدمت + کالا) با تحویل حضوری", async () => {
     const page = await customer.newPage();
-    await addToCart(page, "charge-butane");
-    await addToCart(page, "buy-cylinder-11kg");
+    await addToCart(page, "gas-capsule-refill-11kg?valve=butane");
+    await addToCart(page, "buy-gas-capsule-11kg?fill=filled");
 
     await page.goto("/checkout");
     await page.getByRole("radio", { name: /تحویل حضوری/ }).check();
@@ -191,9 +193,9 @@ test.describe.serial("مسیرهای الو کپسول", () => {
   }) => {
     const shop = await browser.newContext();
     const page = await shop.newPage();
-    await page.goto("/products/charge-oxygen-40kg");
+    await page.goto("/products/oxygen-capsule-refill");
     await expect(
-      page.getByRole("heading", { name: "استعلام قیمت" }),
+      page.getByRole("heading", { name: "استعلام قیمت", exact: true }),
     ).toBeVisible();
     await expect(
       page.locator(
@@ -208,7 +210,7 @@ test.describe.serial("مسیرهای الو کپسول", () => {
     await page.goto("/products");
     const card = page
       .locator("article")
-      .filter({ hasText: "شارژ کپسول اکسیژن ۴۰ کیلویی" });
+      .filter({ hasText: "شارژ کپسول اکسیژن ۴۰ لیتری" });
     await expect(card.getByText("استعلام قیمت", { exact: true })).toBeVisible();
     await expect(card.getByRole("button")).toHaveCount(0);
     await shop.close();

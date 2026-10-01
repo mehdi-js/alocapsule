@@ -10,6 +10,10 @@
  */
 
 import { BRAND_NAME, todo } from "@/lib/brand";
+import {
+  HOME_CONTENT as HOMEPAGE_CONTENT,
+  HOME_FAQ as HOMEPAGE_FAQ,
+} from "@/lib/seo/home-content";
 
 export { COMPLETION_MARKER, hasCompletionMarker, todo } from "@/lib/brand";
 
@@ -42,15 +46,22 @@ export function resolveTitleTemplate(template: string, brandName: string) {
   return template.replaceAll("{brandName}", brandName);
 }
 
-const HOME_DESCRIPTION = `${BRAND_NAME}؛ شارژ، خرید و ارسال کپسول گاز مایع (LPG) در تهران. سفارش آنلاین، ارسال با پیک یا تحویل حضوری.`;
+/** SEO.md §۲.۱: توضیحات متای صفحه‌ی اصلی */
+const HOME_DESCRIPTION =
+  "شارژ کپسول گاز ۱۱ تا ۵۰ کیلویی پرسی و بوتان با تعویض سریع، خرید کپسول گاز خالی یا پرشده و پیک‌نیک؛ ارسال فوری ۱ تا ۴ ساعته در تهران.";
+
+/** تگ‌لاین برند در متای پیش‌فرض و `Organization.description` (SEO.md §۳.۲) */
+export const BRAND_TAGLINE = "تأمین، شارژ و ارسال کپسول گاز مایع (LPG)";
+
+/** SEO.md §۳.۲: املای نادرست لاتین (بدون «c») هرگز استفاده نمی‌شود؛ نگهبانش در `seed-content.test.ts` است */
+export const BRAND_ALTERNATE_NAMES = ["Alo Capsule", "الوکپسول", "alocapsule"];
 
 /**
- * بلوک محتوای سئوی صفحه‌ی اصلی و سوالات متداول عمداً خالی‌اند؛ محتوای نهایی
- * را `SEO.md` الو کپسول تعیین می‌کند و ادمین از «تنظیمات سئو» وارد می‌کند.
- * موتور رندر (`HomeSeoContent`) با مقدار خالی چیزی نمایش نمی‌دهد.
+ * بلوک محتوای سئوی صفحه‌ی اصلی و سوالات متداول (SEO.md §۱۰.۱ و §۱۰.۴؛ متن‌ها
+ * در `src/lib/seo/home-content.ts`). مقدارهای ارسال با توکن `[[…]]` جایگزین می‌شوند.
  */
-const HOME_CONTENT = "";
-const HOME_FAQ: SeoFaqItem[] = [];
+const HOME_CONTENT = HOMEPAGE_CONTENT;
+const HOME_FAQ: SeoFaqItem[] = HOMEPAGE_FAQ;
 
 /**
  * مقادیر seed؛ فقط وقتی کلید وجود ندارد نوشته می‌شوند (ویرایش ادمین حفظ
@@ -61,14 +72,14 @@ export const SEO_SETTING_DEFAULTS: Record<
   string | string[] | SeoFaqItem[]
 > = {
   [SEO_KEYS.brandName]: DEFAULT_BRAND_NAME,
-  [SEO_KEYS.alternateNames]: [],
+  [SEO_KEYS.alternateNames]: BRAND_ALTERNATE_NAMES,
   [SEO_KEYS.titleTemplate]: "%s | {brandName}",
-  [SEO_KEYS.defaultDescription]: HOME_DESCRIPTION,
+  [SEO_KEYS.defaultDescription]: `${BRAND_NAME}؛ ${BRAND_TAGLINE}. سفارش آنلاین، ارسال با پیک یا تحویل حضوری در تهران.`,
   // تا فاز S2/S3 تصویر OG پیش‌فرض نداریم
   [SEO_KEYS.defaultOgImage]: "",
-  [SEO_KEYS.homeTitle]: `شارژ و ارسال کپسول گاز در تهران | ${DEFAULT_BRAND_NAME}`,
+  [SEO_KEYS.homeTitle]: `شارژ کپسول گاز و خرید کپسول گاز در تهران | ${DEFAULT_BRAND_NAME}`,
   [SEO_KEYS.homeDescription]: HOME_DESCRIPTION,
-  [SEO_KEYS.homeH1]: `شارژ و ارسال کپسول گاز در تهران با ${DEFAULT_BRAND_NAME}`,
+  [SEO_KEYS.homeH1]: "شارژ کپسول گاز و خرید کپسول گاز در تهران",
   [SEO_KEYS.homeContent]: HOME_CONTENT,
   [SEO_KEYS.homeFaq]: HOME_FAQ,
   [SEO_KEYS.orgLegalName]: todo("نام حقوقی ثبت‌شده‌ی کسب‌وکار"),

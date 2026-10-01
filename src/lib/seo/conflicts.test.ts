@@ -64,3 +64,66 @@ describe("findSeoConflicts", () => {
     });
   });
 });
+
+describe("findSeoConflicts: شباهت متن هم‌دسته", () => {
+  const text =
+    "شارژ کپسول گاز برای مصرف خانگی مناسب است و کپسول خالی شما با کپسول پرشده تعویض می‌شود";
+  const entry = (
+    id: string,
+    categoryId: string,
+    description: string,
+  ): SeoIndexEntry => ({
+    kind: "product",
+    id,
+    name: `محصول ${id}`,
+    focusKeyword: null,
+    seoTitle: null,
+    metaDescription: null,
+    categoryId,
+    description,
+  });
+  const target = {
+    kind: "product" as const,
+    id: "p0",
+    name: "محصول p0",
+    focusKeyword: null,
+    seoTitle: null,
+    metaDescription: null,
+    categoryId: "c1",
+    description: text,
+  };
+
+  it("فقط محصولات همان دسته و با ارقام نادیده‌گرفته‌شده مقایسه می‌شوند", () => {
+    const result = findSeoConflicts(
+      [
+        entry("p1", "c1", text.replace("خانگی", "خانگی")),
+        entry("p2", "c2", text),
+        entry(
+          "p3",
+          "c1",
+          "پیک نیک سبک برای سفر و کمپینگ با ابعاد کوچک و قابل حمل",
+        ),
+      ],
+      target,
+    );
+    expect(result.similarText).toEqual([
+      { name: "محصول «محصول p1»", score: 1 },
+      { name: "محصول «محصول p3»", score: 0 },
+    ]);
+  });
+
+  it("بدون توضیحات یا دسته ⇒ similarText نیست (دسته‌ها و محصول جدید)", () => {
+    expect(
+      findSeoConflicts([entry("p1", "c1", text)], {
+        ...target,
+        description: null,
+      }).similarText,
+    ).toBeUndefined();
+    expect(
+      findSeoConflicts([entry("p1", "c1", text)], {
+        ...target,
+        categoryId: null,
+      }).similarText,
+    ).toBeUndefined();
+  });
+});

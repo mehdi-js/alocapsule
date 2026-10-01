@@ -104,7 +104,7 @@ export const homeSettingsSchema = z.object({
     .max(200, "مقصد حداکثر ۲۰۰ کاراکتر باشد")
     .refine(
       (value) => /^\/(?!\/)\S*$/.test(value),
-      "مقصد باید مسیر داخلی سایت باشد (مثل /category/lpg-charge)",
+      "مقصد باید مسیر داخلی سایت باشد (مثل /category/gas-capsule-refill)",
     ),
   heroSecondaryCta: text("متن دکمه‌ی تماس", 2, 30),
   stepsTitle: text("عنوان بخش مراحل", 3, 80),

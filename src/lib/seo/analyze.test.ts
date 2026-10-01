@@ -215,3 +215,53 @@ describe("summarizeSeo", () => {
     expect(warn).toMatchObject({ bad: 0, warn: 1, level: "warn" });
   });
 });
+
+describe("چک شباهت متن (SEO.md §۷.۵)", () => {
+  const base = {
+    name: "شارژ کپسول گاز ۱۱ کیلویی",
+    seoTitle: "قیمت شارژ کپسول گاز ۱۱ کیلویی",
+    metaDescription: null,
+    focusKeyword: null,
+    text: "متن",
+    images: null,
+    noindex: false,
+    titleSettings: {
+      brandName: "الو کپسول",
+      titleTemplate: "%s | {brandName}",
+    },
+  };
+  const conflicts = (similarText?: { name: string; score: number }[]) => ({
+    focusKeyword: [],
+    seoTitle: [],
+    metaDescription: [],
+    ...(similarText ? { similarText } : {}),
+  });
+  const similarity = (similarText?: { name: string; score: number }[]) =>
+    analyzeSeo({ ...base, conflicts: conflicts(similarText) }).find(
+      (check) => check.id === "textSimilarity",
+    );
+
+  it("بالای ۶۰٪ قرمز با نام صفحه‌ی رقیب", () => {
+    const check = similarity([
+      { name: "محصول «الف»", score: 0.3 },
+      { name: "محصول «ب»", score: 0.72 },
+    ]);
+    expect(check?.status).toBe("bad");
+    expect(check?.message).toContain("محصول «ب»");
+    expect(check?.message).toContain("تقریباً یکسان");
+  });
+
+  it("۴۰ تا ۶۰٪ نارنجی؛ کمتر سبز؛ بدون هم‌دسته سبز", () => {
+    expect(similarity([{ name: "محصول «ب»", score: 0.5 }])?.status).toBe(
+      "warn",
+    );
+    expect(similarity([{ name: "محصول «ب»", score: 0.1 }])?.status).toBe(
+      "good",
+    );
+    expect(similarity([])?.status).toBe("good");
+  });
+
+  it("وقتی داده‌ی شباهت نیامده (دسته/فرم جدید) چک اجرا نمی‌شود", () => {
+    expect(similarity(undefined)).toBeUndefined();
+  });
+});

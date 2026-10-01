@@ -2,6 +2,7 @@ import { richTextLinks, richTextToPlain } from "@/lib/rich-text";
 import { toPersianDigits } from "@/lib/utils";
 
 import { imageChecks } from "./image-checks";
+import { SIMILARITY_BAD, similarityLevel } from "./similarity";
 import { countWords, normalizeFa } from "./text";
 import {
   buildDocumentTitle,
@@ -34,6 +35,7 @@ export type SeoCheckId =
   | "duplicateKeyword"
   | "duplicateTitle"
   | "duplicateMeta"
+  | "textSimilarity"
   | "keywordDensity"
   | "noindex";
 
@@ -48,6 +50,11 @@ export interface SeoConflicts {
   focusKeyword: string[];
   seoTitle: string[];
   metaDescription: string[];
+  /**
+   * شباهت `description` با محصولات هم‌دسته (SEO.md §۷.۵)؛ فقط برای محصول و
+   * وقتی متن داده شده. نبود کلید ⇒ چک اجرا نمی‌شود.
+   */
+  similarText?: { name: string; score: number }[];
 }
 
 export interface SeoAnalysisInput {
@@ -122,6 +129,35 @@ function duplicateCheck(
         status: "bad",
         message: `${label} با ${competitors.join("، ")} تکراری است.`,
       };
+}
+
+/** بیشترین شباهت با محصولات هم‌دسته؛ بالای ۶۰٪ قرمز، ۴۰ تا ۶۰ نارنجی */
+function similarityCheck(similar: { name: string; score: number }[]): SeoCheck {
+  const top = [...similar].sort((a, b) => b.score - a.score)[0];
+  const percent = (score: number) => fa(Math.round(score * 100));
+  if (!top) {
+    return {
+      id: "textSimilarity",
+      status: "good",
+      message: "متن با محصولات هم‌دسته مقایسه شد و یکتاست.",
+    };
+  }
+  const level = similarityLevel(top.score);
+  if (level === "good") {
+    return {
+      id: "textSimilarity",
+      status: "good",
+      message: `شباهت متن با محصولات هم‌دسته کم است (بیشینه ${percent(top.score)}٪).`,
+    };
+  }
+  return {
+    id: "textSimilarity",
+    status: level === "bad" ? "bad" : "warn",
+    message:
+      level === "bad"
+        ? `متن این صفحه با ${top.name} تقریباً یکسان است (${percent(top.score)}٪ شباهت، بیشتر از ${percent(SIMILARITY_BAD)}٪)؛ گوگل آن‌ها را تکراری می‌بیند.`
+        : `متن این صفحه با ${top.name} شباهت زیادی دارد (${percent(top.score)}٪)؛ بخش‌های مخصوص این صفحه را بیشتر کنید.`,
+  };
 }
 
 function keywordChecks(
@@ -279,6 +315,10 @@ export function analyzeSeo(input: SeoAnalysisInput): SeoCheck[] {
           input.conflicts.metaDescription,
         ),
       );
+  }
+
+  if (input.conflicts?.similarText) {
+    checks.push(similarityCheck(input.conflicts.similarText));
   }
 
   const order: Record<SeoStatus, number> = { bad: 0, warn: 1, good: 2 };

@@ -1,4 +1,5 @@
 import type { SeoConflicts } from "./analyze";
+import { textSimilarity } from "./similarity";
 import { normalizeFa } from "./text";
 import { effectiveTitle } from "./title";
 
@@ -17,6 +18,9 @@ export interface SeoIndexEntry {
   focusKeyword: string | null;
   seoTitle: string | null;
   metaDescription: string | null;
+  /** فقط محصول: دسته و توضیحات (چک شباهت متن، SEO.md §۷.۵) */
+  categoryId?: string | null;
+  description?: string | null;
 }
 
 export interface SeoTarget {
@@ -27,6 +31,8 @@ export interface SeoTarget {
   focusKeyword: string | null;
   seoTitle: string | null;
   metaDescription: string | null;
+  categoryId?: string | null;
+  description?: string | null;
 }
 
 const KIND_LABELS: Record<SeoEntityKind, string> = {
@@ -59,11 +65,26 @@ export function findSeoConflicts(
     if (!wanted) return [];
     return others.filter((entry) => pick(entry) === wanted).map(seoEntityLabel);
   };
-  return {
+  const result: SeoConflicts = {
     focusKeyword: matching((entry) => key(entry.focusKeyword)),
     seoTitle: matching((entry) =>
       key(effectiveTitle(entry.seoTitle, entry.name)),
     ),
     metaDescription: matching((entry) => key(entry.metaDescription)),
   };
+  // شباهت متن فقط بین محصولات هم‌دسته و وقتی توضیحات داده شده
+  if (target.kind === "product" && target.description && target.categoryId) {
+    result.similarText = others
+      .filter(
+        (entry) =>
+          entry.kind === "product" &&
+          entry.categoryId === target.categoryId &&
+          entry.description,
+      )
+      .map((entry) => ({
+        name: seoEntityLabel(entry),
+        score: textSimilarity(target.description, entry.description),
+      }));
+  }
+  return result;
 }

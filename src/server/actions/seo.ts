@@ -26,6 +26,9 @@ const targetSchema = z.object({
   focusKeyword: z.string().max(200).nullable(),
   seoTitle: z.string().max(200).nullable(),
   metaDescription: z.string().max(400).nullable(),
+  /** فقط محصول: دسته و توضیحات برای چک شباهت متن */
+  categoryId: z.string().min(1).nullable().optional(),
+  description: z.string().max(30_000).nullable().optional(),
 });
 
 /** بررسی زنده‌ی تکراری بودن کلمه/عنوان/متا هنگام تایپ در فرم ادمین */

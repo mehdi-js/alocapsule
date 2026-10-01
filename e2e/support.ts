@@ -11,6 +11,8 @@ export const CUSTOMER_PHONE = `0999555${RUN_ID.slice(-4).padStart(4, "0")}`;
 export const ADMIN_PHONE = process.env.E2E_ADMIN_PHONE ?? "09000000000";
 export const COUPON_CODE = `E2E${RUN_ID.slice(-6).toUpperCase()}`;
 /** محصول و دسته‌ی تست (کاتالوگ واقعی محصول فعال ندارد) — قیمت ۱۱۰٬۰۰۰ تومان */
+/** روش ارسال فعال تست (روش‌های seed عادی/فوری تا هزینه‌گذاری کارفرما غیرفعال‌اند) */
+export const E2E_SHIPPING_NAME = `ارسال e2e ${RUN_ID}`;
 export const E2E_PRODUCT_SLUG = `e2e-product-${RUN_ID}`;
 export const E2E_CATEGORY_SLUG = `e2e-category-${RUN_ID}`;
 export const E2E_PRODUCT_PRICE = 110_000;

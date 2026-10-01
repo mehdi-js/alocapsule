@@ -49,8 +49,8 @@ test("اسکرین‌شات‌های F6", async ({ browser }) => {
 
     for (const [file, url] of [
       ["home", "/"],
-      ["product-service", "/products/charge-butane"],
-      ["product-inquiry", "/products/charge-oxygen-40kg"],
+      ["product-service", "/products/gas-capsule-refill-11kg?valve=butane"],
+      ["product-inquiry", "/products/oxygen-capsule-refill"],
     ] as const) {
       await page.goto(url, { waitUntil: "networkidle" });
       await shot(file);
@@ -59,7 +59,7 @@ test("اسکرین‌شات‌های F6", async ({ browser }) => {
     // محدودیت ارسال OTP (۳ بار در ۱۰ دقیقه) بین دو اندازه پاک می‌شود
     await db().rateLimitEvent.deleteMany({});
     await signUpWithOtp(page, PHONE, `Mo${RUN_ID}z`, "/");
-    await page.goto("/products/charge-butane");
+    await page.goto("/products/gas-capsule-refill-11kg?valve=butane");
     await page
       .getByRole("button", { name: /افزودن به سبد/ })
       .first()

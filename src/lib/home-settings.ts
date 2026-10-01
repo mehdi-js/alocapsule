@@ -88,7 +88,7 @@ export const HOME_SETTING_DEFAULTS: Record<
   [HOME_KEYS.heroSubtitle]:
     "کپسول خالی شما با کپسول پرشده تعویض می‌شود؛ سفارش آنلاین، ارسال با پیک در تهران یا تحویل حضوری.",
   [HOME_KEYS.heroPrimaryCta]: "سفارش شارژ کپسول",
-  [HOME_KEYS.heroPrimaryHref]: "/category/lpg-charge",
+  [HOME_KEYS.heroPrimaryHref]: "/category/gas-capsule-refill",
   [HOME_KEYS.heroSecondaryCta]: "تماس تلفنی",
   [HOME_KEYS.stepsTitle]: "شارژ کپسول چطور انجام می‌شود؟",
   [HOME_KEYS.steps]: DEFAULT_STEPS,

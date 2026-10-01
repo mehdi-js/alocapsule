@@ -141,7 +141,7 @@ export function HomeSettingsForm({ initial }: { initial: HomeSettings }) {
           {text("heroSubtitle", "توضیح یک‌خطی", { multiline: true })}
           {text("heroPrimaryCta", "دکمه‌ی اول (سفارش شارژ)")}
           {text("heroPrimaryHref", "مقصد دکمه‌ی اول", {
-            hint: "مسیر داخلی، مثل /category/lpg-charge",
+            hint: "مسیر داخلی، مثل /category/gas-capsule-refill",
           })}
           {text("heroSecondaryCta", "دکمه‌ی دوم (تماس تلفنی)")}
         </div>

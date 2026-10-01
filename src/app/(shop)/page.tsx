@@ -13,6 +13,7 @@ import {
 } from "@/components/shop/HomeSections";
 import { HomeSeoContent } from "@/components/shop/HomeSeoContent";
 import { SearchForm } from "@/components/shop/SearchForm";
+import { applyContentTokens, applyTokensToFaq } from "@/lib/content-tokens";
 import {
   faqPageJsonLd,
   organizationJsonLd,
@@ -23,6 +24,7 @@ import { socialLinks } from "@/lib/site-settings";
 import { getBanners } from "@/server/services/banner.service";
 import { listFeaturedProducts } from "@/server/services/catalog.service";
 import { listFeaturedCategories } from "@/server/services/catalog-page.service";
+import { getContentTokenValues } from "@/server/services/content-tokens.service";
 import {
   getSeoContext,
   getSeoSettings,
@@ -53,17 +55,30 @@ function profileUrls(hrefs: string[]): string[] {
 }
 
 export default async function HomePage() {
-  const [featured, categories, banners, seo, context, site, home, business] =
-    await Promise.all([
-      listFeaturedProducts(),
-      listFeaturedCategories(),
-      getBanners(),
-      getSeoSettings(),
-      getSeoContext(),
-      getSiteSettings(),
-      getHomeSettings(),
-      getBusinessSettings(),
-    ]);
+  const [
+    featured,
+    categories,
+    banners,
+    seo,
+    context,
+    site,
+    home,
+    business,
+    tokens,
+  ] = await Promise.all([
+    listFeaturedProducts(),
+    listFeaturedCategories(),
+    getBanners(),
+    getSeoSettings(),
+    getSeoContext(),
+    getSiteSettings(),
+    getHomeSettings(),
+    getBusinessSettings(),
+    getContentTokenValues(),
+  ]);
+  // مقدارهای ارسال از تنظیمات جایگزین می‌شوند، نه متن ثابت (SEO.md §۱۰.۱)
+  const homeContent = applyContentTokens(seo.home.content, tokens);
+  const homeFaq = applyTokensToFaq(seo.home.faq, tokens);
 
   return (
     <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-12 px-5 pt-4 md:gap-16 md:px-11 md:pt-6">
@@ -84,7 +99,7 @@ export default async function HomePage() {
             brandName: seo.brandName,
             alternateNames: seo.alternateNames,
           }),
-          faqPageJsonLd(seo.home.faq),
+          faqPageJsonLd(homeFaq),
         ]}
       />
       <SearchForm className="md:hidden" />
@@ -101,7 +116,7 @@ export default async function HomePage() {
       <HomeCustomers home={home} />
       <HomeStats home={home} />
       <HomeCta home={home} phone={business.phone} />
-      <HomeSeoContent content={seo.home.content} faq={seo.home.faq} />
+      <HomeSeoContent content={homeContent} faq={homeFaq} />
     </div>
   );
 }

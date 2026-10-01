@@ -30,13 +30,17 @@ export function SeoAnalysisPanel({
   input,
   kind,
   id,
+  categoryId = null,
 }: {
   input: Omit<SeoAnalysisInput, "conflicts">;
   kind: SeoEntityKind;
   id: string | null;
+  /** فقط محصول: دسته‌ی انتخاب‌شده برای چک شباهت متن */
+  categoryId?: string | null;
 }) {
   const [conflicts, setConflicts] = useState<SeoConflicts | null>(null);
-  const { name, focusKeyword, seoTitle, metaDescription } = input;
+  const { name, focusKeyword, seoTitle, metaDescription, text } = input;
+  const description = kind === "product" ? text : null;
 
   useEffect(() => {
     let cancelled = false;
@@ -48,6 +52,8 @@ export function SeoAnalysisPanel({
         focusKeyword,
         seoTitle,
         metaDescription,
+        categoryId,
+        description,
       });
       if (!cancelled && result.ok) setConflicts(result.conflicts);
     }, 600);
@@ -55,7 +61,16 @@ export function SeoAnalysisPanel({
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [kind, id, name, focusKeyword, seoTitle, metaDescription]);
+  }, [
+    kind,
+    id,
+    name,
+    focusKeyword,
+    seoTitle,
+    metaDescription,
+    categoryId,
+    description,
+  ]);
 
   const checks = useMemo(
     () => analyzeSeo({ ...input, conflicts }),

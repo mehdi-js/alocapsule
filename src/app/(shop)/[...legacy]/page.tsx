@@ -6,10 +6,12 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { Breadcrumb } from "@/components/shop/Breadcrumb";
 import { FaqSection } from "@/components/shop/FaqSection";
 import { RichText } from "@/components/ui/RichText";
+import { applyContentTokens, applyTokensToFaq } from "@/lib/content-tokens";
 import { breadcrumbJsonLd, faqPageJsonLd } from "@/lib/seo/jsonld";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import { effectiveMeta } from "@/lib/seo/title";
 import { safeDecode } from "@/lib/utils";
+import { getContentTokenValues } from "@/server/services/content-tokens.service";
 import { getPublishedPage } from "@/server/services/page.service";
 import { recordNotFound } from "@/server/services/redirect.service";
 import { getSeoContext } from "@/server/services/seo-settings.service";
@@ -56,8 +58,16 @@ export default async function LegacyOrPage({ params }: { params: Params }) {
     notFound();
   }
 
-  const page = result.data;
-  const context = await getSeoContext();
+  const [context, tokens] = await Promise.all([
+    getSeoContext(),
+    getContentTokenValues(),
+  ]);
+  // زمان تحویل، آستانه‌ی ارسال رایگان و ساعت تحویل حضوری از تنظیمات (SEO.md §۱۰.۱)
+  const page = {
+    ...result.data,
+    content: applyContentTokens(result.data.content, tokens),
+    faq: applyTokensToFaq(result.data.faq, tokens),
+  };
   const crumbs = [
     { name: "خانه", path: "/" },
     { name: page.title, path: `/${page.slug}` },

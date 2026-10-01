@@ -6,7 +6,7 @@ import { SMS_OUTBOX } from "../playwright.config";
 import { db, loginWithPassword, RUN_ID, signUpWithOtp } from "./support";
 
 /**
- * چرخه‌ی خرید با محصول نمونه‌ی seed («شارژ کپسول گاز بوتان») روی پیامک
+ * چرخه‌ی خرید با محصول نمونه‌ی seed («شارژ کپسول گاز ۱۱ کیلویی · بوتان») روی پیامک
  * console، و اطمینان از این‌که هیچ اثری از برند/محتوای پروژه‌ی مبدأ در صفحات و
  * پیامک‌ها نیست. (تسویه با کارت‌به‌کارت؛ پرداخت آنلاین وجود ندارد.)
  */
@@ -32,9 +32,9 @@ const FORBIDDEN = [
 const PAGES = [
   "/",
   "/products",
-  "/products/charge-butane",
-  "/products/buy-cylinder-11kg",
-  "/category/lpg-charge",
+  "/products/gas-capsule-refill-11kg",
+  "/products/buy-gas-capsule-11kg",
+  "/category/gas-capsule-refill",
   "/about",
   "/contact",
 ];
@@ -102,7 +102,7 @@ test.describe.serial("محصول نمونه", () => {
     page,
   }) => {
     await signUpWithOtp(page, PHONE, PASSWORD, "/");
-    await page.goto("/products/charge-butane");
+    await page.goto("/products/gas-capsule-refill-11kg?valve=butane");
     await page
       .getByRole("button", { name: "افزودن به سبد خرید" })
       .first()
@@ -110,7 +110,7 @@ test.describe.serial("محصول نمونه", () => {
     await expect(page.getByText("به سبد خرید اضافه شد")).toBeVisible();
 
     await page.goto("/cart");
-    // ۱۰ عدد به بالا رایگان است (روش پیک seed)
+    // ۱۰ عدد به بالا رایگان است (روش ارسال تست e2e)
     await expect(
       page.getByText("با افزودن ۹ عدد دیگر، ارسال رایگان می‌شود."),
     ).toBeVisible();
@@ -154,7 +154,7 @@ test.describe.serial("محصول نمونه", () => {
     page,
   }) => {
     await loginWithPassword(page, PHONE, PASSWORD, "/");
-    await page.goto("/products/buy-cylinder-11kg");
+    await page.goto("/products/buy-gas-capsule-11kg");
     await page
       .getByRole("button", { name: "افزودن به سبد خرید" })
       .first()

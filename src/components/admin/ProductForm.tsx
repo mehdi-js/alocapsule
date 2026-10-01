@@ -216,6 +216,7 @@ export function ProductForm({
         context={{
           kind: "product",
           id: product?.id ?? null,
+          categoryId: state.categoryId || null,
           name: state.name,
           path: `/products/${state.slug.trim()}`,
           text: state.description,

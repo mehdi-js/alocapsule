@@ -24,6 +24,7 @@ export default async function globalSetup() {
     E2E_CATEGORY_SLUG,
     E2E_PRODUCT_PRICE,
     E2E_PRODUCT_SLUG,
+    E2E_SHIPPING_NAME,
   } = await import("./support");
   const prisma = db();
   // چند ورود OTP از یک IP در چند دقیقه ⇒ محدودیت ۳ ارسال در ۱۰ دقیقه
@@ -34,6 +35,16 @@ export default async function globalSetup() {
       title: "کد تست e2e",
       type: "PERCENT",
       value: 10,
+    },
+  });
+  // ارسال عادی/فوری seed غیرفعال‌اند؛ تست‌های خرید یک روش فعال با آدرس لازم دارند.
+  // آستانه‌ی رایگان ۱۰ عدد (پیام «با افزودن N عدد دیگر…» در سبد)
+  await prisma.shippingMethod.create({
+    data: {
+      name: E2E_SHIPPING_NAME,
+      cost: 100_000,
+      freeAboveQuantity: 10,
+      sortOrder: 0,
     },
   });
   await prisma.category.create({

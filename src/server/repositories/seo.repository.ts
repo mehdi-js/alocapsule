@@ -15,7 +15,10 @@ export async function listSeoIndex(): Promise<SeoIndexEntry[]> {
     metaDescription: true,
   } as const;
   const [products, categories] = await Promise.all([
-    db.product.findMany({ where: { archivedAt: null }, select }),
+    db.product.findMany({
+      where: { archivedAt: null },
+      select: { ...select, categoryId: true, description: true },
+    }),
     db.category.findMany({ select }),
   ]);
   return [

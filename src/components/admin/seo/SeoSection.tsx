@@ -27,6 +27,8 @@ export interface SeoContext {
   kind: SeoEntityKind;
   /** `null` ⇒ رکورد جدید */
   id: string | null;
+  /** فقط محصول: دسته‌ی فعلی (چک شباهت متن با محصولات هم‌دسته) */
+  categoryId?: string | null;
   name: string;
   /** مسیر صفحه، مثل `/products/example-product` */
   path: string;
@@ -188,6 +190,7 @@ export function SeoSection({
           <SeoAnalysisPanel
             kind={context.kind}
             id={context.id}
+            categoryId={context.categoryId ?? null}
             input={{
               name: context.name,
               seoTitle: state.seoTitle || null,

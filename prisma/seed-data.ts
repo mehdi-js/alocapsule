@@ -10,21 +10,40 @@ import { DEFAULT_TEMPLATES } from "@/lib/notification-templates";
 export const smsTemplates = DEFAULT_TEMPLATES;
 
 /**
- * روش‌های ارسال نمونه (بخش ۶.۱ `FORK.md`). هزینه‌ی پیک عدد نمونه است و باید
- * توسط الو کپسول تعیین شود؛ ارسال رایگان از ۱۰ عدد به بالا.
+ * روش‌های ارسال (SEO.md §۴.۸ و §۱۱). هزینه‌ی عادی و فوری را کارفرما وارد می‌کند؛
+ * تا آن موقع این دو روش **غیرفعال** seed می‌شوند (هزینه‌ی صفر یعنی ارسال رایگان و
+ * نباید تصادفی منتشر شود). تحویل حضوری رایگان و فعال است.
  */
 export const shippingMethods = [
   {
-    id: "seed-shipping-courier",
-    name: "ارسال با پیک",
-    description: "ارسال با پیک به آدرس شما در تهران",
-    cost: 100_000,
+    id: "seed-shipping-normal",
+    name: "ارسال عادی",
+    description: "ارسال با پیک به آدرس شما در شهر تهران",
+    cost: 0,
     payOnDelivery: false,
     freeAboveAmount: null,
-    freeAboveQuantity: 10,
+    freeAboveQuantity: 100,
     requiresAddress: true,
+    deliveryEstimate: "۱ روزه",
+    businessHoursOnly: false,
     provinces: [] as string[],
+    isActive: false,
     sortOrder: 1,
+  },
+  {
+    id: "seed-shipping-express",
+    name: "ارسال فوری",
+    description: "ارسال سریع در ساعات کاری به آدرس شما در شهر تهران",
+    cost: 0,
+    payOnDelivery: false,
+    freeAboveAmount: null,
+    freeAboveQuantity: null,
+    requiresAddress: true,
+    deliveryEstimate: "۱ تا ۴ ساعت",
+    businessHoursOnly: true,
+    provinces: [] as string[],
+    isActive: false,
+    sortOrder: 2,
   },
   {
     id: "seed-shipping-pickup",
@@ -35,10 +54,16 @@ export const shippingMethods = [
     freeAboveAmount: null,
     freeAboveQuantity: null,
     requiresAddress: false,
+    deliveryEstimate: null,
+    businessHoursOnly: false,
     provinces: [] as string[],
-    sortOrder: 2,
+    isActive: true,
+    sortOrder: 3,
   },
 ];
+
+/** روش ارسال نمونه‌ی فاز قبل (جایگزین شد) */
+export const LEGACY_SHIPPING_IDS = ["seed-shipping-courier"];
 
 export const bankCard = {
   id: "seed-bank-card-1",

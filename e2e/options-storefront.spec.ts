@@ -15,7 +15,7 @@ import {
  * canonical، سوییچ اندازه، جدول قیمت hub، ردیف ارسال و خرید با ارسال فوری.
  */
 
-const PHONE = `0999777${RUN_ID.slice(-4).padStart(4, "0")}`;
+const PHONE = `0999888${RUN_ID.slice(-4).padStart(4, "0")}`;
 const PASSWORD = `Mo${RUN_ID}p`;
 const CONSENT = "شرایط تعویض کپسول را خوانده‌ام و می‌پذیرم";
 const slug = (name: string) => `e2e-p1-${name}-${RUN_ID}`;

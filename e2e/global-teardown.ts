@@ -17,6 +17,7 @@ export default async function globalTeardown() {
     COUPON_CODE,
     E2E_CATEGORY_SLUG,
     E2E_PRODUCT_SLUG,
+    E2E_SHIPPING_NAME,
   } = await import("./support");
   const prisma = db();
   if (existsSync(ADMIN_BACKUP)) {
@@ -66,6 +67,9 @@ export default async function globalTeardown() {
     }
     rmSync(SMS_CONNECTION_BACKUP);
   }
+  await prisma.shippingMethod.deleteMany({
+    where: { name: E2E_SHIPPING_NAME },
+  });
   await prisma.coupon.deleteMany({ where: { code: COUPON_CODE } });
   await prisma.product.deleteMany({ where: { slug: E2E_PRODUCT_SLUG } });
   await prisma.category.deleteMany({ where: { slug: E2E_CATEGORY_SLUG } });
