@@ -7,7 +7,7 @@
 #      هر ۲۴ ساعت: بررسی سلامت مالی (نتیجه در لاگ)
 # ─────────────────────────────────────────────────────────────
 set -u
-APP_URL="${APP_URL:-http://app:3000}"
+APP_URL="${APP_URL:-http://alocapsule-app:3000}"
 
 echo "jobs: waiting for $APP_URL/api/health"
 until node -e "fetch('$APP_URL/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"; do

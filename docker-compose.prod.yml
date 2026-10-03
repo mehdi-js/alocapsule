@@ -55,7 +55,10 @@ services:
         condition: service_healthy
     restart: "no"
 
-  app:
+  # نام سرویس عمداً یکتاست (نه `app`): وقتی روی شبکه‌ی یک reverse proxy مشترک با
+  # پروژه‌های دیگر قرار می‌گیرد، نام سرویس alias شبکه می‌شود و `app` با سرویس
+  # هم‌نام پروژه‌ی دیگر تداخل می‌کرد (docker-compose.shared-proxy.yml)
+  alocapsule-app:
     <<: *app-env
     build:
       <<: *build
@@ -74,6 +77,10 @@ services:
   # jobهای دوره‌ای + بازسازی کش پس از راه‌اندازی (scripts/ops/jobs-loop.sh)
   jobs:
     <<: *app-env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-alocapsule}:${POSTGRES_PASSWORD:?}@postgres:5432/${POSTGRES_DB:-alocapsule}?schema=public
+      TZ: Asia/Tehran
+      APP_URL: http://alocapsule-app:3000
     build:
       <<: *build
       target: tools
@@ -81,7 +88,7 @@ services:
     command: ["sh", "scripts/ops/jobs-loop.sh"]
     restart: unless-stopped
     depends_on:
-      app:
+      alocapsule-app:
         condition: service_healthy
 
   # بکاپ روزانه‌ی دیتابیس و فایل‌ها، نگهداری ۱۴ روز (scripts/ops/backup*.sh)
@@ -122,7 +129,7 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
-      app:
+      alocapsule-app:
         condition: service_healthy
 
 volumes:

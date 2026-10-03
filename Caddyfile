@@ -5,7 +5,7 @@
 	request_body {
 		max_size 8MB
 	}
-	reverse_proxy app:3000
+	reverse_proxy alocapsule-app:3000
 }
 
 # یک دامنه‌ی canonical (بدون www؛ SEO.md §۴.۲): نسخه‌ی www با 301 به دامنه‌ی

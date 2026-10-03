@@ -134,9 +134,9 @@ dc exec backup sh /scripts/backup.sh
 **بازگردانی** (⚠️ دیتابیس فعلی بازنویسی می‌شود):
 
 ```bash
-dc stop app jobs caddy
+dc stop alocapsule-app jobs caddy
 dc exec backup sh /scripts/restore.sh /backups/db-XXXX.dump /backups/files-XXXX.tar.gz
-dc start app jobs caddy       # jobs کش صفحات را بازسازی می‌کند
+dc start alocapsule-app jobs caddy       # jobs کش صفحات را بازسازی می‌کند
 dc exec jobs npm run -s check:finance
 ```
 
@@ -163,7 +163,7 @@ dc run --rm migrate npm run -s user:set-password -- 09123456789
 - سلامت: `GET /api/health` ⇒ ۲۰۰ یا ۵۰۳ (برای مانیتورینگ بیرونی مثل UptimeRobot)
 - لاگ‌ها JSON یک‌خطی‌اند (`time`، `level`، `event`، …):
   ```bash
-  dc logs -f app                 # خطاهای درخواست‌ها: event=request_failed
+  dc logs -f alocapsule-app                 # خطاهای درخواست‌ها: event=request_failed
   dc logs jobs | grep finance    # نتیجه‌ی بررسی مالی روزانه
   dc logs backup                 # backup_done / backup_failed
   ```
@@ -171,11 +171,11 @@ dc run --rm migrate npm run -s user:set-password -- 09123456789
 
 ## ۱۰) امنیت
 
-- فایروال: فقط ۲۲، ۸۰ و ۴۴۳ (`ufw allow 22,80,443/tcp && ufw enable`). Postgres و app پورتی روی میزبان باز نمی‌کنند.
+- فایروال: فقط ۲۲، ۸۰ و ۴۴۳ (`ufw allow 22,80,443/tcp && ufw enable`). Postgres و alocapsule-app پورتی روی میزبان باز نمی‌کنند.
 - `.env.production` و پوشه‌ی `backups` را فقط برای root قابل خواندن کنید (`chmod 600 .env.production`).
 - سرآیندهای امنیتی (CSP، HSTS، X-Frame-Options، …) در `next.config.ts` تنظیم شده‌اند.
 - محدودیت تلاش OTP، رمز عبور و کد تخفیف بر اساس IP (و شماره) است. Caddy هدر `X-Forwarded-For` را خودش می‌سازد؛ اگر CDN (مثل آروان) جلوی سرور است، در `Caddyfile` بخش `trusted_proxies` را با بازه‌ی IP آن CDN تنظیم کنید تا IP واقعی کاربر به اپ برسد.
-- اگر TLS را CDN/میزبان می‌دهد، سرویس `caddy` را حذف و پورت `app:3000` را فقط برای همان پروکسی باز کنید.
+- اگر TLS را CDN/میزبان می‌دهد، سرویس `caddy` را حذف و پورت `alocapsule-app:3000` را فقط برای همان پروکسی باز کنید.
 
 ## ۱۱) عیب‌یابی
 
@@ -240,7 +240,7 @@ npm run seo:audit -- https://<دامنه>
 یا روی سرور (مستقیم به اپ، بدون CDN):
 
 ```bash
-dc run --rm jobs npm run -s seo:audit -- http://app:3000
+dc run --rm jobs npm run -s seo:audit -- http://alocapsule-app:3000
 ```
 
 ### Search Console
@@ -284,3 +284,31 @@ dc run --rm jobs npm run -s seo:audit -- http://app:3000
 - [ ] نام «الو کپسول» و «Alo Capsule» در اینستاگرام، دایرکتوری‌ها و فاکتورها یکسان باشد (تفکیک از برند مشابه در حوزه‌ی کپسول آتش‌نشانی)
 - [ ] نماد اعتماد الکترونیک (اینماد)
 - [ ] پس از جابه‌جایی DNS: ثبت sitemap جدید در Search Console و بررسی صفحه‌ی «خطاهای ۴۰۴» پنل در هفته‌ی اول (آدرس‌های قدیمی بدون ریدایرکت برای نگاشت دستی)
+
+## ۱۳) سرور مشترک با سایت‌های دیگر (reverse proxy موجود)
+
+اگر روی همان سرور Caddy/nginx پروژه‌ی دیگری پورت ۸۰ و ۴۴۳ را دارد، Caddy همین پروژه را اجرا **نکنید**:
+
+```bash
+docker compose -f docker-compose.prod.yml -f docker-compose.shared-proxy.yml --env-file .env.production up -d --build
+```
+
+- در `.env.production` مقدار `SHARED_PROXY_NETWORK` را نام شبکه‌ی Docker همان Caddy بگذارید (`docker network ls`).
+- نام سرویس وب‌اپ عمداً `alocapsule-app` است نه `app`: نام سرویس روی شبکه‌ی مشترک alias می‌شود و `app` با سرویس هم‌نام پروژه‌ی دیگر تداخل می‌کرد (ترافیک آن سایت گاهی به اپ ما می‌رسید).
+- در Caddyfile سایت میزبان، بلوک زیر اضافه شود (**بکاپ بگیرید، با `caddy validate` بسنجید و فقط `caddy reload` بزنید؛ restart نه**):
+
+```caddyfile
+alocapsule.ir {
+	encode zstd gzip
+	request_body {
+		max_size 8MB
+	}
+	reverse_proxy alocapsule-app:3000
+}
+
+www.alocapsule.ir {
+	redir https://alocapsule.ir{uri} permanent
+}
+```
+
+- فایل Caddyfile به‌صورت bind mount تکی داخل کانتینر است؛ برای حفظ inode محتوا را با `cat فایل-جدید > Caddyfile` بنویسید (نه `sed -i` یا `mv`).

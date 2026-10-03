@@ -1,0 +1,25 @@
+# ─────────────────────────────────────────────────────────────
+# استقرار روی سروری که reverse proxy (Caddy) پروژه‌ی دیگری پورت ۸۰/۴۴۳ را دارد
+# (راهنما: DEPLOYMENT.md بخش «سرور مشترک»). اجرا:
+#   docker compose -f docker-compose.prod.yml -f docker-compose.shared-proxy.yml \
+#     --env-file .env.production up -d --build
+#
+# - Caddy همین پروژه اجرا نمی‌شود (profile)؛ پورت ۸۰/۴۴۳ میزبان دست نمی‌خورد.
+# - فقط وب‌اپ به شبکه‌ی proxy مشترک وصل می‌شود تا Caddy موجود با
+#   `reverse_proxy alocapsule-app:3000` به آن برسد. دیتابیس، jobs و بکاپ فقط روی
+#   شبکه‌ی خصوصی همین پروژه‌اند.
+# - SHARED_PROXY_NETWORK نام شبکه‌ی Docker همان Caddy است (docker network ls).
+# ─────────────────────────────────────────────────────────────
+services:
+  caddy:
+    profiles: ["standalone-caddy"]
+
+  alocapsule-app:
+    networks:
+      - default
+      - shared_proxy
+
+networks:
+  shared_proxy:
+    external: true
+    name: ${SHARED_PROXY_NETWORK:?نام شبکه‌ی Caddy مشترک را در .env.production بگذارید}
