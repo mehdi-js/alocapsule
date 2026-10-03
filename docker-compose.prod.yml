@@ -9,7 +9,7 @@ name: alocapsule
 x-app-env: &app-env
   env_file: .env.production
   environment:
-    DATABASE_URL: postgresql://${POSTGRES_USER:-alocapsule}:${POSTGRES_PASSWORD:?}@postgres:5432/${POSTGRES_DB:-alocapsule}?schema=public
+    DATABASE_URL: postgresql://${POSTGRES_USER:-alocapsule}:${POSTGRES_PASSWORD:?}@alocapsule-postgres:5432/${POSTGRES_DB:-alocapsule}?schema=public
     TZ: Asia/Tehran
 
 x-build: &build
@@ -22,7 +22,9 @@ x-build: &build
     PRISMA_ENGINES_MIRROR: ${PRISMA_ENGINES_MIRROR:-}
 
 services:
-  postgres:
+  # نام یکتا (نه `postgres`): وب‌اپ روی شبکه‌ی مشترک proxy هم هست و نام `postgres` آنجا
+  # به دیتابیس پروژه‌ی دیگر هم resolve می‌شد (docker-compose.shared-proxy.yml)
+  alocapsule-postgres:
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
@@ -51,7 +53,7 @@ services:
     image: alocapsule-tools:latest
     command: ["npx", "prisma", "migrate", "deploy"]
     depends_on:
-      postgres:
+      alocapsule-postgres:
         condition: service_healthy
     restart: "no"
 
@@ -78,7 +80,7 @@ services:
   jobs:
     <<: *app-env
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-alocapsule}:${POSTGRES_PASSWORD:?}@postgres:5432/${POSTGRES_DB:-alocapsule}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:-alocapsule}:${POSTGRES_PASSWORD:?}@alocapsule-postgres:5432/${POSTGRES_DB:-alocapsule}?schema=public
       TZ: Asia/Tehran
       APP_URL: http://alocapsule-app:3000
     build:
@@ -97,7 +99,7 @@ services:
     restart: unless-stopped
     command: ["sh", "/scripts/backup-loop.sh"]
     environment:
-      PGHOST: postgres
+      PGHOST: alocapsule-postgres
       PGUSER: ${POSTGRES_USER:-alocapsule}
       PGPASSWORD: ${POSTGRES_PASSWORD:?}
       PGDATABASE: ${POSTGRES_DB:-alocapsule}
@@ -112,7 +114,7 @@ services:
       - uploads:/data/uploads
       - private_files:/data/private
     depends_on:
-      postgres:
+      alocapsule-postgres:
         condition: service_healthy
 
   # HTTPS خودکار (Let's Encrypt) برای DOMAIN — اگر TLS را میزبان/CDN می‌دهد حذف شود

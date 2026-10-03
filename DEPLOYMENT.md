@@ -294,6 +294,7 @@ docker compose -f docker-compose.prod.yml -f docker-compose.shared-proxy.yml --e
 ```
 
 - در `.env.production` مقدار `SHARED_PROXY_NETWORK` را نام شبکه‌ی Docker همان Caddy بگذارید (`docker network ls`).
+- نام سرویس دیتابیس هم عمداً `alocapsule-postgres` است (نه `postgres`): وب‌اپ روی شبکه‌ی مشترک هم هست و نام `postgres` آنجا به دیتابیس پروژه‌ی دیگر resolve می‌شد (خطای «Authentication failed» در لاگ اپ).
 - نام سرویس وب‌اپ عمداً `alocapsule-app` است نه `app`: نام سرویس روی شبکه‌ی مشترک alias می‌شود و `app` با سرویس هم‌نام پروژه‌ی دیگر تداخل می‌کرد (ترافیک آن سایت گاهی به اپ ما می‌رسید).
 - در Caddyfile سایت میزبان، بلوک زیر اضافه شود (**بکاپ بگیرید، با `caddy validate` بسنجید و فقط `caddy reload` بزنید؛ restart نه**):
 
