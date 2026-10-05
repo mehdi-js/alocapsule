@@ -23,7 +23,8 @@ export function ProductCard({
     <article className="bg-card relative flex flex-col gap-3.5 rounded-[24px] border border-hair p-3.5 pb-4.5 transition hover:border-outline">
       <Link
         href={href}
-        className="relative block h-[186px] overflow-hidden rounded-[18px]"
+        // مربع ۱:۱ روی همه‌ی نمایشگرها (ارتفاع ثابت نسبت را با عرض ستون عوض می‌کرد)
+        className="relative block aspect-square w-full overflow-hidden rounded-[18px]"
       >
         <MediaImage
           src={product.imageUrl}

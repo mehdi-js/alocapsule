@@ -26,7 +26,8 @@ export function ProductGallery({
 
   return (
     <div className="flex flex-col gap-3.5">
-      <div className="relative h-[300px] overflow-hidden rounded-[22px] md:h-[440px]">
+      {/* تصویر اصلی همیشه مربع ۱:۱ (نه ارتفاع ثابت که در دسکتاپ افقی و در موبایل عمودی می‌شد) */}
+      <div className="relative aspect-square w-full overflow-hidden rounded-[22px]">
         {current ? (
           <Image
             src={current.url}
@@ -59,7 +60,7 @@ export function ProductGallery({
                 aria-label={`نمایش تصویر ${toPersianDigits(index + 1)}`}
                 aria-pressed={index === active}
                 className={cn(
-                  "relative block h-[72px] w-full overflow-hidden rounded-[14px] border transition md:h-[92px]",
+                  "relative block aspect-square w-full overflow-hidden rounded-[14px] border transition",
                   index === active
                     ? "border-brand-strong"
                     : "border-transparent opacity-70 hover:opacity-100",
