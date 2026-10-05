@@ -16,6 +16,11 @@ export const SMS_OUTBOX = path.join(E2E_TMP, "sms-outbox.jsonl");
 /** رمز اصلی ادمین در طول تست؛ بیرون از E2E_TMP تا اجرای نیمه‌کاره گمش نکند */
 export const ADMIN_BACKUP = path.join(tmpdir(), "alocapsule-e2e-admin.json");
 /** اتصال پیامکِ پنل در طول تست کنار گذاشته می‌شود تا پیامک واقعی نرود */
+/** روش‌های ارسال seed پیش از تست (دیتابیس توسعه ممکن است ویرایش‌شده باشد؛ بعد از تست برمی‌گردد) */
+export const SHIPPING_BACKUP = path.join(
+  tmpdir(),
+  "alocapsule-e2e-shipping.json",
+);
 export const SMS_CONNECTION_BACKUP = path.join(
   tmpdir(),
   "alocapsule-e2e-sms-connection.json",

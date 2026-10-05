@@ -5,6 +5,7 @@ import type { Prisma } from "@prisma/client";
 import {
   ADMIN_BACKUP,
   E2E_TMP,
+  SHIPPING_BACKUP,
   SMS_CONNECTION_BACKUP,
 } from "../playwright.config";
 
@@ -56,6 +57,19 @@ export default async function globalTeardown() {
     await prisma.walletTransaction.deleteMany({ where: { userId: user.id } });
     await prisma.order.deleteMany({ where: { userId: user.id } });
     await prisma.user.delete({ where: { id: user.id } });
+  }
+  if (existsSync(SHIPPING_BACKUP)) {
+    const rows = JSON.parse(readFileSync(SHIPPING_BACKUP, "utf8")) as {
+      id: string;
+      [key: string]: unknown;
+    }[];
+    for (const { id, ...data } of rows) {
+      await prisma.shippingMethod.update({
+        where: { id },
+        data: data as Prisma.ShippingMethodUpdateInput,
+      });
+    }
+    rmSync(SHIPPING_BACKUP);
   }
   if (existsSync(SMS_CONNECTION_BACKUP)) {
     const { value } = JSON.parse(

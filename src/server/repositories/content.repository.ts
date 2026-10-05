@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 
 import { recordSlugChange, redirectRemovedEntity } from "./seo.repository";
 
-/** صفحات ثابت (`Page`) و شعب (`Branch`) — SEO.md فاز S4 */
+/** صفحات ثابت (`Page`) — SEO.md فاز S4 */
 
 // ───────── صفحات ─────────
 
@@ -32,54 +32,22 @@ export function createPageRow(data: Prisma.PageCreateInput) {
   return db.page.create({ data });
 }
 
-// ───────── شعب ─────────
-
-export function listBranchRows(onlyActive = false) {
-  return db.branch.findMany({
-    where: onlyActive ? { isActive: true } : {},
-    orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
-  });
-}
-
-export function findBranchById(id: string) {
-  return db.branch.findUnique({ where: { id } });
-}
-
-export function findBranchBySlug(slug: string) {
-  return db.branch.findUnique({ where: { slug } });
-}
-
-export function createBranchRow(data: Prisma.BranchCreateInput) {
-  return db.branch.create({ data });
-}
-
 // ───────── مشترک: ویرایش با تاریخچه‌ی نامک، حذف با ریدایرکت ─────────
 
-type Entity = "page" | "branch";
+type Entity = "page";
 
 const ENTITY_TYPE: Record<Entity, SlugEntityType> = {
   page: "PAGE",
-  branch: "BRANCH",
 };
 
 export function updateWithSlugHistory(
   entity: Entity,
   id: string,
-  data: Prisma.PageUpdateInput & Prisma.BranchUpdateInput,
+  data: Prisma.PageUpdateInput,
   slugChange: { from: string; to: string } | null,
 ) {
   return db.$transaction(async (tx) => {
-    if (entity === "page") {
-      await tx.page.update({
-        where: { id },
-        data: data as Prisma.PageUpdateInput,
-      });
-    } else {
-      await tx.branch.update({
-        where: { id },
-        data: data as Prisma.BranchUpdateInput,
-      });
-    }
+    await tx.page.update({ where: { id }, data });
     if (slugChange) {
       await recordSlugChange(tx, {
         entityType: ENTITY_TYPE[entity],
@@ -103,7 +71,6 @@ export function deleteWithRedirects(
       toPath: params.toPath,
       note: params.note,
     });
-    if (entity === "page") await tx.page.delete({ where: { id: params.id } });
-    else await tx.branch.delete({ where: { id: params.id } });
+    await tx.page.delete({ where: { id: params.id } });
   });
 }

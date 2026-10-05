@@ -11,7 +11,6 @@ const TABS = [
   { href: "/admin/settings/home", label: "صفحه‌ی اصلی" },
   { href: "/admin/settings/bank-cards", label: "کارت‌های بانکی" },
   { href: "/admin/settings/shipping", label: "روش‌های ارسال" },
-  { href: "/admin/settings/branches", label: "شعب" },
   { href: "/admin/settings/banners", label: "بنرها و اسلایدر" },
   { href: "/admin/settings/seo", label: "سئو" },
   { href: "/admin/notifications/settings", label: "پیامک‌ها" },

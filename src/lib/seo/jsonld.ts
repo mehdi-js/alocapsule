@@ -223,60 +223,6 @@ export function faqPageJsonLd(
   };
 }
 
-export interface LocalBusinessInput {
-  siteUrl: string;
-  brandName: string;
-  name: string;
-  slug: string;
-  city: string;
-  district: string | null;
-  address: string;
-  phone: string;
-  latitude: number | null;
-  longitude: number | null;
-  image: string | null;
-  mapUrl: string | null;
-  /** خروجی `openingHoursSpecification` */
-  openingHours: Record<string, unknown>[];
-  /** زیرنوع schema.org (مثلاً `Store`)؛ پیش‌فرض `LocalBusiness` */
-  schemaType?: string;
-}
-
-/** شعبه/محل کسب‌وکار: `LocalBusiness` با آدرس، تلفن، ساعات و مختصات */
-export function localBusinessJsonLd(input: LocalBusinessInput): JsonObject {
-  const telephone = toE164(input.phone);
-  return {
-    "@context": "https://schema.org",
-    "@type": input.schemaType ?? "LocalBusiness",
-    name: `${input.brandName} — ${input.name}`,
-    url: absoluteUrl(`/branches/${input.slug}`, input.siteUrl),
-    parentOrganization: {
-      "@id": absoluteUrl("/#organization", input.siteUrl),
-    },
-    telephone,
-    image: input.image ? absoluteUrl(input.image, input.siteUrl) : undefined,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: real(input.address),
-      addressLocality: real(input.district ?? input.city),
-      addressRegion: real(input.city),
-      addressCountry: "IR",
-    },
-    geo:
-      input.latitude !== null && input.longitude !== null
-        ? {
-            "@type": "GeoCoordinates",
-            latitude: input.latitude,
-            longitude: input.longitude,
-          }
-        : undefined,
-    hasMap: input.mapUrl ?? undefined,
-    openingHoursSpecification: input.openingHours.length
-      ? input.openingHours
-      : undefined,
-  };
-}
-
 export interface BusinessLocationInput {
   siteUrl: string;
   brandName: string;

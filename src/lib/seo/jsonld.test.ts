@@ -5,7 +5,6 @@ import {
   businessLocationJsonLd,
   faqPageJsonLd,
   itemListJsonLd,
-  localBusinessJsonLd,
   organizationJsonLd,
   productJsonLd,
   type ProductJsonLdInput,
@@ -164,43 +163,6 @@ describe("breadcrumb، ItemList و FAQPage", () => {
       ],
     });
     expect(faqPageJsonLd([{ question: "س", answer: todo() }])).toBeNull();
-  });
-});
-
-describe("localBusinessJsonLd", () => {
-  it("آدرس، تلفن E.164، مختصات و ساعات؛ بدون مختصات ⇒ بدون geo", () => {
-    const base = {
-      siteUrl: SITE,
-      brandName: "الو کپسول",
-      name: "شعبه ولیعصر",
-      slug: "valiasr",
-      city: "تهران",
-      district: "ونک",
-      address: "خیابان ولیعصر، پلاک ۱",
-      phone: "۰۲۱-۲۲۳۴۵۶۷۸",
-      latitude: 35.75,
-      longitude: 51.41,
-      image: null,
-      mapUrl: "https://neshan.org/maps/x",
-      openingHours: [{ "@type": "OpeningHoursSpecification" }],
-    };
-    const data = localBusinessJsonLd(base);
-    expect(data).toMatchObject({
-      "@type": "LocalBusiness",
-      name: "الو کپسول — شعبه ولیعصر",
-      url: "https://alocapsule.ir/branches/valiasr",
-      telephone: "+982122345678",
-      address: {
-        addressLocality: "ونک",
-        addressRegion: "تهران",
-        addressCountry: "IR",
-      },
-      geo: { latitude: 35.75, longitude: 51.41 },
-      hasMap: "https://neshan.org/maps/x",
-    });
-    expect(
-      localBusinessJsonLd({ ...base, latitude: null }).geo,
-    ).toBeUndefined();
   });
 });
 

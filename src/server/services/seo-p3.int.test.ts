@@ -174,7 +174,6 @@ describe("sitemap (SEO.md §۸)", () => {
       expect(urls).not.toContain(url);
     }
     expect(urls.some((u) => u.includes("?"))).toBe(false);
-    expect(urls.some((u) => u.startsWith("/branches"))).toBe(false);
   });
 
   it("terms و privacy فقط اگر منتشر شده‌اند؛ faq/shipping/returns هرگز", async () => {

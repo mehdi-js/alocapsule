@@ -1,11 +1,9 @@
 import { z } from "zod";
 
-import { TIME_PATTERN, WEEK_DAYS } from "@/lib/branch-hours";
-
 import { faqItemSchema, latinSlugSchema, MAX_FAQ_ITEMS } from "./seo";
 
 /**
- * صفحات ثابت، شعب و ریدایرکت‌ها (SEO.md فاز S4).
+ * صفحات ثابت و ریدایرکت‌ها (SEO.md فاز S4).
  */
 
 function optionalText(label: string, max: number) {
@@ -21,7 +19,6 @@ function optionalText(label: string, max: number) {
 export const RESERVED_PAGE_SLUGS = new Set([
   "products",
   "category",
-  "branches",
   "cart",
   "checkout",
   "account",
@@ -72,61 +69,6 @@ const coordinate = (label: string, min: number, max: number) =>
     .min(min, `${label} خارج از محدوده است`)
     .max(max, `${label} خارج از محدوده است`)
     .nullable();
-
-export const branchInputSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, "نام شعبه حداقل ۲ کاراکتر باشد")
-    .max(80, "نام شعبه حداکثر ۸۰ کاراکتر باشد"),
-  slug: latinSlugSchema,
-  city: z.string().trim().min(2, "شهر را وارد کنید").max(60),
-  district: optionalText("محله", 60),
-  address: z
-    .string()
-    .trim()
-    .min(5, "آدرس را کامل وارد کنید")
-    .max(300, "آدرس حداکثر ۳۰۰ کاراکتر باشد"),
-  phone: z.string().trim().min(5, "تلفن را وارد کنید").max(40),
-  openingHours: z.object({
-    days: z
-      .array(
-        z
-          .object({
-            day: z.enum(
-              WEEK_DAYS.map((day) => day.key) as [string, ...string[]],
-            ),
-            open: z
-              .string()
-              .regex(TIME_PATTERN, "ساعت را به شکل ۱۰:۰۰ وارد کنید"),
-            close: z
-              .string()
-              .regex(TIME_PATTERN, "ساعت را به شکل ۲۳:۰۰ وارد کنید"),
-          })
-          .refine((day) => day.open !== day.close, {
-            message: "ساعت شروع و پایان یکی است",
-            path: ["close"],
-          }),
-      )
-      .max(7),
-    note: z.string().trim().max(200, "توضیح حداکثر ۲۰۰ کاراکتر باشد"),
-  }),
-  latitude: coordinate("عرض جغرافیایی", 24, 40),
-  longitude: coordinate("طول جغرافیایی", 44, 64),
-  mapLinks: z.object({
-    neshan: httpsUrl("لینک نشان"),
-    balad: httpsUrl("لینک بلد"),
-    google: httpsUrl("لینک گوگل‌مپ"),
-  }),
-  description: optionalText("توضیحات", 5000),
-  seoTitle: optionalText("عنوان سئو", 70),
-  metaDescription: optionalText("توضیحات متا", 160),
-  isActive: z.boolean().default(true),
-  sortOrder: z.number().int().min(0).max(9999).default(0),
-});
-
-export type BranchInput = z.output<typeof branchInputSchema>;
-export type BranchFormInput = z.input<typeof branchInputSchema>;
 
 export const redirectInputSchema = z
   .object({

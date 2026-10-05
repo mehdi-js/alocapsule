@@ -4,6 +4,7 @@ import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import {
   ADMIN_BACKUP,
   E2E_TMP,
+  SHIPPING_BACKUP,
   SMS_CONNECTION_BACKUP,
 } from "../playwright.config";
 
@@ -67,6 +68,22 @@ export default async function globalSetup() {
       },
     },
   });
+  // تست‌ها روی خروجی seed روش‌های ارسال حساب می‌کنند (زمان تحویل، فوری/عادی)؛
+  // ردیف‌ها موقتاً به مقدار seed برمی‌گردند و در teardown به حالت قبلی
+  const { shippingMethods: seeded } = await import("../prisma/seed-data");
+  if (!existsSync(SHIPPING_BACKUP)) {
+    const rows = await prisma.shippingMethod.findMany({
+      where: { id: { in: seeded.map((method) => method.id) } },
+    });
+    writeFileSync(SHIPPING_BACKUP, JSON.stringify(rows));
+  }
+  for (const { id, ...data } of seeded) {
+    await prisma.shippingMethod.upsert({
+      where: { id },
+      create: { id, ...data },
+      update: data,
+    });
+  }
   const admin = await prisma.user.findUnique({ where: { phone: ADMIN_PHONE } });
   if (admin?.role !== "ADMIN" || !admin.isActive) {
     throw new Error(`ادمین فعال ${ADMIN_PHONE} لازم است (npm run db:seed)`);

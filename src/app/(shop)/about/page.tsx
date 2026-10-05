@@ -4,7 +4,6 @@ import Link from "next/link";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { BannerImage } from "@/components/shop/BannerImage";
 import {
-  BranchCards,
   ContentPanel,
   PageHero,
   SectionTitle,
@@ -17,7 +16,6 @@ import { buildPageMetadata } from "@/lib/seo/metadata";
 import { effectiveMeta } from "@/lib/seo/title";
 import { ABOUT_PAGE, SITE } from "@/lib/site-content";
 import { getBanners } from "@/server/services/banner.service";
-import { listActiveBranches } from "@/server/services/branch.service";
 import { getLocalBusinessJsonLd } from "@/server/services/business-schema.service";
 import { getFixedPage } from "@/server/services/page.service";
 import { getSeoContext } from "@/server/services/seo-settings.service";
@@ -41,14 +39,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [{ aboutStats }, banners, page, branches, localBusiness] =
-    await Promise.all([
-      getSiteSettings(),
-      getBanners(),
-      getFixedPage("about"),
-      listActiveBranches(),
-      getLocalBusinessJsonLd(),
-    ]);
+  const [{ aboutStats }, banners, page, localBusiness] = await Promise.all([
+    getSiteSettings(),
+    getBanners(),
+    getFixedPage("about"),
+    getLocalBusinessJsonLd(),
+  ]);
   return (
     <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-10 px-5 pt-4 md:gap-14 md:pt-5">
       <JsonLd data={localBusiness} />
@@ -132,16 +128,6 @@ export default async function AboutPage() {
           })}
         </ul>
       </section>
-
-      {branches.length > 0 ? (
-        <section
-          aria-labelledby="branches-title"
-          className="flex flex-col gap-6"
-        >
-          <SectionTitle id="branches-title">شعب {SITE.name}</SectionTitle>
-          <BranchCards />
-        </section>
-      ) : null}
 
       <ContentPanel className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
         <div className="flex flex-col gap-2">

@@ -3,18 +3,8 @@ import { randomBytes } from "node:crypto";
 import { afterAll, describe, expect, it } from "vitest";
 
 import { db } from "@/lib/db";
-import {
-  branchInputSchema,
-  pageInputSchema,
-  redirectInputSchema,
-} from "@/lib/validation/content";
+import { pageInputSchema, redirectInputSchema } from "@/lib/validation/content";
 
-import {
-  createBranch,
-  deleteBranch,
-  getBranchPage,
-  updateBranch,
-} from "./branch.service";
 import {
   createPage,
   deletePage,
@@ -31,12 +21,11 @@ import {
 
 /**
  * معیارهای فاز S4 (SEO.md §۱۳): ریدایرکت آدرس فارسی درصد-کدشده مستقیم به
- * مقصد نهایی، 410، لاگ ۴۰۴، رد حلقه با پیام فارسی، صفحات و شعب.
+ * مقصد نهایی، 410، لاگ ۴۰۴، رد حلقه با پیام فارسی، صفحات.
  */
 
 const RUN = randomBytes(3).toString("hex");
 const pageIds: string[] = [];
-const branchIds: string[] = [];
 
 function redirect(from: string, to: string, statusCode: 301 | 410 = 301) {
   return saveRedirect(
@@ -48,10 +37,9 @@ afterAll(async () => {
   await db.redirect.deleteMany({ where: { fromPath: { contains: RUN } } });
   await db.notFoundLog.deleteMany({ where: { path: { contains: RUN } } });
   await db.slugHistory.deleteMany({
-    where: { entityId: { in: [...pageIds, ...branchIds] } },
+    where: { entityId: { in: pageIds } },
   });
   await db.page.deleteMany({ where: { id: { in: pageIds } } });
-  await db.branch.deleteMany({ where: { id: { in: branchIds } } });
   clearRedirectCache();
   await db.$disconnect();
 });
@@ -147,7 +135,7 @@ describe("لاگ ۴۰۴", () => {
   });
 });
 
-describe("صفحات و شعب", () => {
+describe("صفحات", () => {
   it("صفحه: منتشرنشده ⇒ نیست؛ تغییر نامک ⇒ ریدایرکت؛ حذف ⇒ ریدایرکت به خانه", async () => {
     const input = (slug: string, isPublished: boolean) =>
       pageInputSchema.parse({
@@ -171,41 +159,5 @@ describe("صفحات و شعب", () => {
       where: { fromPath: { in: [`/page-a-${RUN}`, `/page-b-${RUN}`] } },
     });
     expect(redirects.map((r) => r.toPath)).toEqual(["/", "/"]);
-  });
-
-  it("شعبه: ساعات روزانه، تغییر نامک و حذف ⇒ ریدایرکت به فهرست شعب", async () => {
-    const input = (slug: string) =>
-      branchInputSchema.parse({
-        name: "شعبه تست",
-        slug,
-        city: "تهران",
-        address: "خیابان آزمایش، پلاک ۱",
-        phone: "02100000000",
-        openingHours: {
-          days: [{ day: "saturday", open: "10:00", close: "22:00" }],
-          note: "",
-        },
-        latitude: null,
-        longitude: null,
-        mapLinks: { neshan: "", balad: "", google: "" },
-      });
-    const { id } = await createBranch(input(`branch-a-${RUN}`));
-    branchIds.push(id);
-    const page = await getBranchPage(`branch-a-${RUN}`);
-    expect(page.kind === "found" && page.data.openingHours.days).toEqual([
-      { day: "saturday", open: "10:00", close: "22:00" },
-    ]);
-
-    await updateBranch(id, input(`branch-b-${RUN}`));
-    expect(await getBranchPage(`branch-a-${RUN}`)).toEqual({
-      kind: "redirect",
-      to: `/branches/branch-b-${RUN}`,
-    });
-
-    await deleteBranch(id);
-    const row = await db.redirect.findUniqueOrThrow({
-      where: { fromPath: `/branches/branch-b-${RUN}` },
-    });
-    expect(row.toPath).toBe("/branches");
   });
 });

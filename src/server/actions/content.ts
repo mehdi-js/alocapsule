@@ -3,19 +3,12 @@
 import { z } from "zod";
 
 import {
-  type BranchFormInput,
-  branchInputSchema,
   type PageFormInput,
   pageInputSchema,
   type RedirectFormInput,
   redirectInputSchema,
 } from "@/lib/validation/content";
 import { requireAdmin } from "@/server/auth/current-user";
-import {
-  createBranch,
-  deleteBranch,
-  updateBranch,
-} from "@/server/services/branch.service";
 import {
   createPage,
   deletePage,
@@ -40,7 +33,7 @@ import {
 } from "./types";
 
 /**
- * صفحات ثابت، شعب، ریدایرکت‌ها و لاگ ۴۰۴ (SEO.md فاز S4).
+ * صفحات ثابت، ریدایرکت‌ها و لاگ ۴۰۴ (SEO.md فاز S4).
  * ترتیب: نقش ادمین ← Zod ← service ← revalidate.
  */
 
@@ -71,36 +64,6 @@ export async function deletePageAction(id: string): Promise<ActionResult> {
   }
   return runAction(async () => {
     await deletePage(id);
-    revalidateCatalog();
-    return {};
-  });
-}
-
-// ───────── شعب ─────────
-
-export async function saveBranchAction(
-  id: string | null,
-  input: BranchFormInput,
-): Promise<ActionResult<{ id: string }>> {
-  await requireAdmin();
-  const parsed = branchInputSchema.safeParse(input);
-  if (!parsed.success) return validationFailure(parsed.error);
-  return runAction(async () => {
-    const result = id
-      ? await updateBranch(id, parsed.data)
-      : await createBranch(parsed.data);
-    revalidateCatalog();
-    return result;
-  });
-}
-
-export async function deleteBranchAction(id: string): Promise<ActionResult> {
-  await requireAdmin();
-  if (!idSchema.safeParse(id).success) {
-    return { ok: false, message: INVALID_INPUT_MESSAGE };
-  }
-  return runAction(async () => {
-    await deleteBranch(id);
     revalidateCatalog();
     return {};
   });

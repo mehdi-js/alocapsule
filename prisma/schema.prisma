@@ -700,7 +700,6 @@ enum SlugEntityType {
   PRODUCT
   CATEGORY
   PAGE
-  BRANCH
 }
 
 /// نامک‌های قبلی؛ آدرس قدیمی با 301 به نامک فعلی می‌رود
@@ -737,30 +736,6 @@ model NotFoundLog {
   firstSeenAt  DateTime @default(now()) @db.Timestamptz(3)
   lastSeenAt   DateTime @default(now()) @db.Timestamptz(3)
   lastReferrer String?
-}
-
-/// شعبه (در فاز S4 جایگزین شعب داخل `site.content` می‌شود)
-model Branch {
-  id              String   @id @default(cuid())
-  name            String
-  slug            String   @unique
-  city            String
-  district        String?
-  address         String
-  phone           String
-  /// ساعات کاری: `{ days: [{day, open, close}], note }` (lib/branch-hours.ts)
-  openingHours    Json
-  latitude        Float?
-  longitude       Float?
-  /// {neshan, balad, google}
-  mapLinks        Json
-  imageUrl        String?
-  description     String?
-  seoTitle        String?
-  metaDescription String?
-  isActive        Boolean  @default(true)
-  sortOrder       Int      @default(0)
-  updatedAt       DateTime @default(now()) @updatedAt @db.Timestamptz(3)
 }
 
 /// صفحات ثابت (درباره ما، تماس، سوالات متداول، ارسال، مرجوعی، حریم خصوصی)

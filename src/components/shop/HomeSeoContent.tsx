@@ -1,5 +1,6 @@
 import { RichText } from "@/components/ui/RichText";
 
+import { CollapsibleText } from "./CollapsibleText";
 import { FaqSection } from "./FaqSection";
 import { panel } from "./styles";
 
@@ -22,11 +23,14 @@ export function HomeSeoContent({
           aria-label="درباره‌ی خرید از ما"
           className={`${panel} text-ink-soft p-6 text-[15px] md:p-10`}
         >
-          <RichText
-            text={content}
-            headingLevel={2}
-            className="[&_a]:text-brand-strong [&_h2]:text-ink max-w-[900px] [&_h2]:text-xl md:[&_h2]:text-2xl"
-          />
+          {/* بلوک سئو: فقط ابتدایش دیده می‌شود و با فلش باز می‌شود؛ کل متن در HTML هست */}
+          <CollapsibleText>
+            <RichText
+              text={content}
+              headingLevel={2}
+              className="[&_a]:text-brand-strong [&_h2]:text-ink max-w-[900px] [&_h2]:text-xl md:[&_h2]:text-2xl"
+            />
+          </CollapsibleText>
         </section>
       ) : null}
       <FaqSection items={faq} id="home-faq" />

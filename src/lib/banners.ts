@@ -61,13 +61,6 @@ export const BANNER_SLOTS = {
     mobile: "1000 × 740",
     tip: "متنی روی تصویر نمی‌آید.",
   },
-  branchesHero: {
-    label: "بنر بالای «شعب»",
-    where: "صفحه‌ی آدرس شعب",
-    desktop: "2400 × 580",
-    mobile: "1000 × 740",
-    tip: "عنوان صفحه روی سمت راست (دسکتاپ) و پایین (موبایل) می‌نشیند.",
-  },
   contactHero: {
     label: "بنر بالای «تماس با ما»",
     where: "صفحه‌ی تماس با ما",
@@ -80,11 +73,15 @@ export const BANNER_SLOTS = {
 export type BannerSlot = keyof typeof BANNER_SLOTS;
 export const BANNER_SLOT_KEYS = Object.keys(BANNER_SLOTS) as BannerSlot[];
 
-/** اسلایدر صفحه‌ی اصلی */
+/**
+ * اسلایدر صفحه‌ی اصلی. تصویر در کادر کنار عنوان (نه پشت متن) نمایش داده می‌شود؛
+ * کادر در دسکتاپ نسبت ۵:۴ و در موبایل ۴:۳ دارد (`HomeHero`)، پس اندازه‌ی
+ * پیشنهادی هم همان نسبت‌هاست (تصویر عریض باید برش بخورد).
+ */
 export const HERO_SIZES = {
-  desktop: "2400 × 890",
-  mobile: "1000 × 800",
-  tip: "عنوان و دکمه روی سمت راست (دسکتاپ) و نیمه‌ی پایین (موبایل) می‌نشینند؛ سوژه‌ی اصلی عکس را سمت چپ / بالا قرار دهید.",
+  desktop: "1400 × 1120",
+  mobile: "1000 × 750",
+  tip: "تصویر در کادر کنار عنوان نمایش داده می‌شود: نسبت ۵:۴ در دسکتاپ و ۴:۳ در موبایل. سوژه‌ی اصلی را وسط عکس بگذارید تا برش نخورد.",
 } as const;
 
 export interface BannersSettings {

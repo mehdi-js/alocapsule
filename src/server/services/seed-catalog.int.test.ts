@@ -1,4 +1,4 @@
-import { afterAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { applyContentTokens } from "@/lib/content-tokens";
 import { db } from "@/lib/db";
@@ -10,6 +10,7 @@ import {
 import { computeFilledPrices } from "@/lib/product-options";
 import { HOME_CONTENT, HOME_FAQ } from "@/lib/seo/home-content";
 
+import { shippingMethods as seededMethods } from "../../../prisma/seed-data";
 import {
   getCategoryPriceTable,
   getProductPage,
@@ -219,6 +220,23 @@ describe("hub و سوییچ اندازه", () => {
 });
 
 describe("روش‌های ارسال و توکن‌های متن", () => {
+  // ادمین ممکن است روش‌های seed را در دیتابیس توسعه ویرایش کرده باشد (فعال/فوری…)؛
+  // برای سنجش خروجی seed، ردیف‌ها موقتاً به مقدار seed برمی‌گردند و بعد
+  // دقیقاً به حالت قبلی
+  let snapshot: Awaited<ReturnType<typeof db.shippingMethod.findMany>> = [];
+  beforeAll(async () => {
+    const ids = seededMethods.map((method) => method.id);
+    snapshot = await db.shippingMethod.findMany({ where: { id: { in: ids } } });
+    for (const { id, ...data } of seededMethods) {
+      await db.shippingMethod.update({ where: { id }, data });
+    }
+  });
+  afterAll(async () => {
+    for (const { id, ...row } of snapshot) {
+      await db.shippingMethod.update({ where: { id }, data: row });
+    }
+  });
+
   it("عادی و فوری غیرفعال تا هزینه‌گذاری؛ حضوری فعال و رایگان", async () => {
     const methods = await db.shippingMethod.findMany({
       where: {
