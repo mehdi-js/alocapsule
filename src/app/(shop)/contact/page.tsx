@@ -58,7 +58,7 @@ export default async function ContactPage() {
         imageLabel="بنر تماس"
         images={banners.images.contactHero}
       >
-        <p className="text-ink-soft text-[15px] leading-[2]">
+        <p className="text-on-media/95 text-[15px] leading-[2]">
           برای پیگیری سفارش، سفارش عمده یا هر پرسشی با ما در تماس باشید.
         </p>
       </PageHero>

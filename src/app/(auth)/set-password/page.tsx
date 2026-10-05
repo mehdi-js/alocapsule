@@ -16,9 +16,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * تعیین رمز عبور (اجباری پس از اولین ورود با کد پیامکی، یا پس از «فراموشی
- * رمز») و تغییر رمز از پنل کاربر. کاربرِ بدون رمز تا این‌جا را کامل نکند
- * هیچ‌جا واردشده حساب نمی‌شود.
+ * پیشنهاد تعیین رمز عبور بعد از اولین ورود با کد پیامکی (**اختیاری**: «بعداً
+ * تنظیم می‌کنم» کاربر را بدون رمز به مقصد می‌برد)، تعیین رمز بعد از «فراموشی
+ * رمز» و تغییر رمز از پنل کاربر.
  */
 export default async function SetPasswordPage({
   searchParams,
@@ -45,21 +45,21 @@ export default async function SetPasswordPage({
       <Logo />
       <header className="space-y-2">
         <h1 className="text-3xl font-extrabold">
-          {hasPassword ? "رمز عبور جدید" : "تعیین رمز عبور"}
+          {hasPassword ? "رمز عبور جدید" : "رمز عبور می‌گذارید؟"}
         </h1>
         <p className="text-muted leading-[2]">
-          {hasPassword ? "رمز عبور حساب " : "برای تکمیل ثبت‌نام، برای حساب "}
+          {hasPassword ? "رمز عبور حساب " : "برای حساب "}
           <span dir="ltr">{toPersianDigits(user.phone)}</span>
           {hasPassword
             ? " را عوض کنید. نشست‌های دیگر شما پس از تغییر رمز خارج می‌شوند."
-            : " یک رمز عبور بگذارید. از این پس می‌توانید با رمز عبور یا کد پیامکی وارد شوید."}
+            : " می‌توانید همین حالا رمز عبور بگذارید تا دفعات بعد بدون پیامک هم وارد شوید، یا بعداً از «حساب من ← پروفایل» آن را تنظیم کنید. ورود با کد پیامکی همیشه ممکن است."}
         </p>
       </header>
 
       <SetPasswordForm
         requireCurrent={requireCurrent}
         next={next}
-        submitLabel={hasPassword ? "ذخیره‌ی رمز جدید" : "ذخیره و ادامه"}
+        submitLabel={hasPassword ? "ذخیره‌ی رمز جدید" : "تنظیم رمز و ادامه"}
       />
 
       <div className="flex items-center justify-between text-sm">
@@ -68,7 +68,13 @@ export default async function SetPasswordPage({
             انصراف
           </Link>
         ) : (
-          <span />
+          <Link
+            href={next}
+            data-skip-password
+            className="text-ink-soft font-bold underline underline-offset-4"
+          >
+            بعداً تنظیم می‌کنم
+          </Link>
         )}
         <form action={logoutAction}>
           <button

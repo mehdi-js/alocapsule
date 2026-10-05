@@ -38,8 +38,8 @@ export function PageHero({
       />
       <div className="absolute inset-0 hidden bg-scrim-side md:block" />
       <div className="absolute inset-0 bg-scrim-bottom md:hidden" />
-      <div className="relative flex max-w-[640px] flex-col gap-4 p-6 md:me-auto md:p-14">
-        <p className="text-accent text-[15px]">{eyebrow}</p>
+      <div className="text-on-media relative flex max-w-[640px] flex-col gap-4 p-6 [text-shadow:0_1px_12px_rgb(0_0_0/0.25)] md:me-auto md:p-14">
+        <p className="text-on-media/90 text-[15px] font-bold">{eyebrow}</p>
         <h1 className="text-[30px] leading-[1.3] font-extrabold md:text-5xl">
           {title.map((line) => (
             <span key={line} className="block">

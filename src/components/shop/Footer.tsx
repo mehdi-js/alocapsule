@@ -33,8 +33,9 @@ export async function Footer() {
   return (
     <footer className="bg-ink text-on-media mt-12 px-5 pt-12 pb-6 lg:px-11">
       <div className="mx-auto w-full max-w-[1400px]">
-        <div className="grid gap-10 md:grid-cols-[1.2fr_0.8fr_0.8fr_1.2fr]">
-          <div className="flex flex-col gap-4">
+        {/* موبایل: دو ستون (برند و تماس تمام‌عرض، لینک‌ها و دسته‌ها کنار هم) تا فوتر کوتاه بماند */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-[1.2fr_0.8fr_0.8fr_1.2fr] md:gap-10">
+          <div className="col-span-2 flex flex-col gap-4 md:col-span-1">
             {/* لوگوی رسمی (آبی/نارنجی) روی زمینه‌ی تیره‌ی فوتر خوانا نیست؛ روی کاشی روشن */}
             <Logo className="w-fit rounded-2xl bg-white px-4 py-2.5" />
             <p className="text-on-media/75 text-sm">{SITE.tagline}</p>
@@ -88,7 +89,7 @@ export async function Footer() {
             </nav>
           ) : null}
 
-          <div className="flex flex-col gap-3">
+          <div className="col-span-2 flex flex-col gap-3 md:col-span-1">
             <h2 className="text-brand text-[15px] font-bold">اطلاعات تماس</h2>
             <a
               href={phoneHref(business.phone)}

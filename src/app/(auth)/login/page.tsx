@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 import { LoginForm } from "@/components/auth/LoginForm";
 import { Logo } from "@/components/shop/Logo";
@@ -23,10 +22,6 @@ export default async function LoginPage({
 }) {
   const next = safeRedirectPath((await searchParams).next);
   const current = await getSessionUser();
-  // ثبت‌نام نیمه‌کاره: تعیین رمز اجباری است
-  if (current && !current.hasPassword) {
-    redirect(`/set-password?next=${encodeURIComponent(next)}`);
-  }
   const user = current?.user;
 
   return (
@@ -36,7 +31,8 @@ export default async function LoginPage({
         <h1 className="text-3xl font-extrabold">ورود به {SITE.name}</h1>
         <p className="text-muted leading-[2]">
           با شماره‌ی موبایل وارد شوید؛ اگر حساب ندارید، با کد پیامکی ثبت‌نام
-          می‌کنید و یک رمز عبور می‌گذارید.
+          می‌کنید. گذاشتن رمز عبور اختیاری است و بعد از ورود می‌توانید آن را
+          تنظیم کنید.
         </p>
       </header>
 

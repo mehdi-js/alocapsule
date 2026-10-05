@@ -5,15 +5,19 @@ import { notFound } from "next/navigation";
 import { ProfileForm } from "@/components/shop/account/ProfileForm";
 import { btnOutline, panel } from "@/components/shop/styles";
 import { cn } from "@/lib/utils";
-import { requireUser } from "@/server/auth/current-user";
+import { getSessionUser, requireUser } from "@/server/auth/current-user";
 import { getProfile } from "@/server/services/account.service";
 
 export const metadata: Metadata = { title: "پروفایل" };
 
 export default async function MyProfilePage() {
   const user = await requireUser();
-  const profile = await getProfile(user.id);
+  const [profile, session] = await Promise.all([
+    getProfile(user.id),
+    getSessionUser(),
+  ]);
   if (!profile) notFound();
+  const hasPassword = session?.hasPassword ?? false;
   return (
     <div className="flex flex-col gap-5">
       <ProfileForm profile={profile} />
@@ -25,14 +29,15 @@ export default async function MyProfilePage() {
           رمز عبور
         </h2>
         <p className="text-muted text-sm leading-7">
-          با رمز عبور یا کد پیامکی وارد می‌شوید. پس از تغییر رمز، نشست‌های دیگر
-          شما خارج می‌شوند.
+          {hasPassword
+            ? "با رمز عبور یا کد پیامکی وارد می‌شوید. پس از تغییر رمز، نشست‌های دیگر شما خارج می‌شوند."
+            : "هنوز رمز عبور ندارید و با کد پیامکی وارد می‌شوید. با تعیین رمز عبور، دفعات بعد بدون پیامک هم می‌توانید وارد شوید."}
         </p>
         <Link
           href="/set-password?next=/account/profile"
           className={cn(btnOutline, "self-start")}
         >
-          تغییر رمز عبور
+          {hasPassword ? "تغییر رمز عبور" : "تعیین رمز عبور"}
         </Link>
       </section>
     </div>

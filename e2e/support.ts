@@ -54,7 +54,7 @@ export async function readOtp(phone: string, after: Date): Promise<string> {
 }
 
 /**
- * ثبت‌نام با کد پیامکی (کاربر جدید/بدون رمز) و تعیین رمز اجباری؛ سپس به
+ * ثبت‌نام با کد پیامکی (کاربر جدید/بدون رمز) و تعیین رمز (اختیاری؛ این تابع تعیین می‌کند)؛ سپس به
  * `next` می‌رود.
  */
 export async function signUpWithOtp(
@@ -74,7 +74,7 @@ export async function signUpWithOtp(
   await page.waitForURL("**/set-password**");
   await page.getByLabel("رمز عبور جدید", { exact: true }).fill(password);
   await page.getByLabel("تکرار رمز عبور جدید").fill(password);
-  await page.getByRole("button", { name: "ذخیره و ادامه" }).click();
+  await page.getByRole("button", { name: "تنظیم رمز و ادامه" }).click();
   await page.waitForURL((url) => !url.pathname.startsWith("/set-password"));
 }
 
@@ -91,4 +91,24 @@ export async function loginWithPassword(
   await page.getByLabel("رمز عبور", { exact: true }).fill(password);
   await page.getByRole("button", { name: "ورود", exact: true }).click();
   await page.waitForURL((url) => !url.pathname.startsWith("/login"));
+}
+
+/** ثبت‌نام با کد پیامکی بدون تعیین رمز («بعداً تنظیم می‌کنم») */
+export async function signUpWithOtpSkippingPassword(
+  page: Page,
+  phone: string,
+  next = "/",
+) {
+  await page.goto(`/login?next=${encodeURIComponent(next)}`);
+  const sentAt = new Date(Date.now() - 1000);
+  await page.getByLabel("شماره‌ی موبایل").fill(phone);
+  await page.getByRole("button", { name: "ادامه" }).click();
+  const code = await readOtp(phone, sentAt);
+  await page.getByLabel("کد تأیید").fill(code);
+  await page.getByRole("button", { name: "ورود" }).click();
+
+  // بعد از ورود موفق پیشنهاد تعیین رمز می‌آید؛ «بعداً» ⇒ مقصد
+  await page.waitForURL("**/set-password**");
+  await page.getByRole("link", { name: "بعداً تنظیم می‌کنم" }).click();
+  await page.waitForURL((url) => !url.pathname.startsWith("/set-password"));
 }

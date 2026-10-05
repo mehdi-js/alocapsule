@@ -50,12 +50,13 @@ export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
 
 /**
  * کاربر فعلی یا `null`؛ نقش و وضعیت از دیتابیس خوانده می‌شود نه از JWT.
- * تعیین رمز عبور اجباری است: کاربرِ بدون رمز هیچ‌جا واردشده حساب نمی‌شود
- * تا صفحه‌ی `/set-password` را کامل کند.
+ * تعیین رمز عبور **اختیاری** است: کاربری که با کد پیامکی ثبت‌نام کرده و رمز
+ * نگذاشته هم واردشده حساب می‌شود (بعد از ورود از او پرسیده می‌شود، صفحه‌ی
+ * `/set-password`؛ «بعداً» مجاز است).
  */
 export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const current = await getSessionUser();
-  return current?.hasPassword ? current.user : null;
+  return current?.user ?? null;
 });
 
 export async function requireUser(): Promise<CurrentUser> {
