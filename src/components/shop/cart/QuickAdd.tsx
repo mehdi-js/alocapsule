@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import type { ProductCardDto } from "@/server/services/catalog.service";
 
 import { CloseIcon, PlusIcon } from "../icons";
-import { btnPrimary, variantPill } from "../styles";
+import { btnPrimaryCompact, variantPill } from "../styles";
 import { useCart } from "./CartProvider";
 
 /**
@@ -102,7 +102,7 @@ export function QuickAdd({ product }: { product: ProductCardDto }) {
             type="button"
             onClick={() => addVariant(selected)}
             disabled={pending}
-            className={cn(btnPrimary, "w-full px-3 py-2.5 text-sm")}
+            className={cn(btnPrimaryCompact, "w-full py-2.5")}
           >
             {pending
               ? "در حال افزودن…"

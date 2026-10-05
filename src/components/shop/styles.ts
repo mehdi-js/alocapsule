@@ -6,6 +6,14 @@ import { cn } from "@/lib/utils";
 export const btnPrimary =
   "inline-flex items-center justify-center gap-2.5 rounded-full bg-brand-strong px-7 py-3.5 text-[15px] font-extrabold text-on-brand transition hover:bg-brand-strong-hover disabled:cursor-not-allowed disabled:opacity-60";
 
+/**
+ * دکمه‌ی اصلی فشرده (نوار چسبان موبایل، افزودن سریع). `cn` کلاس‌های متناقض را
+ * ادغام نمی‌کند: `cn(btnPrimary, "px-3")` هم `px-7` و هم `px-3` را می‌ریخت و
+ * دکمه از عرض نوار بیرون می‌زد؛ پس برای دکمه‌ی کوچک از این استفاده شود.
+ */
+export const btnPrimaryCompact =
+  "inline-flex items-center justify-center gap-2 rounded-full bg-brand-strong px-3 text-sm font-extrabold whitespace-nowrap text-on-brand transition hover:bg-brand-strong-hover disabled:cursor-not-allowed disabled:opacity-60";
+
 /** دکمه‌ی CTA روی عکس (تیره‌تر، برای خوانایی روی تصویر) */
 export const btnDeep =
   "inline-flex items-center gap-3 rounded-full bg-brand-deep py-2.5 pe-3 ps-7 text-[15px] font-bold text-on-brand shadow-[0_20px_44px_-24px_color-mix(in_srgb,var(--color-brand)_80%,transparent)] transition hover:bg-brand-deep-hover";

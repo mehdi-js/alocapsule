@@ -16,7 +16,7 @@ import type { CatalogVariantDto } from "@/server/services/catalog-page.service";
 import { useCart } from "./cart/CartProvider";
 import { CartIcon } from "./icons";
 import { QtyStepper } from "./QtyStepper";
-import { btnPrimary, panel, variantPill } from "./styles";
+import { btnPrimary, btnPrimaryCompact, panel, variantPill } from "./styles";
 
 /** قرص انتخاب یک مقدار گزینه؛ مقدار بدون ترکیب فعال کم‌رنگ و غیرقابل انتخاب است */
 const chipClass = (selected: boolean, available: boolean) =>
@@ -198,8 +198,10 @@ export function ProductPurchase({
       </div>
 
       {/* نوار چسبان موبایل */}
-      <div className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-3 border-t border-hair bg-surface px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] md:hidden">
-        <div className="flex min-w-0 flex-col">
+      {/* عرض ثابت = پنجره (w-full): محتوا هرگز نباید از آن بیرون بزند، وگرنه کل صفحه
+          در موبایل جابه‌جا می‌شود */}
+      <div className="fixed inset-x-0 bottom-0 z-40 flex w-full items-center gap-2 overflow-hidden border-t border-hair bg-surface px-3 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] md:hidden">
+        <div className="flex min-w-0 shrink flex-col">
           <span className="text-muted truncate text-[11px]">
             {toPersianDigits(qty)}
             {variant.title ? ` × ${variant.title}` : ""}
@@ -209,14 +211,30 @@ export function ProductPurchase({
             <span className="text-[11px] font-medium">تومان</span>
           </span>
         </div>
-        <QtyStepper value={qty} max={maxQuantity} size="sm" onChange={setQty} />
+        <div className="shrink-0">
+          <QtyStepper
+            value={qty}
+            max={maxQuantity}
+            size="sm"
+            onChange={setQty}
+          />
+        </div>
         <button
           type="button"
           onClick={addToCart}
           disabled={pending}
-          className={cn(btnPrimary, "h-12 flex-1 px-3 py-0 text-sm")}
+          aria-label="افزودن به سبد خرید"
+          className={cn(btnPrimaryCompact, "h-12 min-w-0 flex-1")}
         >
-          {pending ? "…" : "افزودن به سبد"}
+          {pending ? (
+            "…"
+          ) : (
+            <>
+              افزودن
+              {/* گوشی‌های خیلی باریک: فقط «افزودن» تا نوار از عرض بیرون نزند */}
+              <span className="hidden min-[360px]:inline">به سبد</span>
+            </>
+          )}
         </button>
       </div>
     </div>

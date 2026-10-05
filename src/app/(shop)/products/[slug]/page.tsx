@@ -228,10 +228,11 @@ export default async function ProductPage({
           }))}
         />
 
-        <div className="grid items-start gap-8 lg:grid-cols-[1.05fr_1fr] lg:gap-12">
+        {/* ستون تکی با minmax(0,1fr): بدون آن عرض ستون به محتوای ذاتی (جدول قیمت ۴۲۰px) باز می‌شد و کل صفحه‌ی موبایل جابه‌جا می‌شد */}
+        <div className="grid grid-cols-[minmax(0,1fr)] items-start gap-8 lg:grid-cols-[1.05fr_1fr] lg:gap-12">
           <ProductGallery images={product.images} productName={product.name} />
 
-          <div className="flex flex-col gap-6">
+          <div className="flex min-w-0 flex-col gap-6">
             <div className="flex flex-col gap-3.5">
               {product.kind === "SERVICE" ? (
                 <ServiceBadge className="w-fit" />
